@@ -1,3 +1,4 @@
+package project;
 import java.util.ArrayList;
 /**
  * Tuple class to store tuple data and schema list information
@@ -21,7 +22,7 @@ public class Tuple{
 	public String[] getTuple() {
 		return tuple;
 	}
-
+	
 	/**
 	 * Method to return tuple in a visible way
 	 * 

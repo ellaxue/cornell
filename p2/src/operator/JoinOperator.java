@@ -1,3 +1,4 @@
+package operator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -5,6 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.sf.jsqlparser.expression.Expression;
+import project.QueryPlan;
+import project.SchemaPair;
+import project.Tuple;
+import project.catalog;
+import project.conditionEvaluator;
 
 /**
  * Join operator to execute the join operation

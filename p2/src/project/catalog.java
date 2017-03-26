@@ -4,6 +4,8 @@
  * 
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
+
+package project;
 import java.util.*;
 
 public final class catalog {

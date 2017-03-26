@@ -10,7 +10,7 @@
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
 
-
+package project;
 import java.util.Stack;
 
 import net.sf.jsqlparser.expression.AllComparisonExpression;
@@ -61,7 +61,6 @@ public class conditionEvaluator implements ExpressionVisitor {
 	private Tuple tuple;
 	private boolean result=false;
 	private Stack<Boolean> stack=new Stack<Boolean>();
-	private catalog cl=catalog.getInstance();
 
 
 	/**

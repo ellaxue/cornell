@@ -3,6 +3,7 @@
  * 
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
+package project;
 public class SchemaPair {
     private String tablename;
 	private String schema;

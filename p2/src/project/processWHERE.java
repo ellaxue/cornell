@@ -1,3 +1,4 @@
+package project;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
@@ -186,7 +187,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}
@@ -242,7 +242,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}
@@ -298,7 +297,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}
@@ -372,7 +370,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}
@@ -428,7 +425,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}
@@ -484,7 +480,6 @@ public class processWHERE implements ExpressionVisitor {
 		Expression right = arg0.getRightExpression();
 		String ltable = "";
 		String rtable = "";
-		catalog cl = catalog.getInstance();
 		if (left instanceof Column) {
 			ltable = ((Column) left).getTable().getName();
 		}

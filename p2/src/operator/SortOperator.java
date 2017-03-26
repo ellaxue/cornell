@@ -1,14 +1,12 @@
-import java.awt.List;
+package operator;
+import project.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Sort operator to sort data in ascending order according to 

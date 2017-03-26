@@ -1,5 +1,8 @@
 
+package operator;
 import java.io.IOException;
+
+import project.Tuple;
 /**
  * Abstract class for all the possible operators.
  * 
