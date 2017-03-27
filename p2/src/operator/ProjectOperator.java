@@ -55,7 +55,7 @@ public class ProjectOperator extends Operator{
 	 * Method to reset after projection by reset its child
 	 */
 	@Override
-	public void reset() {
+	public void reset() throws IOException {
 		child.reset();
 	}
 

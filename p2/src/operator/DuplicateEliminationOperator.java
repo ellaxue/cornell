@@ -1,10 +1,14 @@
-package project;
+package operator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import operator.Operator;
+
+import project.QueryPlan;
+import project.SchemaPair;
+import project.Tuple;
+import project.catalog;
 
 /**
  * operator to support DISTINCT constraint.
@@ -118,7 +122,7 @@ public class DuplicateEliminationOperator extends Operator {
 	 * Method to reset after projection by reset all its fields
 	 */
 	@Override
-	public void reset() {
+	public void reset() throws IOException {
 		child.reset();
 		count=0;
 	}

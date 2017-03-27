@@ -43,7 +43,7 @@ public class SortOperator extends Operator {
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() {
+	public void reset() throws IOException {
 		child.reset();
 		count = 0; 
 	}

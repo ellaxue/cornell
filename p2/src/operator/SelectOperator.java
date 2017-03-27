@@ -41,7 +41,7 @@ public class SelectOperator extends Operator {
 	 * Method to reset
 	 */
 	@Override
-	public void reset() {
+	public void reset() throws IOException{
     child.reset();		
 	}
 

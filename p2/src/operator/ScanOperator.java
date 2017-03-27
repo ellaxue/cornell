@@ -13,11 +13,10 @@ import java.util.ArrayList;
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
 public class ScanOperator extends Operator {
-	private int count = 0;
-	private String tablename;
+	TupleReader reader;
 
-	public ScanOperator(String tablename) {
-		this.tablename = tablename;
+	public ScanOperator(String tablename) throws IOException {
+		reader=new DirectReader(tablename);
 	}
 
 	/**
@@ -27,47 +26,15 @@ public class ScanOperator extends Operator {
 	 */
 	@Override
 	public Tuple getNextTuple() throws IOException {
-		catalog cl = catalog.getInstance();
-		String fileDirectory;
-	
-		if (cl.UseAlias()) {
-			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
-		} else {
-			fileDirectory = cl.getTableLocation().get(tablename);
-		}
-	
-		FileReader toRead = new FileReader(fileDirectory);
-		BufferedReader br = new BufferedReader(toRead);
-		int n = 0;
-		String line = br.readLine();
-		while (n != count) {
-			line = br.readLine();
-			n++;
-		}
-		br.close();
-		count++;
-		if (line == null) {
-			return null;
-		}
-		ArrayList<SchemaPair> schema = new ArrayList<SchemaPair>();
-		if (cl.UseAlias()) {
-			for (String s : cl.getTableSchema().get(cl.getAlias().get(tablename))) {
-				schema.add(new SchemaPair(tablename, s));
-			}
-		} else {
-			for (String s : cl.getTableSchema().get(tablename)) {
-				schema.add(new SchemaPair(tablename, s));
-			}
-		}
-		return new Tuple(line.split(","), schema);
+	  return reader.readNext();
 	}
 
 	/**
 	 * Method to reset 
 	 */
 	@Override
-	public void reset() {
-		count = 0;
+	public void reset() throws IOException {
+		reader.reset();
 	}
 
 	/**

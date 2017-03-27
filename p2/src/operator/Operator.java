@@ -18,7 +18,7 @@ public abstract class Operator {
 		/**
 		 * Method to reset the operator
 		 */
-		public abstract void reset(); 
+		public abstract void reset() throws IOException; 
 		
 		/**
 		 * Method to dump the result and give the output of the current operator 

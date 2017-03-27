@@ -90,7 +90,7 @@ public class JoinOperator extends Operator {
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() {
+	public void reset() throws IOException  {
 		leftChild.reset();
 		rightChild.reset();
 		count = 0;
