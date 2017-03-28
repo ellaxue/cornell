@@ -1,8 +1,6 @@
 package project;
 
-import java.awt.print.Printable;
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +41,6 @@ public class DirectReader implements TupleReader {
 				schema.add(new SchemaPair(tablename, s));
 			}
 		} else {
-			System.out.println(cl.getTableSchema().get(tablename));
 			for (String s : cl.getTableSchema().get(tablename)) {
 				schema.add(new SchemaPair(tablename, s));
 			}
@@ -53,7 +50,14 @@ public class DirectReader implements TupleReader {
 
 	@Override
 	public void reset() throws IOException {
-      bufferedReader.reset();
+		String fileDirectory;
+		if (cl.UseAlias()) {
+			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
+		} else {
+			fileDirectory = cl.getTableLocation().get(tablename);
+		}
+		FileReader toRead = new FileReader(fileDirectory);
+		bufferedReader = new BufferedReader(toRead);
 	}
 
 }

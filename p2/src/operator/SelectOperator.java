@@ -50,15 +50,13 @@ public class SelectOperator extends Operator {
 	 */
 	@Override
 	public void dump() throws IOException {
-		FileWriter output= new FileWriter(catalog.getInstance().getOutputdir()+File.separator+"query"+QueryPlan.getCount(),false);
-		BufferedWriter br= new BufferedWriter(output);
-		Tuple tu;
-	    while ((tu=this.getNextTuple())!=null) {
-	    br.write(tu.getComplete());  
-	    br.newLine();
-	    }
-	    br.close();	
-	    QueryPlan.nextQuery();
+	    Tuple tu;
+        TupleWriter writer= new DirectWriter();
+    	while ((tu=this.getNextTuple())!=null) {
+    		writer.writeNext(tu);
+    	}
+    	writer.close();
+		QueryPlan.nextQuery();
 	};
 
 }

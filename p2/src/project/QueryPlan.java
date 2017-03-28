@@ -56,7 +56,7 @@ public class QueryPlan {
 	 *            directory and out put directory
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		catalog cl = catalog.getInstance();
 
 		cl.setOutputdir(args[1]);
@@ -80,9 +80,10 @@ public class QueryPlan {
 		schemaReader.close();
 
 		// parse the query and output results
-		try {
+		   Long t=System.currentTimeMillis();
 			CCJSqlParser parser = new CCJSqlParser(new FileReader(inputdir + File.separator + "queries.sql"));
 			Statement statement;
+			try {
 			while ((statement = parser.Statement()) != null) {
 				System.out.println("Read statement: " + statement);
 				Select select = (Select) statement;
@@ -236,11 +237,11 @@ public class QueryPlan {
 				}
 				cl.setUseAlias(false);
 			}
-		} catch (
-		Exception e) {
+		} catch (Exception e) {
 			System.err.println("Exception occurred during parsing");
 			e.printStackTrace();
 		}
+			   System.out.println(System.currentTimeMillis()-t);
 
 	}
 
