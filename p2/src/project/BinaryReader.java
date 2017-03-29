@@ -60,7 +60,7 @@ public class BinaryReader implements TupleReader {
 		buffer.clear();
 		if(fc.read(buffer)!=-1) {
 			attribute_num = buffer.getInt(0);
-			tuple_num = buffer.getInt(1);
+			tuple_num = buffer.getInt(4);
 			return readNext();}
 		}
 		fc.close();
@@ -75,7 +75,7 @@ public class BinaryReader implements TupleReader {
 		fc = fin.getChannel();
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
-		tuple_num = buffer.getInt(1);
+		tuple_num = buffer.getInt(4);
 	}
 
 }
