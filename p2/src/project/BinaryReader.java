@@ -40,7 +40,7 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
-		if(count<tuple_num*4) {
+		if(count<tuple_num*4+8) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
 				count+=4;
