@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import project.BinaryWriter;
 import project.DirectWriter;
 import project.QueryPlan;
 import project.SchemaPair;
@@ -135,7 +136,7 @@ public class DuplicateEliminationOperator extends Operator {
 	@Override
 	public void dump() throws IOException {
 	    Tuple tu;
-        TupleWriter writer= new DirectWriter();
+        TupleWriter writer= new BinaryWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
     	}

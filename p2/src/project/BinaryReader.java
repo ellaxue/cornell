@@ -40,7 +40,8 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
-		if(count<tuple_num*4+8) {
+		
+		if(count<tuple_num*attribute_num*4+8) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
 				count+=4;
@@ -61,6 +62,7 @@ public class BinaryReader implements TupleReader {
 		if(fc.read(buffer)!=-1) {
 			attribute_num = buffer.getInt(0);
 			tuple_num = buffer.getInt(4);
+			count=8;
 			return readNext();}
 		}
 		fc.close();
@@ -73,6 +75,7 @@ public class BinaryReader implements TupleReader {
 		count=8;
 		fin = new FileInputStream(fileDirectory);
 		fc = fin.getChannel();
+		buffer=ByteBuffer.allocate(4096);
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);

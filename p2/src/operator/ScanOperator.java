@@ -43,7 +43,7 @@ public class ScanOperator extends Operator {
 	@Override
 	public void dump() throws IOException {
 	    Tuple tu;
-        TupleWriter writer= new DirectWriter();
+        TupleWriter writer= new BinaryWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
     	}
