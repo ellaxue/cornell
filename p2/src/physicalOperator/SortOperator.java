@@ -1,4 +1,4 @@
-package operator;
+package physicalOperator;
 import project.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,21 +8,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import net.sf.jsqlparser.expression.Expression;
+
 /**
  * Sort operator to sort data in ascending order according to 
  * a subset of required columns for ordering. Then sort the rest
  * columns.
  * 
- * @author Chengcheng Ji (cj368) and Pei Xu (px29)
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
  */
 public class SortOperator extends Operator {
 	private Operator child;
 	private ArrayList<Tuple> sorted_tuples;
+	private ArrayList<SchemaPair> schema_pair;
+	private boolean organized = false;
 	int count = 0;
 
 	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
 		this.child = child;
-		this.sorted_tuples = organize(child, schema_pair);
+		this.schema_pair = schema_pair;
 	}
 	
 	/**
@@ -32,6 +36,7 @@ public class SortOperator extends Operator {
 	 */
 	@Override
 	public Tuple getNextTuple() throws IOException {
+		if(organized == false) {this.sorted_tuples = organize(child, schema_pair);organized = true;}
 		if (sorted_tuples.size() != count) {
 			count++;
 			return sorted_tuples.get(count-1);}
@@ -55,10 +60,13 @@ public class SortOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
+        TupleWriter writerReadable= new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+    		writerReadable.writeNext(tu);
     	}
     	writer.close();
+    	writerReadable.close();
 		QueryPlan.nextQuery();
 	}
 
@@ -148,5 +156,31 @@ public class SortOperator extends Operator {
 		};
 		Collections.sort(tupleList, compare);
 		return tupleList;
+	}
+
+	@Override
+	public void setLeftChild(Operator child) throws IOException {
+		this.child = child;
+		
+	}
+
+	@Override
+	public void setRightChild(Operator child) {
+	}
+
+	@Override
+	public Operator getLeftChild() {
+		return this.child;
+	}
+
+	@Override
+	public Operator getRightChild() {
+		return null;
+	}
+
+	@Override
+	public Expression getExpression() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

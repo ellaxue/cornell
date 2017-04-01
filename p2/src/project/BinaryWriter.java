@@ -27,11 +27,11 @@ public class BinaryWriter implements TupleWriter{
 	@Override
 	public void writeNext(Tuple tu) throws IOException {
 		count++;
-		System.out.println("count:"+count);
+//		System.out.println("count:"+count);
 		if(firstCall == 0){
 			attribute_num = tu.getTuple().length;
 			if(attribute_num==0) return;
-			System.out.println("attribute_num:"+attribute_num);
+//			System.out.println("attribute_num:"+attribute_num);
 			firstCall = 1;
 			limit = 4088/(4*attribute_num);
 			buffer.putInt(attribute_num);

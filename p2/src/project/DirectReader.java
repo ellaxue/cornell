@@ -5,6 +5,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This class reads in human readable input form input path
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class DirectReader implements TupleReader {
 	private BufferedReader bufferedReader;
 	private String tablename;
@@ -28,6 +33,9 @@ public class DirectReader implements TupleReader {
 		bufferedReader = new BufferedReader(toRead);
 	}
 
+	/**
+	 * This method reads next line of the input file
+	 */
 	@Override
 	public Tuple readNext() throws IOException {
 		String line = bufferedReader.readLine();
@@ -48,6 +56,9 @@ public class DirectReader implements TupleReader {
 		return new Tuple(line.split(","), schema);
 	}
 
+	/**
+	 * reset input reader
+	 */
 	@Override
 	public void reset() throws IOException {
 		String fileDirectory;

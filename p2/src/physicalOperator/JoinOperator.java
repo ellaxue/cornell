@@ -1,4 +1,4 @@
-package operator;
+package physicalOperator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,22 +27,17 @@ public class JoinOperator extends Operator {
 	private Operator rightChild;
 	private Expression ex;
 	private int count;
-
+	private boolean addedToSet = false;
 	public JoinOperator(Operator leftChild, Operator rightChild, Expression ex) throws IOException {
-		Tuple left;
+		
 		this.leftset = new ArrayList<>();
 		this.leftChild = leftChild;
 		this.rightChild = rightChild;
-		while ((left = leftChild.getNextTuple()) != null) {
-			this.leftset.add(left);
-		}// get and store tuple from the outer
-		
-		
 		this.ex = ex;
 		this.count = 0;
 	}
 
-	/**
+	/** 
 	 * Method to obtain a tuple from the outer and a tuple from the inner and glue them
 	   together
 	 * 
@@ -51,6 +46,7 @@ public class JoinOperator extends Operator {
 	 */
 	@Override
 	public Tuple getNextTuple() throws IOException {
+		if(addedToSet == false) {addLeftTableToSet();addedToSet = true;}
 		Tuple left;
 		String[] lt;
 		Tuple right;
@@ -107,11 +103,45 @@ public class JoinOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
+        TupleWriter writerReadable = new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+    		writerReadable.writeNext(tu);
     	}
     	writer.close();
+    	writerReadable.close();
 		QueryPlan.nextQuery();
+	}
+	private void addLeftTableToSet() throws IOException{
+		Tuple left;
+		while ((left = leftChild.getNextTuple()) != null) {
+			this.leftset.add(left);
+		}// get and store tuple from the outer
+	}
+	@Override
+	public void setLeftChild(Operator child) throws IOException {
+		
+		this.leftChild = child;
+		
+	}
+
+	@Override
+	public void setRightChild(Operator child) {
+		this.rightChild = child;
+	}
+
+	@Override
+	public Operator getLeftChild() {
+		return this.leftChild;
+	}
+
+	@Override
+	public Operator getRightChild() {
+		return this.rightChild;
+	}
+	
+	public Expression getExpression(){
+		return this.ex;
 	}
 
 }

@@ -1,7 +1,8 @@
 
-package operator;
+package physicalOperator;
 import java.io.IOException;
 
+import net.sf.jsqlparser.expression.Expression;
 import project.Tuple;
 /**
  * Abstract class for all the possible operators.
@@ -24,4 +25,14 @@ public abstract class Operator {
 		 * Method to dump the result and give the output of the current operator 
 		 */
         public abstract void dump() throws IOException;
+        
+        public abstract void setLeftChild(Operator child) throws IOException;
+        
+        public abstract void setRightChild(Operator child);
+        
+        public abstract Operator getLeftChild();
+        
+        public abstract Operator getRightChild();
+        
+        public abstract Expression getExpression();
 }
