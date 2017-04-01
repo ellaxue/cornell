@@ -1,4 +1,4 @@
-package operator;
+package physicalOperator;
 import project.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,8 +31,12 @@ public class SelectOperator extends Operator {
 	public Tuple getNextTuple() throws IOException{		
 	Tuple tu;
 	while((tu= child.getNextTuple())!=null) {
-		conditionEvaluator eva= new conditionEvaluator(tu,ex);
-		if (eva.getResult()){return tu;}
+		if(ex == null) {return tu;}
+		else{
+			conditionEvaluator eva= new conditionEvaluator(tu,ex);
+			if (eva.getResult()){return tu;}
+		}
+		
 	}	
 	return null;
 	}
@@ -52,11 +56,32 @@ public class SelectOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
+        TupleWriter writerReadable= new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+    		writerReadable.writeNext(tu);
     	}
     	writer.close();
+    	writerReadable.close();
 		QueryPlan.nextQuery();
+	}
+	@Override
+	public void setLeftChild(Operator child) {
+		this.child = (ScanOperator)child;
+	}
+	@Override
+	public void setRightChild(Operator child) {
+		
+	}
+	@Override
+	public Operator getLeftChild() {
+		return this.child;
+	}
+	@Override
+	public Operator getRightChild() {
+		return null;
 	};
-
+	public Expression getExpression(){
+		return this.ex;
+	}
 }

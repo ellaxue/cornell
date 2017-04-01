@@ -1,4 +1,4 @@
-package operator;
+package physicalOperator;
 import project.*;
 
 import java.awt.print.Printable;
@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import net.sf.jsqlparser.expression.Expression;
 /**
  * Project operator to execute the projection
  * 
@@ -68,11 +70,39 @@ public class ProjectOperator extends Operator{
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
+        TupleWriter writerReadable = new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+    		writerReadable.writeNext(tu);
     	}
     	writer.close();
+    	writerReadable.close();
 		QueryPlan.nextQuery();
+	}
+
+	@Override
+	public void setLeftChild(Operator child) {
+		this.child = child;
+	}
+
+	@Override
+	public void setRightChild(Operator child) {
+	}
+
+	@Override
+	public Operator getLeftChild() {
+		return this.child;
+	}
+
+	@Override
+	public Operator getRightChild() {
+		return null;
+	}
+
+	@Override
+	public Expression getExpression() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

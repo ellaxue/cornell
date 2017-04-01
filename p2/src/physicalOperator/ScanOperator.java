@@ -1,4 +1,4 @@
-package operator;
+package physicalOperator;
 import project.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import net.sf.jsqlparser.expression.Expression;
 /**
  * Scan operator to scan the information of base table
  * 
@@ -44,11 +46,32 @@ public class ScanOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
+        TupleWriter writerReadable= new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+    		writerReadable.writeNext(tu);
     	}
     	writer.close();
+    	writerReadable.close();
 		QueryPlan.nextQuery();
+	}
+
+	@Override
+	public void setLeftChild(Operator child) {}
+
+	@Override
+	public void setRightChild(Operator child) {}
+
+	@Override
+	public Operator getLeftChild() {return null;}
+
+	@Override
+	public Operator getRightChild() {return null;}
+
+	@Override
+	public Expression getExpression() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
