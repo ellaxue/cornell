@@ -70,13 +70,13 @@ public class ProjectOperator extends Operator{
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
-        TupleWriter writerReadable = new DirectWriter();
+      //  TupleWriter writerReadable = new DirectWriter();
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
-    		writerReadable.writeNext(tu);
+    	//	writerReadable.writeNext(tu);
     	}
     	writer.close();
-    	writerReadable.close();
+    //	writerReadable.close();
 		QueryPlan.nextQuery();
 	}
 

@@ -61,30 +61,28 @@ public class QueryPlan {
 		initSchema(schemadr,database,cl);
 
 		// parse the query and output results
-		Long t=System.currentTimeMillis();
+		
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(inputdir + File.separator + "queries.sql"));
 		Statement statement;
 		try {
 			while ((statement = parser.Statement()) != null) {
-
+				Long t=System.currentTimeMillis();
 				System.out.println("============================Read statement=========================================");
 				//store alias information and interprets query statement
 				queryInterpreter = new QueryInterpreter(statement,cl);
 				setSchemaPair();
 				LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 				logicalPlan.buildQueryPlan();
-				queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
 				PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter);
 				logicalPlan.getRootOperator().accept(physicalPlan);
-				physicalPlan.printPhysicalPlanTree(physicalPlan.result());
 				physicalPlan.result().dump();
+				System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
 			}
 		} 
 		catch (Exception e) {
 			System.err.println("Exception occurred during parsing");
 			e.printStackTrace();
 		}
-			System.out.println(System.currentTimeMillis()-t);
 	}
 	
 /*---------------------move logic from the main to helper functions---------------*/	
