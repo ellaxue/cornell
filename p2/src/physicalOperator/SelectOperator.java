@@ -31,18 +31,11 @@ public class SelectOperator extends Operator {
 	public Tuple getNextTuple() throws IOException{		
 	Tuple tu;
 	while((tu= child.getNextTuple())!=null) {
-		if(ex == null) {
-			//System.out.println("select nex tuple " + tu.getComplete());
-			return tu;
-		}
+		if(ex == null) {return tu;}
 		else{
 			conditionEvaluator eva= new conditionEvaluator(tu,ex);
-			if (eva.getResult()){
-				//System.out.println("select nex tuple " + tu.getComplete());
-				return tu;
-			}
+			if (eva.getResult()){return tu;}
 		}
-		
 	}	
 	return null;
 	}

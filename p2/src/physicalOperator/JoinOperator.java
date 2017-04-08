@@ -72,7 +72,6 @@ public class JoinOperator extends Operator {
 					sb_next.append(s).append(",");
 				}
 				Tuple tu = new Tuple(sb_next.toString().split(","), def_schema_next);
-//				if (printcount ++ < 10 ) System.out.println("joined tuple " + tu.getComplete() + " shema " + def_schema_next);
 				if (ex != null) {
 					conditionEvaluator eva = new conditionEvaluator(tu, ex);
 					if (eva.getResult()) {

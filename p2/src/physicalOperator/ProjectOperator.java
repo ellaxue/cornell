@@ -39,9 +39,6 @@ public class ProjectOperator extends Operator{
 
 		while((tu = child.getNextTuple())!=null){
 			ArrayList<SchemaPair> sp = tu.getSchemaList();
-//			System.out.println("sort get next tuple " + tu.getComplete());
-//			System.out.println("tuple schemalist " + tu.getSchemaList());
-//			System.out.println("required item " + schema_pair);
 			t = tu.getTuple();
 			for(SchemaPair require_sp: schema_pair){//get the required columns
 				for(SchemaPair sch:sp){
@@ -53,7 +50,6 @@ public class ProjectOperator extends Operator{
 						}
 				}
 			}
-//			System.out.println("next projected tuple " + sb.toString());
 			return new Tuple(sb.toString().split(","), schema_pair);
 		}	
 		return null;

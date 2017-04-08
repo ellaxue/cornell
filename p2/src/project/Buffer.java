@@ -11,10 +11,7 @@ public class Buffer extends ArrayList<Tuple> {
 	private int pageTupleCapacity;
 	public Buffer(int pageNumber,int tupleColumns) {
 		this.pageNumber=pageNumber;
-//		tupleCapacity = 12;
 		tupleCapacity=pageSize*pageNumber/(tupleColumns*4);
-//		pageTupleCapacity = 3;
-//		System.out.println("tuple capacity" + tupleCapacity);
 	}
 	
 	public boolean isFull() {
