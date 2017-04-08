@@ -8,10 +8,13 @@ public class Buffer extends ArrayList<Tuple> {
 	private int pageNumber;
 	private int tupleCapacity; // max tuple numbers
 	private static final int pageSize=4096;
-	
+	private int pageTupleCapacity;
 	public Buffer(int pageNumber,int tupleColumns) {
 		this.pageNumber=pageNumber;
+//		tupleCapacity = 12;
 		tupleCapacity=pageSize*pageNumber/(tupleColumns*4);
+//		pageTupleCapacity = 3;
+//		System.out.println("tuple capacity" + tupleCapacity);
 	}
 	
 	public boolean isFull() {
@@ -21,5 +24,13 @@ public class Buffer extends ArrayList<Tuple> {
 	
 	public int getPageNumber() {
 		return pageNumber;
+	}
+	
+	/**
+	 * Checking if a page has reach its capacity for storing tuples
+	 * @return true if the page has reach its capacity 
+	 */
+	public boolean pageIsFull(){
+		return this.size() >= pageTupleCapacity;
 	}
 }

@@ -23,7 +23,8 @@ public class SortOperator extends Operator {
 	private ArrayList<SchemaPair> schema_pair;
 	private boolean organized = false;
 	int count = 0;
-
+	private int orderByIndex[];
+	
 	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
 		this.child = child;
 		this.schema_pair = schema_pair;
@@ -36,12 +37,16 @@ public class SortOperator extends Operator {
 	 */
 	@Override
 	public Tuple getNextTuple() throws IOException {
-		if(organized == false) {this.sorted_tuples = organize(child, schema_pair);organized = true;}
+		if(organized == false) {
+			this.sorted_tuples = organize(child, schema_pair);
+			organized = true;
+			
+		}
 		if (sorted_tuples.size() != count) {
 			count++;
-			return sorted_tuples.get(count-1);}
-		else
-			return null;
+			return sorted_tuples.get(count-1);
+		}
+		else return null;
 	}
 
 	/**
@@ -60,13 +65,15 @@ public class SortOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
-     //   TupleWriter writerReadable= new DirectWriter();
+        TupleWriter writerReadable = null;
+        if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter();}
+        
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
-     //   	writerReadable.writeNext(tu);
+    		if (QueryPlan.debuggingMode){writerReadable.writeNext(tu);}
     	}
     	writer.close();
-    	//writerReadable.close();
+    	if (QueryPlan.debuggingMode){writerReadable.close();}
 		QueryPlan.nextQuery();
 	}
 
@@ -76,88 +83,79 @@ public class SortOperator extends Operator {
 		while ((tu = child.getNextTuple()) != null) {
 			tupleList.add(tu);
 		}
+		
+		//create a sorting order array for comparing tuples
+		if(!tupleList.isEmpty()) {setSortingIndexOrder(tupleList.get(0));}
+		
 		Comparator<Tuple> compare = new Comparator<Tuple>() {
 			@Override
-			// sort required columns in "order by"
-			
-			
 			public int compare(Tuple t1, Tuple t2) {
-				if(schema_pair!=null) {
-				for (SchemaPair pair : schema_pair) {
-					for (SchemaPair p : t1.getSchemaList()) {
-						if (pair.equalsTo(p)) {
-							pair = p;
-						}
-					}
-					int indext1 = t1.getSchemaList().indexOf(pair);
-					Long valuet1 = Long.parseLong(t1.getTuple()[indext1]);
-					for (SchemaPair p : t2.getSchemaList()) {
-						if (pair.equalsTo(p)) {
-							pair = p;
-						}
-					}
-					int indext2 = t2.getSchemaList().indexOf(pair);
-					Long valuet2 = Long.parseLong(t2.getTuple()[indext2]);
-					if (valuet1 > valuet2) {
-						return 1;
-					} else if (valuet1 < valuet2) {
+				
+				String[] leftTuple = t1.getTuple();
+				String[] rightTuple = t2.getTuple();
+				
+				for(int j = 0; j < leftTuple.length; j++){
+					int k = orderByIndex[j];
+					if(Integer.parseInt(leftTuple[k]) < Integer.parseInt(rightTuple[k])){
 						return -1;
 					}
-					continue;
-				}
-				// sort other columns not in "order by"
-				for (SchemaPair pair : t1.getSchemaList()) {
-					if (!schema_pair.contains(pair)) {
-						for (SchemaPair p : t1.getSchemaList()) {
-							if (pair.equalsTo(p)) {
-								pair = p;
-							}
-						}
-						int indext1 = t1.getSchemaList().indexOf(pair);
-						for (SchemaPair p : t2.getSchemaList()) {
-							if (pair.equalsTo(p)) {
-								pair = p;
-							}
-						}
-						int indext2 = t2.getSchemaList().indexOf(pair);
-						Long valuet1 = Long.parseLong(t1.getTuple()[indext1]);
-						Long valuet2 = Long.parseLong(t2.getTuple()[indext2]);
-						if (valuet1 > valuet2) {
-							return 1;
-						} else if (valuet1 < valuet2) {
-							return -1;
-						}
-						continue;
+					else if(Integer.parseInt(leftTuple[k]) > Integer.parseInt(rightTuple[k])){
+						return 1;
 					}
 				}
 				return 0;
-			}
-				else {
-					for (SchemaPair pair : t1.getSchemaList()) {
-							int indext1 = t1.getSchemaList().indexOf(pair);
-							Long valuet1 = Long.parseLong(t1.getTuple()[indext1]);
-							for (SchemaPair p : t2.getSchemaList()) {
-								if (pair.equalsTo(p)) {
-									pair = p;
-								}
-							}
-							int indext2 = t2.getSchemaList().indexOf(pair);
-							Long valuet2 = Long.parseLong(t2.getTuple()[indext2]);
-							if (valuet1 > valuet2) {
-								return 1;
-							} else if (valuet1 < valuet2) {
-								return -1;
-							}
-							continue;
-					}
-					return 0;
-				}
 				}
 		};
 		Collections.sort(tupleList, compare);
 		return tupleList;
 	}
+	
+	/**
+	 * Create the sorting array of table for comparing tuples
+	 * @param tuple the tuple contains schemaList information
+	 */
+	private void setSortingIndexOrder(Tuple tuple) {
+		int index = 0;
+		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
+		orderByIndex = new int[sortingTupleSchemaList.size()];
+		for(SchemaPair schemaPair: schema_pair){
+			orderByIndex[index++] = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
+		}
+		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
+			if(!orderByListContains(schema_pair,sortingTupleSchemaList.get(i))){
+				orderByIndex[index++] = i;
+			}			
+		}
+	}
+	/**
+	 * Obtain the index of this schemaPair element stored in sortingTupleSchemaList
+	 * @param sortingTupleSchemaList the schemaPair list of the tuple to be sorted
+	 * @param schemaPair the schemaPair to be checked
+	 * @return
+	 */
+	private int indexOfSortingTupleSchemaList(ArrayList<SchemaPair> sortingTupleSchemaList, SchemaPair schemaPair) {
+		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
+			if(sortingTupleSchemaList.get(i).equalsTo(schemaPair)){
+				return i;
+			}
+		}
+		return -1;
+	}
 
+	/**
+	 * Check if the schemaPair is one of elements in schemaPairList that contains orderby elements
+	 * @param schemaPairList the list contains OrderBy elements
+	 * @param schemaPair the pair to be checked
+	 * @return
+	 */
+	private boolean orderByListContains(ArrayList<SchemaPair> schemaPairList, SchemaPair schemaPair) {
+		for(SchemaPair pair: schemaPairList){
+			if(pair.equalsTo(schemaPair)){
+				return true;
+			}
+		}
+		return false;
+	}
 	@Override
 	public void setLeftChild(Operator child) throws IOException {
 		this.child = child;

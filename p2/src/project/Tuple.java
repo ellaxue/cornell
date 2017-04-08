@@ -12,6 +12,8 @@ public class Tuple{
 	public Tuple(String[] tuple, ArrayList<SchemaPair> schemaList) {
 		this.tuple=tuple;
 		this.schemaList=schemaList;
+//		System.out.println("set new tuple ============== " + this.getComplete());
+//		System.out.println("set new schema ============== " + schemaList);
 	}
 	
 	/**

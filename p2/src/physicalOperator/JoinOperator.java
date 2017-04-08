@@ -28,6 +28,7 @@ public class JoinOperator extends Operator {
 	private Expression ex;
 	private int count;
 	private boolean addedToSet = false;
+	private int printcount = 0;
 	public JoinOperator(Operator leftChild, Operator rightChild, Expression ex) throws IOException {
 		
 		this.leftset = new ArrayList<>();
@@ -71,6 +72,7 @@ public class JoinOperator extends Operator {
 					sb_next.append(s).append(",");
 				}
 				Tuple tu = new Tuple(sb_next.toString().split(","), def_schema_next);
+//				if (printcount ++ < 10 ) System.out.println("joined tuple " + tu.getComplete() + " shema " + def_schema_next);
 				if (ex != null) {
 					conditionEvaluator eva = new conditionEvaluator(tu, ex);
 					if (eva.getResult()) {
@@ -103,26 +105,28 @@ public class JoinOperator extends Operator {
 	public void dump() throws IOException {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
-     //   TupleWriter writerReadable = new DirectWriter();
+        TupleWriter writerReadable = null;
+        if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter();}
+        
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
-    	//	writerReadable.writeNext(tu);
+    		if (QueryPlan.debuggingMode){writerReadable.writeNext(tu);}
     	}
     	writer.close();
-    	//writerReadable.close();
+    	if (QueryPlan.debuggingMode){writerReadable.close();}
 		QueryPlan.nextQuery();
 	}
+	
 	private void addLeftTableToSet() throws IOException{
 		Tuple left;
 		while ((left = leftChild.getNextTuple()) != null) {
 			this.leftset.add(left);
 		}// get and store tuple from the outer
 	}
+	
 	@Override
 	public void setLeftChild(Operator child) throws IOException {
-		
 		this.leftChild = child;
-		
 	}
 
 	@Override
@@ -140,6 +144,7 @@ public class JoinOperator extends Operator {
 		return this.rightChild;
 	}
 	
+	@Override
 	public Expression getExpression(){
 		return this.ex;
 	}

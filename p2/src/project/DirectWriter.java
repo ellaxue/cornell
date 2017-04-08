@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class DirectWriter implements TupleWriter {
 	private BufferedWriter br;
-
+	private File file;
 	/**
 	 * Constructor sets up output path for writer 
 	 * @throws IOException
@@ -22,6 +22,11 @@ public class DirectWriter implements TupleWriter {
 		br = new BufferedWriter(output);
 	}
 
+	public DirectWriter(String fileName) throws IOException{
+		file = new File(catalog.getInstance().getTempFileDir()+File.separator+fileName);
+		FileWriter output= new FileWriter(file,false);
+		br = new BufferedWriter(output);
+	}
 	/**
 	 * writes out next tuple
 	 */

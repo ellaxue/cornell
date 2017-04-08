@@ -33,7 +33,7 @@ public class QueryInterpreter {
 	 */
 	public QueryInterpreter(Statement statement,catalog cl){
 		this.statement = statement;
-		System.out.println("SQL : " + statement);
+		System.out.println("Query " +  QueryPlan.getCount()+" : " + statement);
 		if(statement instanceof Select){
 			plainSelect = (PlainSelect)((Select)statement).getSelectBody();
 			whereCondition = plainSelect.getWhere();

@@ -1,6 +1,9 @@
 package project;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -11,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BinaryReader implements TupleReader {
-	private ByteBuffer buffer=ByteBuffer.allocate(4096);
+	private ByteBuffer buffer=ByteBuffer.allocate(QueryPlan.pageSize);
 	private catalog cl = catalog.getInstance();
-	private String tablename;
+	private String tablename[];
 	private FileInputStream fin;
 	private FileChannel fc;
 	private int attribute_num;
@@ -21,9 +24,9 @@ public class BinaryReader implements TupleReader {
 	private String fileDirectory;
 	private int count=8;
 
-
 	public BinaryReader(String tablename) throws IOException {
-		this.tablename=tablename;
+		this.tablename = new String[1];
+		this.tablename[0]=tablename;
 		if (cl.UseAlias()) {
 			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
 		} else {
@@ -34,51 +37,75 @@ public class BinaryReader implements TupleReader {
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
+
 	}
-
-
+	
+	public BinaryReader(String tableName[], String fileName) throws IOException{
+		tablename = tableName;
+//		System.out.println("table name " + tablename);
+		File file = new File(cl.getTempFileDir()+File.separator+toString(tableName)+fileName);
+//		System.out.println("read from temp file " + file);
+		fin = new FileInputStream(file);
+		fc = fin.getChannel();
+		fc.read(buffer);
+		attribute_num = buffer.getInt(0);
+		tuple_num = buffer.getInt(4);
+	}
+	
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
-		
+
 		if(count<tuple_num*attribute_num*4+8) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
 				count+=4;
 			}
 			ArrayList<SchemaPair> schema = new ArrayList<SchemaPair>();
-			if (cl.UseAlias()) {
-				for (String s : cl.getTableSchema().get(cl.getAlias().get(tablename))) {
-					schema.add(new SchemaPair(tablename, s));
-				}
-			} else {
-				for (String s : cl.getTableSchema().get(tablename)) {
-					schema.add(new SchemaPair(tablename, s));
+			for(int i = 0; i < tablename.length; i++){
+				String curTableName = tablename[i];
+				if (cl.UseAlias()) {
+					for (String s : cl.getTableSchema().get(cl.getAlias().get(curTableName))) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
+				} else {
+					for (String s : cl.getTableSchema().get(curTableName)) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
 				}
 			}
-			return new Tuple(tuple, schema);}
+			
+			return new Tuple(tuple, schema);
+		}
 		else {
-		buffer.clear();
-		if(fc.read(buffer)!=-1) {
-			attribute_num = buffer.getInt(0);
-			tuple_num = buffer.getInt(4);
-			count=8;
-			return readNext();}
+			buffer.clear();
+			if(fc.read(buffer)!=-1) {
+				attribute_num = buffer.getInt(0);
+				tuple_num = buffer.getInt(4);
+				count=8;
+				return readNext();}
 		}
 		fc.close();
 		fin.close();
 		return null;
 	}
 
+
 	@Override
 	public void reset() throws IOException {
 		count=8;
 		fin = new FileInputStream(fileDirectory);
 		fc = fin.getChannel();
-		buffer=ByteBuffer.allocate(4096);
+		buffer=ByteBuffer.allocate(QueryPlan.pageSize);
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
 	}
-
+	public String toString(String name[]){
+		String res = "";
+		for(int i = 0; i < name.length; i++){
+			res+= name[i];
+		}
+		return res;
+	}
 }

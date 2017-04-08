@@ -20,11 +20,13 @@ import java.util.*;
  */
 public class QueryPlan {
 	private static int queryCount = 1;
+	static final int pageSize = 4096;
 	static ArrayList<SchemaPair> schema_pair_order;
 	static ArrayList<SchemaPair> schema_pair;
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
+	public static boolean debuggingMode = false;
 
 	/**
 	 * count the query completed
@@ -54,10 +56,12 @@ public class QueryPlan {
 		catalog cl = catalog.getInstance();
 
 		cl.setOutputdir(args[1]);
+		cl.setTempFileDir(args[2]);
 		String inputdir = args[0];
 		String schemadr = args[0] + File.separator + "db" + File.separator + "schema.txt";
 		String database = args[0] + File.separator + "db" + File.separator + "data";
-
+		String configDir = args[0] + File.separator + "plan_builder_config.txt";
+		
 		initSchema(schemadr,database,cl);
 
 		// parse the query and output results
@@ -73,8 +77,10 @@ public class QueryPlan {
 				setSchemaPair();
 				LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 				logicalPlan.buildQueryPlan();
-				PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter);
+				queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
+				PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,configDir);
 				logicalPlan.getRootOperator().accept(physicalPlan);
+				physicalPlan.printPhysicalPlanTree(physicalPlan.result());
 				physicalPlan.result().dump();
 				System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
 			}
