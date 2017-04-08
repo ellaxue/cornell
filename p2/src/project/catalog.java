@@ -15,7 +15,7 @@ public final class catalog {
 	private HashMap<String, String> alias = new HashMap<String, String>();
 	private String outputdir;
 	private Boolean usingAlias = false;
-
+	private String tempFileDir;
 	private catalog() {
 	}
 
@@ -102,5 +102,14 @@ public final class catalog {
 	 */
 	public boolean UseAlias() {
 		return usingAlias;
+	}
+
+	public void setTempFileDir(String dir) {
+		// TODO Auto-generated method stub
+		this.tempFileDir = dir;
+	}
+	
+	public String getTempFileDir(){
+		return this.tempFileDir;
 	}
 }

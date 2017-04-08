@@ -1,5 +1,7 @@
 package project;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 
 import logicalOperator.*;
@@ -15,19 +17,26 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private Operator rootOperator = null;
 	private Operator curOperator = null;
 	private catalog cl;
+	private int joinPageSize;
+	private int sortPageSize;
 	QueryInterpreter queryInterpreter;
-	
+	private String configDir;
+	private int sortMethod;
+	private int joinMethod;
 	/**
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
 	 * @param queryInterpreter query interpreter
+	 * @throws IOException 
 	 */
-	PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter)
+	PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String configDir) throws IOException
 	{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
+		this.configDir = configDir;
+		setOperatorMethod();
 	}
-	
+
 	/**
 	 * @return the root of the physical query plan tree
 	 */
@@ -53,9 +62,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 				((JoinOperator)curOperator).setRightChild(selectOperator);
 			}
 		}
-		else{
-			curOperator.setLeftChild(selectOperator);
-		}
+		else{curOperator.setLeftChild(selectOperator);}
 	}
 	
 	/**
@@ -77,13 +84,19 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	@Override
 	public void visit(LogicalJoinOperator node) throws IOException {
 		
-		JoinOperator joinOperator = new JoinOperator(null, null,node.getExpressoin());
-		if(rootOperator == null){
-			rootOperator = joinOperator; 
+		JoinOperator joinOperator = null;
+		if(joinMethod == 0){
+			joinOperator = new JoinOperator(null, null,node.getExpressoin());
 		}
-		else{	
-			curOperator.setLeftChild(joinOperator);
+		else if(joinMethod == 1){
+//			joinOperator = BNLJ
 		}
+		else{
+//			joinOperator = MSJ
+		}
+		
+		if(rootOperator == null){ rootOperator = joinOperator; }
+		else{curOperator.setLeftChild(joinOperator);}
 		
 		curOperator = joinOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
@@ -117,19 +130,29 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	@Override
 	public void visit(LogicalSortOperator node) throws IOException {
 		// call different constructor depends on if query contains orderBy
-		SortOperator sortOperator;
+		Operator sortOperator;
 		if (QueryPlan.schema_pair_order != null && QueryPlan.schema_pair_order.size() > 0) {
-			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order); 
+			if(sortMethod == 0){
+				sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
+			}
+			else{
+				sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
+				System.out.println("external sort method chosen with sort page size " + sortPageSize);
+			}
 		}
 		else{
-			sortOperator = new SortOperator(null,QueryPlan.schema_pair);
+			if(sortMethod == 0){
+				sortOperator = new SortOperator(null,QueryPlan.schema_pair);
+			}
+			else{
+				sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair,sortPageSize);
+				System.out.println("external sort method chosen with sort page size " + sortPageSize);
+			}
 		}
-		if(rootOperator == null){
-			rootOperator = sortOperator;
-		}
-		else{
-			curOperator.setLeftChild(sortOperator);
-		}
+			
+		if(rootOperator == null){rootOperator = sortOperator;}
+		else{curOperator.setLeftChild(sortOperator);}
+		
 		curOperator = sortOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 	}
@@ -148,12 +171,10 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		else{
 			distinctOperator = new DuplicateEliminationOperator(null,QueryPlan.schema_pair);
 		}
-		if(rootOperator == null){
-			rootOperator = distinctOperator;
-		}
-		else{
-			curOperator.setLeftChild(distinctOperator);
-		}
+		
+		if(rootOperator == null){rootOperator = distinctOperator;}
+		else{curOperator.setLeftChild(distinctOperator);}
+		
 		curOperator = distinctOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 	}
@@ -167,5 +188,28 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		printPhysicalPlanTree(op.getLeftChild());
 		printPhysicalPlanTree(op.getRightChild());
 		System.out.println("physical operator " + op.getClass());
+	}
+	
+	/**
+	 * Read the config file and set join method and sorting method
+	 * @throws IOException
+	 */
+	private void setOperatorMethod() throws IOException {
+		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
+		String line = configReader.readLine();
+		if(line != null){
+			String splitLine[] = line.split(" ");
+			joinMethod = Integer.parseInt(splitLine[0]);
+			if(joinMethod != 0){
+				joinPageSize = Integer.parseInt(splitLine[1]);
+			}
+			if((line = configReader.readLine()) != null){
+				splitLine = line.split(" ");
+				sortMethod = Integer.parseInt(splitLine[0]);
+				if(sortMethod != 0){
+					sortPageSize = Integer.parseInt(splitLine[1]);
+				}
+			}
+		}
 	}
 }

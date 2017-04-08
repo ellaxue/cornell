@@ -24,14 +24,19 @@ public class BinaryWriter implements TupleWriter{
 		fc = fout.getChannel();
 	}
 	
+	public  BinaryWriter(String fileName) throws IOException{
+		firstCall = 0;
+		tuple_num = 0;
+		fout = new FileOutputStream(cl.getTempFileDir()+File.separator+fileName, false);
+		fc = fout.getChannel();
+	}
+	
 	@Override
 	public void writeNext(Tuple tu) throws IOException {
 		count++;
-//		System.out.println("count:"+count);
 		if(firstCall == 0){
 			attribute_num = tu.getTuple().length;
 			if(attribute_num==0) return;
-//			System.out.println("attribute_num:"+attribute_num);
 			firstCall = 1;
 			limit = 4088/(4*attribute_num);
 			buffer.putInt(attribute_num);
@@ -40,7 +45,6 @@ public class BinaryWriter implements TupleWriter{
 		}
 		if(tuple_num<limit){
 			for(String s: tu.getTuple()){
-				//System.out.println("limit:"+limit);
 				int n = Integer.parseInt(s);
 				buffer.putInt(n);
 			}	
@@ -61,9 +65,7 @@ public class BinaryWriter implements TupleWriter{
 			buffer.clear();
 			writeNext(tu);
 			
-		}
-		
-		
+		}	
 	}
 
 	@Override

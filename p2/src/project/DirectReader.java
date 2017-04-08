@@ -1,6 +1,8 @@
 package project;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,9 +14,9 @@ import java.util.ArrayList;
  */
 public class DirectReader implements TupleReader {
 	private BufferedReader bufferedReader;
-	private String tablename;
+	private String tablename[];
 	catalog cl = catalog.getInstance();
-	
+	private int count =0 ;
 
 	/**
 	 * constructor of reader
@@ -22,14 +24,22 @@ public class DirectReader implements TupleReader {
 	 * 				  table to be read
 	 */
 	public DirectReader(String tablename) throws IOException {	
-		this.tablename=tablename;
+		this.tablename = new String[1];
+		this.tablename[0]=tablename;
 		String fileDirectory;
 		if (cl.UseAlias()) {
 			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
 		} else {
 			fileDirectory = cl.getTableLocation().get(tablename);
 		}
-		FileReader toRead = new FileReader(fileDirectory);
+		FileReader toRead = new FileReader(fileDirectory+"_humanreadable");
+		bufferedReader = new BufferedReader(toRead);
+	}
+
+	public DirectReader(String tableName[], String fileNameID) throws FileNotFoundException{
+		tablename = tableName;
+		File file = new File(cl.getTempFileDir()+File.separator+this.toString(tablename)+fileNameID);
+		FileReader toRead = new FileReader(file);
 		bufferedReader = new BufferedReader(toRead);
 	}
 
@@ -44,14 +54,18 @@ public class DirectReader implements TupleReader {
 			return null;
 		}
 		ArrayList<SchemaPair> schema = new ArrayList<SchemaPair>();
-		if (cl.UseAlias()) {
-			for (String s : cl.getTableSchema().get(cl.getAlias().get(tablename))) {
-				schema.add(new SchemaPair(tablename, s));
+		for(int i = 0; i < tablename.length; i++){
+			String curTableName = tablename[i];
+			if (cl.UseAlias()) {
+				for (String s : cl.getTableSchema().get(cl.getAlias().get(curTableName))) {
+					schema.add(new SchemaPair(curTableName, s));
+				}
+			} else {
+				for (String s : cl.getTableSchema().get(curTableName)) {
+					schema.add(new SchemaPair(curTableName, s));
+				}
 			}
-		} else {
-			for (String s : cl.getTableSchema().get(tablename)) {
-				schema.add(new SchemaPair(tablename, s));
-			}
+			
 		}
 		return new Tuple(line.split(","), schema);
 	}
@@ -63,12 +77,20 @@ public class DirectReader implements TupleReader {
 	public void reset() throws IOException {
 		String fileDirectory;
 		if (cl.UseAlias()) {
-			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
+			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(this.toString(tablename)));
 		} else {
-			fileDirectory = cl.getTableLocation().get(tablename);
+			fileDirectory = cl.getTableLocation().get(this.toString(tablename));
 		}
-		FileReader toRead = new FileReader(fileDirectory);
+
+		FileReader toRead = new FileReader(fileDirectory+"_humanreadable");
 		bufferedReader = new BufferedReader(toRead);
 	}
 
+	public String toString(String name[]){
+		String res = "";
+		for(int i = 0; i < name.length; i++){
+			res+= name[i];
+		}
+		return res;
+	}
 }
