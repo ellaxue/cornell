@@ -22,7 +22,7 @@ public class SortOperator extends Operator {
 	private ArrayList<Tuple> sorted_tuples;
 	private ArrayList<SchemaPair> schema_pair;
 	private boolean organized = false;
-	int count = 0;
+	private int count = 0;
 	private int orderByIndex[];
 	
 	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
@@ -181,4 +181,11 @@ public class SortOperator extends Operator {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void reset(int index) throws IOException {
+		count=index;
+	}
+	
+	
 }

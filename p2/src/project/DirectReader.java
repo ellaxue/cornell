@@ -16,7 +16,6 @@ public class DirectReader implements TupleReader {
 	private BufferedReader bufferedReader;
 	private String tablename[];
 	catalog cl = catalog.getInstance();
-	private int count =0 ;
 
 	/**
 	 * constructor of reader
@@ -92,5 +91,14 @@ public class DirectReader implements TupleReader {
 			res+= name[i];
 		}
 		return res;
+	}
+
+	@Override
+	public void reset(int index) throws IOException {
+		this.reset();
+		for(int i=0;i<index;i++) {
+			bufferedReader.readLine();
+		}
+		
 	}
 }

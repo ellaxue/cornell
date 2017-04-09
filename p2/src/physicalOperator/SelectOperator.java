@@ -85,4 +85,9 @@ public class SelectOperator extends Operator {
 	public Expression getExpression(){
 		return this.ex;
 	}
+	@Override
+	public void reset(int index) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

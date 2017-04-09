@@ -108,4 +108,13 @@ public class BinaryReader implements TupleReader {
 		}
 		return res;
 	}
+
+	@Override
+	public void reset(int index) throws IOException {
+		int maxTupleNumber=4088/(attribute_num*4);
+		int pageIndex=(int)Math.ceil((double)index/(double)maxTupleNumber);
+		count=pageIndex*8+index*attribute_num*4;
+		fc.position(count);
+		fc.read(buffer);
+	}
 }

@@ -17,6 +17,7 @@ public class LogicalPlanBuilder {
 	private HashMap<String, Expression> JoinEx;
 	private HashMap<String, Expression> SelectEx;
 	private catalog cl;
+	private static ArrayList<String> tableList;
 	/**
 	 * Constructor
 	 * @param queryInter get statement elements from query interpreter
@@ -136,11 +137,9 @@ public class LogicalPlanBuilder {
 		Expression ex = queryInterpreter.getWhereCondition();
 		Table firstTable = queryInterpreter.getFirstTable();
 		List<Join> joinList = queryInterpreter.getJoinList();		
-		ArrayList<String> tableList = new ArrayList<String>();
-		
+		tableList = new ArrayList<String>();
 		if (!cl.UseAlias()) {tableList.add(firstTable.getName());} 
 		else {tableList.add(firstTable.getAlias());}
-		
 		if (joinList != null) {
 			for (Join j : joinList) {
 				String name = ((Table) j.getRightItem()).getName();
@@ -156,5 +155,9 @@ public class LogicalPlanBuilder {
 		SelectEx = pw.getSelectEx();
 		if (JoinEx.isEmpty()) {JoinEx = null;}
 		if (SelectEx.isEmpty()) {SelectEx = null;}
+	}
+	
+	public static ArrayList<String> getJoinOrder() {
+		return tableList;
 	}
 }

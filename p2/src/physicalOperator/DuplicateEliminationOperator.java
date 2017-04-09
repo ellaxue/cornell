@@ -190,4 +190,10 @@ public class DuplicateEliminationOperator extends Operator {
 
 	@Override
 	public Expression getExpression() {return null;}
+
+	@Override
+	public void reset(int index) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -148,4 +148,10 @@ public class JoinOperator extends Operator {
 		return this.ex;
 	}
 
+	@Override
+	public void reset(int index) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

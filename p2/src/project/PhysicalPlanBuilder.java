@@ -3,9 +3,11 @@ package project;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import logicalOperator.*;
 import net.sf.jsqlparser.statement.select.AllColumns;
+import net.sf.jsqlparser.statement.select.Join;
 import physicalOperator.*;
 
 /**
@@ -18,10 +20,10 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private Operator curOperator = null;
 	private catalog cl;
 	private int joinPageSize;
-	private int sortPageSize;
+	private static int sortPageSize;
 	QueryInterpreter queryInterpreter;
 	private String configDir;
-	private int sortMethod;
+	private static int sortMethod;
 	private int joinMethod;
 	/**
 	 * Constructor
@@ -54,12 +56,12 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if(rootOperator == null){
 			rootOperator = selectOperator;
 		}
-		else if(curOperator instanceof JoinOperator){
-			if(((JoinOperator)curOperator).getLeftChild() == null){
-				((JoinOperator)curOperator).setLeftChild(selectOperator);
+		else if(curOperator instanceof JoinOperator || curOperator instanceof SMJoinOperator){
+			if((curOperator).getLeftChild() == null){
+				(curOperator).setLeftChild(selectOperator);
 			}
 			else{
-				((JoinOperator)curOperator).setRightChild(selectOperator);
+				(curOperator).setRightChild(selectOperator);
 			}
 		}
 		else{curOperator.setLeftChild(selectOperator);}
@@ -84,7 +86,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	@Override
 	public void visit(LogicalJoinOperator node) throws IOException {
 		
-		JoinOperator joinOperator = null;
+		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(null, null,node.getExpressoin());
 		}
@@ -92,7 +94,9 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 //			joinOperator = BNLJ
 		}
 		else{
-//			joinOperator = MSJ
+			JoinAttributesExtraction jae = new JoinAttributesExtraction
+					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
+			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
 		}
 		
 		if(rootOperator == null){ rootOperator = joinOperator; }
@@ -200,7 +204,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if(line != null){
 			String splitLine[] = line.split(" ");
 			joinMethod = Integer.parseInt(splitLine[0]);
-			if(joinMethod != 0){
+			if(joinMethod == 1){
 				joinPageSize = Integer.parseInt(splitLine[1]);
 			}
 			if((line = configReader.readLine()) != null){
@@ -211,5 +215,14 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 				}
 			}
 		}
+		configReader.close();
+	}
+	
+	public static int getSortMethod() {
+		return sortMethod;
+	}
+	
+	public static int getSortPageNumber() {
+		return sortPageSize;
 	}
 }

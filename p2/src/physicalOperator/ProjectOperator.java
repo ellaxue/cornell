@@ -106,4 +106,10 @@ public class ProjectOperator extends Operator{
 		return null;
 	}
 
+	@Override
+	public void reset(int index) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

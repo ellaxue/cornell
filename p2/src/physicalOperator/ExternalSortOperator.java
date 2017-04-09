@@ -58,7 +58,6 @@ public class ExternalSortOperator extends Operator{
 				new BinaryReader(tableName, finalSortedFileIdentifier);
 			}
 		}
-		
 		Tuple tuple = null;
 		if(tupleReader != null){
 			tuple = tupleReader.readNext();
@@ -248,7 +247,7 @@ public class ExternalSortOperator extends Operator{
 	 * @param fileIdetifier to identify which file for the same table
 	 * @throws IOException
 	 */
-	private void writeToFile(String fileIdetifier ) throws IOException {
+	private void writeToFile(String fileIdetifier) throws IOException {
 		//create a file writer and set the combined table name as the file name
 		TupleWriter writer = QueryPlan.debuggingMode? new DirectWriter(this.toString(tableName)+fileIdetifier)
 				:new BinaryWriter(this.toString(tableName)+fileIdetifier);
@@ -391,5 +390,10 @@ public class ExternalSortOperator extends Operator{
 	 */
 	public String getSortedFileFullName(){
 		return this.getSortedTableName()+this.getSortedFileIdentifier();
+	}
+
+	@Override
+	public void reset(int index) throws IOException {
+		tupleReader.reset(index);
 	}
 }

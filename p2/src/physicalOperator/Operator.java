@@ -22,17 +22,23 @@ public abstract class Operator {
 		public abstract void reset() throws IOException; 
 		
 		/**
+		 *  reset the operator to specific tuple index
+		 */
+		public abstract void reset(int index) throws IOException;
+		
+		/**
 		 * Method to dump the result and give the output of the current operator 
 		 */
         public abstract void dump() throws IOException;
         
         public abstract void setLeftChild(Operator child) throws IOException;
         
-        public abstract void setRightChild(Operator child);
+        public abstract void setRightChild(Operator child) throws IOException;
         
         public abstract Operator getLeftChild();
         
         public abstract Operator getRightChild();
         
         public abstract Expression getExpression();
+        
 }
