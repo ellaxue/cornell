@@ -94,6 +94,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 //			joinOperator = BNLJ
 		}
 		else{
+			System.out.println("SMJoin method chosen with sort page size " + joinPageSize);
 			JoinAttributesExtraction jae = new JoinAttributesExtraction
 					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
 			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
@@ -135,23 +136,12 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	public void visit(LogicalSortOperator node) throws IOException {
 		// call different constructor depends on if query contains orderBy
 		Operator sortOperator;
-		if (QueryPlan.schema_pair_order != null && QueryPlan.schema_pair_order.size() > 0) {
-			if(sortMethod == 0){
-				sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
-			}
-			else{
-				sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
-				System.out.println("external sort method chosen with sort page size " + sortPageSize);
-			}
+		if(sortMethod == 0){
+			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
 		}
 		else{
-			if(sortMethod == 0){
-				sortOperator = new SortOperator(null,QueryPlan.schema_pair);
-			}
-			else{
-				sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair,sortPageSize);
-				System.out.println("external sort method chosen with sort page size " + sortPageSize);
-			}
+			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
+			System.out.println("external sort method chosen with sort page size " + sortPageSize);
 		}
 			
 		if(rootOperator == null){rootOperator = sortOperator;}

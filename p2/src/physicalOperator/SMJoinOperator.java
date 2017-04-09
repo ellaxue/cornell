@@ -58,7 +58,7 @@ public class SMJoinOperator extends Operator {
 		}
 		Tuple result=null;
 		while (tl != null && tr != null) {
-			System.out.println(tl.getComplete());
+			
 			while (compare(tl, gr)==-1 &&tl!=null) {
 				tl=leftChild.getNextTuple();
 			}
@@ -85,6 +85,9 @@ public class SMJoinOperator extends Operator {
 						sb_next.append(s).append(",");
 					}
 					result = new Tuple(sb_next.toString().split(","), def_schema_next);
+					System.out.println("left tuple " + tl.getComplete());
+					System.out.println("right tuple " + tr.getComplete());
+					System.out.println("result " + result.getComplete());
 					tr=rightChild.getNextTuple();
 					if(tr==null) {
 						tr=gr;
@@ -135,7 +138,7 @@ public class SMJoinOperator extends Operator {
 		if (sortMethod == 0) {
 			this.leftChild = new SortOperator(child, leftSchema);
 		} else {
-			this.leftChild = new ExternalSortOperator(child, leftSchema, PhysicalPlanBuilder.getSortPageNumber());
+			this.leftChild = new ExternalSortOperator(child, QueryPlan.schema_pair_order, PhysicalPlanBuilder.getSortPageNumber());
 		}
 	}
 
@@ -145,7 +148,7 @@ public class SMJoinOperator extends Operator {
 		if (sortMethod == 0) {
 			this.rightChild = new SortOperator(child, rightSchema);
 		} else {
-			this.rightChild = new ExternalSortOperator(child, rightSchema, PhysicalPlanBuilder.getSortPageNumber());
+			this.rightChild = new ExternalSortOperator(child, QueryPlan.schema_pair_order, PhysicalPlanBuilder.getSortPageNumber());
 		}
 	}
 

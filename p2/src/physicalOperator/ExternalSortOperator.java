@@ -70,6 +70,7 @@ public class ExternalSortOperator extends Operator{
 		Tuple tuple = null;
 		//pass 0 - sort B pages' tuples at a time
 		while((tuple = child.getNextTuple()) != null){
+//			System.out.println("add tuple " + tuple.getComplete());
 			if(tableName == null){
 				setTempFileName(tuple);
 				setSortingIndexOrder(tuple);
@@ -94,7 +95,7 @@ public class ExternalSortOperator extends Operator{
 			merge();
 			//current pass run merge finished, reset for the next pass run
 			if(sortedRun == 0){
-				cleanPreRunFile();
+				cleanPreRunFile();//delete previous run's files
 				prevRuns = countCurRuns;
 				sortedRun = countCurRuns;
 				readFileCounter = 0;
@@ -252,6 +253,7 @@ public class ExternalSortOperator extends Operator{
 		TupleWriter writer = QueryPlan.debuggingMode? new DirectWriter(this.toString(tableName)+fileIdetifier)
 				:new BinaryWriter(this.toString(tableName)+fileIdetifier);
 		for(Tuple tuple:buffer){
+//			System.out.println("write to file " + tuple.getComplete());
 			writer.writeNext(tuple);
 		}
 		
@@ -261,6 +263,12 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	private void sort(){
+//		System.out.println("================order by===================== ");
+//		System.out.println("order by " + schema_pair);
+//		for(int i = 0; i < orderByIndex.length;i++){
+//			System.out.print(orderByIndex[i] + " ");
+//		}
+//		System.out.println();
 		buffer.sort(new Comparator<Tuple>(){
 			@Override
 			public int compare(Tuple t1, Tuple t2) {

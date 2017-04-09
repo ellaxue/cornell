@@ -21,7 +21,7 @@ import java.util.*;
 public class QueryPlan {
 	private static int queryCount = 1;
 	static final int pageSize = 4096;
-	static ArrayList<SchemaPair> schema_pair_order;
+	public static ArrayList<SchemaPair> schema_pair_order;
 	static ArrayList<SchemaPair> schema_pair;
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
