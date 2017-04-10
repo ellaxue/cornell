@@ -19,6 +19,8 @@ public class BinaryReader implements TupleReader {
 	private String fileDirectory;
 	private String filename;
 	private int totalCount;
+	private int maxTupleNumber;
+	private int pageIndex=1;
 
 	public BinaryReader(String tablename) throws IOException {
 		this.tablename = new String[1];
@@ -33,7 +35,6 @@ public class BinaryReader implements TupleReader {
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
-
 	}
 	
 	public BinaryReader(String tableName[], String fileName) throws IOException{
@@ -51,7 +52,9 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
-		if( totalCount!=0 && (totalCount+count)%4096==0) {count+=8;}
+		int actualcount=totalCount-(pageIndex-1)*4096+count;
+		if( totalCount!=0 && actualcount>(4096-attribute_num*4) && actualcount<=4096) {
+			count+=(8+4096-actualcount);}
 		if(count<tuple_num*attribute_num*4+8) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
@@ -106,9 +109,10 @@ public class BinaryReader implements TupleReader {
 
 	@Override
 	public void reset(int index) throws IOException {
-		int maxTupleNumber=4088/(attribute_num*4);
-		int pageIndex=(int)Math.ceil((double)index/(double)maxTupleNumber);
-		totalCount = pageIndex*8+index*attribute_num*4;
+		maxTupleNumber = 4088/(attribute_num*4);
+		pageIndex = (int)Math.ceil((double)index/(double)maxTupleNumber);
+		totalCount = (index/maxTupleNumber)*4096+(index%maxTupleNumber)*attribute_num*4;
+		if(index%maxTupleNumber!=0) totalCount+=8;
 		if(fc.isOpen()) {
 		fc.position(totalCount);
 		buffer.clear();
