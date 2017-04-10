@@ -1,14 +1,10 @@
 package physicalOperator;
 
 import java.io.IOException;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.util.ArrayList;
-
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import project.BinaryWriter;
 import project.DirectWriter;
-import project.JoinAttributesExtraction;
 import project.PhysicalPlanBuilder;
 import project.QueryPlan;
 import project.SchemaPair;
@@ -58,14 +54,15 @@ public class SMJoinOperator extends Operator {
 		}
 		Tuple result=null;
 		while (tl != null && tr != null) {
-			
-			while (compare(tl, gr)==-1 &&tl!=null) {
+			while (compare(tl, gr)==-1) {
 				tl=leftChild.getNextTuple();
+				if(tl==null) {return null;}
 			}
-			while(compare(tl, gr)==1 &&gr!=null) {
+			while(gr!=null&&compare(tl, gr)==1) {
 				gr=rightChild.getNextTuple();
 				tr=gr;
 				count++;
+				if(gr==null) {return null;}
 			}
 			while(compare(tl, gr)==0) {
 				while(compare(tl, tr)==0) {
@@ -85,9 +82,6 @@ public class SMJoinOperator extends Operator {
 						sb_next.append(s).append(",");
 					}
 					result = new Tuple(sb_next.toString().split(","), def_schema_next);
-					System.out.println("left tuple " + tl.getComplete());
-					System.out.println("right tuple " + tr.getComplete());
-					System.out.println("result " + result.getComplete());
 					tr=rightChild.getNextTuple();
 					if(tr==null) {
 						tr=gr;
@@ -138,7 +132,7 @@ public class SMJoinOperator extends Operator {
 		if (sortMethod == 0) {
 			this.leftChild = new SortOperator(child, leftSchema);
 		} else {
-			this.leftChild = new ExternalSortOperator(child, QueryPlan.schema_pair_order, PhysicalPlanBuilder.getSortPageNumber());
+			this.leftChild = new ExternalSortOperator(child, leftSchema, PhysicalPlanBuilder.getSortPageNumber());
 		}
 	}
 
@@ -148,7 +142,7 @@ public class SMJoinOperator extends Operator {
 		if (sortMethod == 0) {
 			this.rightChild = new SortOperator(child, rightSchema);
 		} else {
-			this.rightChild = new ExternalSortOperator(child, QueryPlan.schema_pair_order, PhysicalPlanBuilder.getSortPageNumber());
+			this.rightChild = new ExternalSortOperator(child, rightSchema, PhysicalPlanBuilder.getSortPageNumber());
 		}
 	}
 

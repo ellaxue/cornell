@@ -94,9 +94,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 //			joinOperator = BNLJ
 		}
 		else{
-			System.out.println("SMJoin method chosen with sort page size " + joinPageSize);
+			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
 			JoinAttributesExtraction jae = new JoinAttributesExtraction
 					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
+			System.out.println(jae .getLeft());
+			System.out.println(jae .getRight());
 			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
 		}
 		

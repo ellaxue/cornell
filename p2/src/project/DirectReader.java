@@ -16,6 +16,7 @@ public class DirectReader implements TupleReader {
 	private BufferedReader bufferedReader;
 	private String tablename[];
 	catalog cl = catalog.getInstance();
+	private String filenameID;
 
 	/**
 	 * constructor of reader
@@ -36,6 +37,7 @@ public class DirectReader implements TupleReader {
 	}
 
 	public DirectReader(String tableName[], String fileNameID) throws FileNotFoundException{
+		filenameID = fileNameID;
 		tablename = tableName;
 		File file = new File(cl.getTempFileDir()+File.separator+this.toString(tablename)+fileNameID);
 		FileReader toRead = new FileReader(file);
@@ -95,7 +97,8 @@ public class DirectReader implements TupleReader {
 
 	@Override
 	public void reset(int index) throws IOException {
-		this.reset();
+		File file=	new File(cl.getTempFileDir()+File.separator+toString(tablename)+filenameID);
+		bufferedReader = new BufferedReader(new FileReader(file));
 		for(int i=0;i<index;i++) {
 			bufferedReader.readLine();
 		}

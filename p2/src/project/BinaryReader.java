@@ -1,17 +1,11 @@
 package project;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class BinaryReader implements TupleReader {
 	private ByteBuffer buffer=ByteBuffer.allocate(QueryPlan.pageSize);
@@ -21,8 +15,10 @@ public class BinaryReader implements TupleReader {
 	private FileChannel fc;
 	private int attribute_num;
 	private int tuple_num;
-	private String fileDirectory;
 	private int count=8;
+	private String fileDirectory;
+	private String filename;
+	private int totalCount;
 
 	public BinaryReader(String tablename) throws IOException {
 		this.tablename = new String[1];
@@ -42,9 +38,9 @@ public class BinaryReader implements TupleReader {
 	
 	public BinaryReader(String tableName[], String fileName) throws IOException{
 		tablename = tableName;
-//		System.out.println("table name " + tablename);
+		this.filename=fileName;
 		File file = new File(cl.getTempFileDir()+File.separator+toString(tableName)+fileName);
-//		System.out.println("read from temp file " + file);
+		//System.out.println("read from temp file " + file);
 		fin = new FileInputStream(file);
 		fc = fin.getChannel();
 		fc.read(buffer);
@@ -55,7 +51,7 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
-
+		if( totalCount!=0 && (totalCount+count)%4096==0) {count+=8;}
 		if(count<tuple_num*attribute_num*4+8) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
@@ -74,7 +70,6 @@ public class BinaryReader implements TupleReader {
 					}
 				}
 			}
-			
 			return new Tuple(tuple, schema);
 		}
 		else {
@@ -113,8 +108,22 @@ public class BinaryReader implements TupleReader {
 	public void reset(int index) throws IOException {
 		int maxTupleNumber=4088/(attribute_num*4);
 		int pageIndex=(int)Math.ceil((double)index/(double)maxTupleNumber);
-		count=pageIndex*8+index*attribute_num*4;
-		fc.position(count);
+		totalCount = pageIndex*8+index*attribute_num*4;
+		if(fc.isOpen()) {
+		fc.position(totalCount);
+		buffer.clear();
 		fc.read(buffer);
+		count=0;
+		}
+		else {
+			File file=	new File(cl.getTempFileDir()+File.separator+toString(tablename)+filename);;
+			fin = new FileInputStream(file);
+			fc = fin.getChannel();
+			fc.position(totalCount);
+			buffer.clear();
+			fc.read(buffer);
+			count=0;
+
+		}
 	}
 }
