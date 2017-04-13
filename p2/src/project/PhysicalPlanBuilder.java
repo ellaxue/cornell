@@ -56,7 +56,8 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if(rootOperator == null){
 			rootOperator = selectOperator;
 		}
-		else if(curOperator instanceof JoinOperator || curOperator instanceof SMJoinOperator){
+		else if(curOperator instanceof JoinOperator || curOperator instanceof SMJoinOperator 
+				|| curOperator instanceof BNLJOperator){
 			if((curOperator).getLeftChild() == null){
 				(curOperator).setLeftChild(selectOperator);
 			}
@@ -89,9 +90,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(null, null,node.getExpressoin());
+			System.out.println("TNLJ method chosen");
 		}
 		else if(joinMethod == 1){
-//			joinOperator = BNLJ
+			System.out.println("BNLJ method chosen with join page size " + joinPageSize);
+			joinOperator = new BNLJOperator(null, null, node.getExpressoin(), joinPageSize);
 		}
 		else{
 			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
@@ -138,6 +141,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator sortOperator;
 		if(sortMethod == 0){
 			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
+			System.out.println("internal sort method chosen");
 		}
 		else{
 			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
