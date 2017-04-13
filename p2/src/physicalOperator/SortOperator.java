@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import IO.BinaryWriter;
+import IO.DirectWriter;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
 
 /**

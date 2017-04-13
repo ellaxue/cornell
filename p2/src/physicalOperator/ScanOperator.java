@@ -8,6 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import IO.BinaryReader;
+import IO.BinaryWriter;
+import IO.DirectReader;
+import IO.DirectWriter;
+import IO.TupleReader;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
 /**
  * Scan operator to scan the information of base table

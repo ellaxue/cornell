@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import IO.BinaryWriter;
+import IO.DirectWriter;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
 /**
  * Select operator to execute the select operation.

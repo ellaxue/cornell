@@ -1,4 +1,4 @@
-package project;
+package queryPlanBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +11,9 @@ import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.SelectItem;
+import project.QueryInterpreter;
+import project.catalog;
+import project.processWHERE;
 public class LogicalPlanBuilder {
 	private QueryInterpreter queryInterpreter;
 	private TreeNode root;

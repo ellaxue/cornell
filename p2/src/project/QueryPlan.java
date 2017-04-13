@@ -5,6 +5,8 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
+import queryPlanBuilder.LogicalPlanBuilder;
+import queryPlanBuilder.PhysicalPlanBuilder;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.expression.*;
 import java.util.*;
@@ -20,9 +22,9 @@ import java.util.*;
  */
 public class QueryPlan {
 	private static int queryCount = 1;
-	static final int pageSize = 4096;
+	public static final int pageSize = 4096;
 	public static ArrayList<SchemaPair> schema_pair_order;
-	static ArrayList<SchemaPair> schema_pair;
+	public static ArrayList<SchemaPair> schema_pair;
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;

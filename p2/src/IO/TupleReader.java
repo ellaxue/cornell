@@ -1,8 +1,10 @@
-package project;
+package IO;
 
 import java.io.IOException;
 
 import javax.swing.tree.ExpandVetoException;
+
+import project.Tuple;
 
 public interface TupleReader {
 

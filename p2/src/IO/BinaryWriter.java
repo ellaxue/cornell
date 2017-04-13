@@ -1,10 +1,14 @@
-package project;
+package IO;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+
+import project.QueryPlan;
+import project.Tuple;
+import project.catalog;
 
 public class BinaryWriter implements TupleWriter{
 	FileOutputStream fout;

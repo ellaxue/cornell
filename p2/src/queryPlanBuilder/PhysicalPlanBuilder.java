@@ -1,4 +1,4 @@
-package project;
+package queryPlanBuilder;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,6 +9,11 @@ import logicalOperator.*;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Join;
 import physicalOperator.*;
+import project.JoinAttributesExtraction;
+import project.OperationVisitor;
+import project.QueryInterpreter;
+import project.QueryPlan;
+import project.catalog;
 
 /**
  * This class recursively builds a physical query plan with a tree structure
@@ -31,7 +36,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @param queryInterpreter query interpreter
 	 * @throws IOException 
 	 */
-	PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String configDir) throws IOException
+	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String configDir) throws IOException
 	{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;

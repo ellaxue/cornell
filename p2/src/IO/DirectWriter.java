@@ -1,9 +1,13 @@
-package project;
+package IO;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import project.QueryPlan;
+import project.Tuple;
+import project.catalog;
 
 /**
  * This method writes tuple outputs to file with human readable format

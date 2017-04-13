@@ -1,4 +1,4 @@
-package project;
+package IO;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+
+import project.QueryPlan;
+import project.SchemaPair;
+import project.Tuple;
+import project.catalog;
 
 public class BinaryReader implements TupleReader {
 	private ByteBuffer buffer=ByteBuffer.allocate(QueryPlan.pageSize);

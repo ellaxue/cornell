@@ -1,4 +1,4 @@
-package project;
+package IO;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,6 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import project.SchemaPair;
+import project.Tuple;
+import project.catalog;
 
 /**
  * This class reads in human readable input form input path

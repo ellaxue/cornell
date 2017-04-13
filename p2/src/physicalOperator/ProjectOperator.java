@@ -8,6 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import IO.BinaryWriter;
+import IO.DirectWriter;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
 /**
  * Project operator to execute the projection

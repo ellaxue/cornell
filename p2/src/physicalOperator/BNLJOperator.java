@@ -3,14 +3,14 @@ package physicalOperator;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import IO.BinaryWriter;
+import IO.DirectWriter;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
-import project.BinaryWriter;
 import project.Buffer;
-import project.DirectWriter;
 import project.QueryPlan;
 import project.SchemaPair;
 import project.Tuple;
-import project.TupleWriter;
 import project.conditionEvaluator;
 /**
  * BNLJoin operator to execute the BNLJoin operation

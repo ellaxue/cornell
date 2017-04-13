@@ -4,17 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import IO.BinaryReader;
+import IO.BinaryWriter;
+import IO.DirectReader;
+import IO.DirectWriter;
+import IO.TupleReader;
+import IO.TupleWriter;
 import net.sf.jsqlparser.expression.Expression;
-import project.BinaryReader;
-import project.BinaryWriter;
 import project.Buffer;
-import project.DirectReader;
-import project.DirectWriter;
 import project.QueryPlan;
 import project.SchemaPair;
 import project.Tuple;
-import project.TupleReader;
-import project.TupleWriter;
 import project.catalog;
 
 public class ExternalSortOperator extends Operator{
