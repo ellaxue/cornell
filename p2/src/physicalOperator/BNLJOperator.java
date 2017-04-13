@@ -63,8 +63,7 @@ public class BNLJOperator extends Operator{
 			this.Outer_attr = temp.getTuple().length;
 			leftChild.reset();
 			this.first_enter = false;
-			int cst = BNLJ_Page_Bytes/(4*Outer_attr);
-			this.buf = new Buffer(pageSize, cst);
+			this.buf = new Buffer(pageSize, Outer_attr);
 		}
 		
 		if(addedToSet == false) {//Initiate new block
@@ -108,9 +107,11 @@ public class BNLJOperator extends Operator{
 			count ++;
 		}
 		if(count==buf.size()){
+			if(!buf.isFull()) return null;
 			addedToSet = false;
 			buf.clear();
 			count = 0;
+			return getNextTuple();
 		}
 		return null;
 	}
@@ -128,6 +129,7 @@ public class BNLJOperator extends Operator{
 		//buf = new Buffer(pageSize, cst);
 		buf.clear();
 		first_enter = true;
+		addedToSet=false;
 	}
 
 	
@@ -164,8 +166,7 @@ public class BNLJOperator extends Operator{
 	 */
 	private void addLeftTableToBuffer() throws IOException{
 		Tuple left;
-		
-		while ((left = leftChild.getNextTuple()) != null && (!buf.isFull())) {
+		while ( (!buf.isFull() &&(left = leftChild.getNextTuple()) != null)) {
 			this.buf.add(left);
 		}// get and store tuple from the outer
 	}
