@@ -28,7 +28,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = true;
+	public static boolean debuggingMode = false;
 
 	/**
 	 * count the query completed
