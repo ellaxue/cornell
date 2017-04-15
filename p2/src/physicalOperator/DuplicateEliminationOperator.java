@@ -1,6 +1,7 @@
 package physicalOperator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale.FilteringMode;
 
 import IO.BinaryWriter;
 import IO.DirectWriter;
@@ -18,11 +19,10 @@ import project.Tuple;
 
 public class DuplicateEliminationOperator extends Operator {
 	private Operator child;
-	private ArrayList<Tuple> distinctTuple = new ArrayList<Tuple>();
 	ArrayList<SchemaPair> schema_pair;
-	private int count;
-	private boolean addDistinctSet = false;
 	private boolean flag;
+	private Tuple firstTuple;
+	private boolean firstTime=true;
 
 	/** 
 	 * Assuming the tuple from child is sorted already. Simply compare
@@ -55,18 +55,9 @@ public class DuplicateEliminationOperator extends Operator {
 	 */
 	@Override
 	public Tuple getNextTuple() throws IOException {
-		//only execute once
-		if(addDistinctSet== false){
-			if(this.flag == true){ addOrderSetWithOrderBy();}
-			else{ addOrderSetWithoutOrderBy();}
-			addDistinctSet = true;
-		}
-		
-		if ( distinctTuple.size() != count) {
-			count++;
-			return  distinctTuple.get(count-1);}
-		else
-			return null;	}
+		if(this.flag == true){return ReturnWithOrderBy();}
+		else{ return ReturnWithoutOrderBy();}
+	}
 
 	/**
 	 * Method to reset after projection by reset all its fields
@@ -74,7 +65,6 @@ public class DuplicateEliminationOperator extends Operator {
 	@Override
 	public void reset() throws IOException {
 		child.reset();
-		count=0;
 	}
 
 	/**
@@ -99,79 +89,86 @@ public class DuplicateEliminationOperator extends Operator {
 	 * store distinct tuples with order by query
 	 * @throws IOException IOexception
 	 */
-	private void addOrderSetWithOrderBy() throws IOException{
-		ArrayList<Tuple> childTu = new ArrayList<Tuple>();
-		Tuple tu;
-		while ((tu = child.getNextTuple()) != null) {
-			childTu.add(tu);
+	private Tuple ReturnWithOrderBy() throws IOException{
+		Tuple tu=null;
+		if(firstTime) {
+			firstTuple = child.getNextTuple();
+			firstTime=false;
+			return firstTuple;
 		}
-		if(!childTu.isEmpty()) {Tuple firstTuple = childTu.get(0);
-		for (Tuple tuple : childTu) {
+		if (firstTuple==null) return null;
+		while (true) {
+			tu=child.getNextTuple();
+			if (tu==null) return null;
 			boolean repeat = false;
-			if (tuple != firstTuple) {
-				for (SchemaPair pair : schema_pair) {
-					for (SchemaPair p : firstTuple.getSchemaList()) {
-						if (pair.equalsTo(p)) {
-							pair = p;
-						}
+			for (SchemaPair pair : schema_pair) {
+				for (SchemaPair p : firstTuple.getSchemaList()) {
+					if (pair.equalsTo(p)) {
+						pair = p;
 					}
-					int indext1 = firstTuple.getSchemaList().indexOf(pair);
-					Long valuet1 = Long.parseLong(firstTuple.getTuple()[indext1]);
-					for (SchemaPair p : tuple.getSchemaList()) {
-						if (pair.equalsTo(p)) {
-							pair = p;
-						}
-					}
-					int indext2 = tuple.getSchemaList().indexOf(pair);
-					Long valuet2 = Long.parseLong(tuple.getTuple()[indext2]);
-					if (!valuet1.equals(valuet2)) {//If encounter a distinct value, break and return the tuple
-						repeat = false;
-						break;
-					}else repeat = true;
 				}
+				int indext1 = firstTuple.getSchemaList().indexOf(pair);
+				Long valuet1 = Long.parseLong(firstTuple.getTuple()[indext1]);
+				for (SchemaPair p : tu.getSchemaList()) {
+					if (pair.equalsTo(p)) {
+						pair = p;
+					}
+				}
+				int indext2 = tu.getSchemaList().indexOf(pair);
+				Long valuet2 = Long.parseLong(tu.getTuple()[indext2]);
+				if (!valuet1.equals(valuet2)) {//If encounter a distinct value, break and return the tuple
+					repeat = false;
+					break;
+				}else repeat = true;
 			}
 
-			if (!repeat) {distinctTuple.add(tuple);}
-			firstTuple=tuple;
-		}
+
+			if (!repeat) {firstTuple=tu;
+			return tu;}
 		}
 	}
-	
+
+
 	/**
 	 * store distinct tuples witout orderby query
 	 * @throws IOException IOexception
 	 */
-	private void addOrderSetWithoutOrderBy() throws IOException{
-		ArrayList<Tuple> childTu = new ArrayList<Tuple>();
-		Tuple tu;
-		while ((tu = child.getNextTuple()) != null) {
-			childTu.add(tu);
+	private Tuple ReturnWithoutOrderBy() throws IOException{
+		Tuple tu=null;
+		if(firstTime) {
+			firstTuple = child.getNextTuple();
+			firstTime=false;
+			return firstTuple;
 		}
-		if(!childTu.isEmpty()) {Tuple firstTuple = childTu.get(0);
-		for (Tuple tuple : childTu) {
+		System.out.println(firstTuple.getComplete());
+		if (firstTuple==null) return null;
+		while (true) {
+			tu=child.getNextTuple();
+			if (tu==null) return null;
 			boolean repeat = false;
-			if (tuple != firstTuple) {
+			if (tu != firstTuple) {
 				for (SchemaPair pair : firstTuple.getSchemaList()) {
 					int indext1 = firstTuple.getSchemaList().indexOf(pair);
 					Long valuet1 = Long.parseLong(firstTuple.getTuple()[indext1]);
-					for (SchemaPair p : tuple.getSchemaList()) {
+					for (SchemaPair p : tu.getSchemaList()) {
 						if (pair.equalsTo(p)) {
 							pair = p;
 						}
 					}
-					int indext2 = tuple.getSchemaList().indexOf(pair);
-					Long valuet2 = Long.parseLong(tuple.getTuple()[indext2]);
+					int indext2 = tu.getSchemaList().indexOf(pair);
+					Long valuet2 = Long.parseLong(tu.getTuple()[indext2]);
 					if (!(valuet1.equals( valuet2))) {//If encounter a distinct value, break and return the tuple
 						repeat = false;
 						break;
 					}else repeat = true;
 				}
 			}
-			if (!repeat) {distinctTuple.add(tuple);}
-			firstTuple=tuple;
-		}}
+			if (!repeat) {firstTuple=tu; return tu;}
+			
+		}
 	}
-	
+
+
 	/**
 	 * set current operator's child
 	 */
@@ -179,7 +176,7 @@ public class DuplicateEliminationOperator extends Operator {
 	public void setLeftChild(Operator child){
 		this.child = child;
 	}
-	
+
 	@Override
 	public void setRightChild(Operator child) {}
 
@@ -195,6 +192,6 @@ public class DuplicateEliminationOperator extends Operator {
 	@Override
 	public void reset(int index) throws IOException {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
