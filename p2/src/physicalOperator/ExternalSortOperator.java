@@ -3,6 +3,7 @@ package physicalOperator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import IO.BinaryReader;
@@ -34,7 +35,7 @@ public class ExternalSortOperator extends Operator{
 	private int countCurRuns = 0;
 	private String finalSortedFileIdentifier = null;
 	private TupleReader tupleReader;
-	private int orderByIndex[];
+	private Integer orderByIndex[];
 	/**
 	 * Constructor 
 	 * @param BPages Buffer size with B pages
@@ -113,9 +114,10 @@ public class ExternalSortOperator extends Operator{
 	private void setSortingIndexOrder(Tuple tuple) {
 		int index = 0;
 		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
-		orderByIndex = new int[sortingTupleSchemaList.size()];
+		orderByIndex = new Integer [sortingTupleSchemaList.size()];
 		for(SchemaPair schemaPair: schema_pair){
-			orderByIndex[index++] = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
+			int n = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
+			if(!Arrays.asList(orderByIndex).contains(n)) {orderByIndex[index++]=n; }
 		}
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(!orderByListContains(schema_pair,sortingTupleSchemaList.get(i))){

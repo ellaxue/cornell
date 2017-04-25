@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -26,7 +27,7 @@ public class SortOperator extends Operator {
 	private ArrayList<SchemaPair> schema_pair;
 	private boolean organized = false;
 	private int count = 0;
-	private int orderByIndex[];
+	private Integer orderByIndex[];
 	
 	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
 		this.child = child;
@@ -120,9 +121,10 @@ public class SortOperator extends Operator {
 	private void setSortingIndexOrder(Tuple tuple) {
 		int index = 0;
 		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
-		orderByIndex = new int[sortingTupleSchemaList.size()];
+		orderByIndex = new Integer [sortingTupleSchemaList.size()];
 		for(SchemaPair schemaPair: schema_pair){
-			orderByIndex[index++] = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
+			int n = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
+			if(!Arrays.asList(orderByIndex).contains(n)) {orderByIndex[index++]=n; }
 		}
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(!orderByListContains(schema_pair,sortingTupleSchemaList.get(i))){

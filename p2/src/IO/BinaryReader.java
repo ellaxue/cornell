@@ -58,9 +58,7 @@ public class BinaryReader implements TupleReader {
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
 		int actualcount=totalCount-(pageIndex-1)*4096+count;
-		if( totalCount!=0 && actualcount>(4096-attribute_num*4) && actualcount<=4096) {
-			count+=(8+4096-actualcount);}
-		if(count<tuple_num*attribute_num*4+8) {
+		if(count<tuple_num*attribute_num*4+8 && count+attribute_num*4<=buffer.limit()) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));
 				count+=4;
@@ -132,7 +130,6 @@ public class BinaryReader implements TupleReader {
 			buffer.clear();
 			fc.read(buffer);
 			count=0;
-
 		}
 	}
 }
