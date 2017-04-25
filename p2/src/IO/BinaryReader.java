@@ -117,8 +117,10 @@ public class BinaryReader implements TupleReader {
 		totalCount = (index/maxTupleNumber)*4096+(index%maxTupleNumber)*attribute_num*4;
 		if(index%maxTupleNumber!=0) totalCount+=8;
 		if(fc.isOpen()) {
+		if ((fc.position()/4096+1)>pageIndex) tuple_num=maxTupleNumber;
 		fc.position(totalCount);
 		buffer.clear();
+		buffer.limit(pageIndex*4096-totalCount);
 		fc.read(buffer);
 		count=0;
 		}
@@ -126,8 +128,10 @@ public class BinaryReader implements TupleReader {
 			File file=	new File(cl.getTempFileDir()+File.separator+toString(tablename)+filename);;
 			fin = new FileInputStream(file);
 			fc = fin.getChannel();
+			if ((fc.size()/4096+1)>pageIndex) tuple_num=maxTupleNumber;
 			fc.position(totalCount);
 			buffer.clear();
+			buffer.limit(pageIndex*4096-totalCount);
 			fc.read(buffer);
 			count=0;
 		}
