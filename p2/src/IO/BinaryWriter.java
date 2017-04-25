@@ -31,7 +31,7 @@ public class BinaryWriter implements TupleWriter{
 	public  BinaryWriter(String fileName) throws IOException{
 		firstCall = 0;
 		tuple_num = 0;
-		fout = new FileOutputStream(cl.getTempFileDir()+File.separator+fileName, false);
+		fout = new FileOutputStream(fileName, false);
 		fc = fout.getChannel();
 	}
 	
@@ -93,6 +93,17 @@ public class BinaryWriter implements TupleWriter{
 		while(b.hasRemaining()){
 			b.putInt(0);
 		}
+	}
+
+	@Override
+	public void writeNext(String str) throws IOException {
+		// TODO Auto-generated method stub		
+	}
+
+	@Override
+	public void writeHeader(String line, int numElement) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 package queryPlanBuilder;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +37,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @param queryInterpreter query interpreter
 	 * @throws IOException 
 	 */
-	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String configDir) throws IOException
+	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws IOException
 	{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
-		this.configDir = configDir;
+		this.configDir = inputDir+File.separator+"plan_builder_config.txt";
 		setOperatorMethod();
 	}
 

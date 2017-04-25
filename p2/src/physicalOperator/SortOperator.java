@@ -43,7 +43,6 @@ public class SortOperator extends Operator {
 		if(organized == false) {
 			this.sorted_tuples = organize(child, schema_pair);
 			organized = true;
-			
 		}
 		if (sorted_tuples.size() != count) {
 			count++;
@@ -80,10 +79,26 @@ public class SortOperator extends Operator {
 		QueryPlan.nextQuery();
 	}
 
+	public void dump(String filePath) throws IOException{
+		Tuple tu;
+        TupleWriter writer= new BinaryWriter(filePath);
+        TupleWriter writerReadable = null;
+        if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter(filePath+"readable");}
+        
+    	while ((tu=this.getNextTuple())!=null) {
+//    		System.out.println("write tuple" + tu.getComplete());
+    		writer.writeNext(tu);
+    		if (QueryPlan.debuggingMode){writerReadable.writeNext(tu);}
+    	}
+    	writer.close();
+    	if (QueryPlan.debuggingMode){writerReadable.close();}
+		QueryPlan.nextQuery();
+	}
 	private ArrayList<Tuple> organize(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
 		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
 		Tuple tu;
 		while ((tu = child.getNextTuple()) != null) {
+//			System.out.println("tuple " + tu.getComplete());
 			tupleList.add(tu);
 		}
 		
@@ -120,8 +135,10 @@ public class SortOperator extends Operator {
 	private void setSortingIndexOrder(Tuple tuple) {
 		int index = 0;
 		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
+		System.out.println("schema list " + tuple.getSchemaList());
 		orderByIndex = new int[sortingTupleSchemaList.size()];
 		for(SchemaPair schemaPair: schema_pair){
+			System.out.println("orderby schema pair " + schemaPair.getSchema());
 			orderByIndex[index++] = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
 		}
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
@@ -139,6 +156,7 @@ public class SortOperator extends Operator {
 	private int indexOfSortingTupleSchemaList(ArrayList<SchemaPair> sortingTupleSchemaList, SchemaPair schemaPair) {
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(sortingTupleSchemaList.get(i).equalsTo(schemaPair)){
+				System.out.println("index "  + i);
 				return i;
 			}
 		}

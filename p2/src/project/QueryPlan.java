@@ -5,11 +5,20 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
+import physicalOperator.ScanOperator;
+import physicalOperator.SortOperator;
 import queryPlanBuilder.LogicalPlanBuilder;
 import queryPlanBuilder.PhysicalPlanBuilder;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.expression.*;
 import java.util.*;
+
+import BPlusTree.BPlusTree;
+import BPlusTree.Record;
+//import BPlusTree.Utils;
+import IO.BinaryReader;
+import IO.DirectReader;
+import IO.TupleReader;
 
 /**
  * Main program to get the input, build the query plan tree and dump the output.
@@ -28,73 +37,124 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = false;
+	public static boolean debuggingMode = true;
 
-	/**
-	 * count the query completed
-	 */
-	public static void nextQuery() {
-		queryCount++;
-	}
-
-	/**
-	 * get the query number being dealt with
-	 * 
-	 * @return query number
-	 */
-	public static int getCount() {
-		return queryCount;
-	}
-
+	
 	/**
 	 * main program to parse the query, build the query plan and output the
 	 * result
 	 * 
-	 * @param input
-	 *            directory and out put directory
+	 * @param input directory and out put directory
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws Exception {
 		catalog cl = catalog.getInstance();
-
-		cl.setOutputdir(args[1]);
-		cl.setTempFileDir(args[2]);
-		String inputdir = args[0];
-		String schemadr = args[0] + File.separator + "db" + File.separator + "schema.txt";
-		String database = args[0] + File.separator + "db" + File.separator + "data";
-		String configDir = args[0] + File.separator + "plan_builder_config.txt";
+		setUpFileDirectory(cl,args[0]);
+		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
 		
-		initSchema(schemadr,database,cl);
-
-		// parse the query and output results
 		
-		CCJSqlParser parser = new CCJSqlParser(new FileReader(inputdir + File.separator + "queries.sql"));
-		Statement statement;
-		try {
-			while ((statement = parser.Statement()) != null) {
-				Long t=System.currentTimeMillis();
-				System.out.println("============================Read statement=========================================");
-				//store alias information and interprets query statement
-				queryInterpreter = new QueryInterpreter(statement,cl);
-				setSchemaPair();
-				LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
-				logicalPlan.buildQueryPlan();
-				queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
-				PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,configDir);
-				logicalPlan.getRootOperator().accept(physicalPlan);
-				physicalPlan.printPhysicalPlanTree(physicalPlan.result());
-				physicalPlan.result().dump();
-				System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
+		
+		if(cl.shouldBuildIndex()) {
+			System.out.println("build index tree");
+			BufferedReader indexInfoReader = new BufferedReader(new FileReader(cl.getIndexInforFilePath()));
+			//build index tree;
+			String line = indexInfoReader.readLine();
+			while(line != null){
+				BPlusTree<Integer, Record> bt = new BPlusTree<Integer, Record>(line);
+				ArrayList<SchemaPair> list = new ArrayList<SchemaPair>();
+				list.add(new SchemaPair(bt.getTableName(),bt.getColumnName()));
+				TupleReader reader = null;
+				int keyIndex = getColumnIndex(cl,bt);
+				if(bt.getIsCluster()){
+					SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),list);
+					System.out.println("write to " + cl.getDatabaseDir()+File.separator+bt.getTableName());
+					sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName()+"_sorted");
+					reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()+"_sorted"),new String[]{bt.getTableName()});
+				}
+				else{
+					System.out.println("dir " + cl.getDatabaseDir()+File.separator+bt.getTableName());
+					reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
+				}
+				
+				System.out.println("index " + keyIndex);
+				Tuple tuple = null;
+				int count = 50;
+				while((tuple = reader.readNext()) != null){
+//					System.out.println(tuple.getComplete());
+					int key = Integer.parseInt(tuple.getTuple()[keyIndex]);
+					bt.addToRecordMap(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
+//					if(--count == 0){
+//						break;
+//					}
+//					bt.insert(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
+//					
+				}
+				bt.buildTree(cl.getOutputdir()+File.separator+bt.getTableName()+"."+bt.getColumnName());
+//				Utils.printTree(bt);
+				System.out.println("num of leaf nodes " + bt.numOfLeafNode);
+				line = indexInfoReader.readLine();
+//				line = null;
 			}
-		} 
-		catch (Exception e) {
-			System.err.println("Exception occurred during parsing");
-			e.printStackTrace();
+			
+			indexInfoReader.close();
+		}
+		// parse the query and output results
+		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
+		Statement statement;
+		if(cl.shouldEvalQuery()){
+			queryCount = 1;
+			try {
+				while ((statement = parser.Statement()) != null) {
+					Long t=System.currentTimeMillis();
+					System.out.println("============================Read statement=========================================");
+					//store alias information and interprets query statement
+					queryInterpreter = new QueryInterpreter(statement,cl);
+					setSchemaPair();
+					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
+					logicalPlan.buildQueryPlan();
+					queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
+					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir());
+					logicalPlan.getRootOperator().accept(physicalPlan);
+					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
+					 
+					physicalPlan.result().dump();
+					System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
+				}
+			} 
+			catch (Exception e) {
+				System.err.println("Exception occurred during parsing");
+				e.printStackTrace();
+			}
 		}
 	}
 	
 /*---------------------move logic from the main to helper functions---------------*/	
 	
+	private static int getColumnIndex(catalog cl,BPlusTree<Integer, Record> bt) {
+		// TODO Auto-generated method stub
+		int index = 0;
+		for(String str: cl.getTableSchema().get(bt.getTableName())){
+			if(bt.getColumnName().equals(str)){
+				return index;
+			}
+			index++;
+		}
+		return index;
+	}
+
+	private static void setUpFileDirectory(catalog cl, String args) throws IOException {
+		String configDir = args + File.separator + "interpreter_config_file.txt";
+		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
+		
+		cl.setInputDir(args+configReader.readLine());
+		cl.setOutputdir(args+configReader.readLine());
+		cl.setTempFileDir(args+configReader.readLine());
+		cl.setBuildIndex(configReader.readLine().equals("1")? true : false);
+		cl.setEvalQuery(configReader.readLine().equals("1")? true : false);
+		
+		configReader.close();
+	}
+
 	/**
 	 * This method initializes database schema and stores it in a catalog class
 	 * @param schemadr directory for schema file
@@ -152,4 +212,21 @@ public class QueryPlan {
 			}
 		}
 	}
+	
+	/**
+	 * count the query completed
+	 */
+	public static void nextQuery() {
+		queryCount++;
+	}
+
+	/**
+	 * get the query number being dealt with
+	 * 
+	 * @return query number
+	 */
+	public static int getCount() {
+		return queryCount;
+	}
+
 }	

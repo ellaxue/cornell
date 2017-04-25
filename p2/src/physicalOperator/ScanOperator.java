@@ -24,7 +24,7 @@ public class ScanOperator extends Operator {
 	TupleReader reader;
 
 	public ScanOperator(String tablename) throws IOException {
-		reader=QueryPlan.debuggingMode? new DirectReader(tablename):new BinaryReader(tablename);
+		reader= new BinaryReader(tablename);
 	}
 
 	/**

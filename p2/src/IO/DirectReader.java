@@ -108,4 +108,16 @@ public class DirectReader implements TupleReader {
 		}
 		
 	}
+
+	@Override
+	public int getCurTotalPageRead() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getCurPageTupleRead() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

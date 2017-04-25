@@ -6,6 +6,7 @@
  */
 
 package project;
+import java.io.File;
 import java.util.*;
 
 public final class catalog {
@@ -16,6 +17,12 @@ public final class catalog {
 	private String outputdir;
 	private Boolean usingAlias = false;
 	private String tempFileDir;
+	private String inputDir;
+	private String schemaFilePath;
+	private String database;
+	private String indexInforFilePath;
+	private Boolean buildIndex;
+	private Boolean evalQuery;
 	private catalog() {
 	}
 
@@ -105,11 +112,49 @@ public final class catalog {
 	}
 
 	public void setTempFileDir(String dir) {
-		// TODO Auto-generated method stub
 		this.tempFileDir = dir;
 	}
 	
 	public String getTempFileDir(){
 		return this.tempFileDir;
+	}
+
+	public void setInputDir(String inputDir) {
+		this.inputDir = inputDir;
+		schemaFilePath = inputDir + File.separator + "db" + File.separator + "schema.txt";
+		database = inputDir + File.separator + "db" + File.separator + "data"; 
+		indexInforFilePath = inputDir + File.separator + "db" + File.separator+"index_info.txt";
+	}
+	
+	public String getInputDir(){
+		return this.inputDir;
+	}
+	
+	public String getSchemaFilePath(){
+		return this.schemaFilePath;
+	}
+	
+	public String getDatabaseDir(){
+		return this.database;
+	}
+	
+	public String getIndexInforFilePath(){
+		return indexInforFilePath;
+	}
+
+	public void setBuildIndex(boolean flag) {
+		buildIndex = flag;
+	}
+	
+	public Boolean shouldBuildIndex(){
+		return this.buildIndex;
+	}
+	
+	public Boolean shouldEvalQuery(){
+		return this.evalQuery;
+	}
+
+	public void setEvalQuery(boolean flag) {
+		this.evalQuery = flag;
 	}
 }

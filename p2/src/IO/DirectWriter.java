@@ -27,10 +27,12 @@ public class DirectWriter implements TupleWriter {
 	}
 
 	public DirectWriter(String fileName) throws IOException{
-		file = new File(catalog.getInstance().getTempFileDir()+File.separator+fileName);
+		file = new File(fileName);
 		FileWriter output= new FileWriter(file,false);
 		br = new BufferedWriter(output);
 	}
+	
+	
 	/**
 	 * writes out next tuple
 	 */
@@ -40,11 +42,25 @@ public class DirectWriter implements TupleWriter {
 			br.newLine();	
 	}
 
+	
 	/**
 	 * close the write after done writing outputs
 	 */
 	@Override
 	public void close() throws IOException {
 		br.close();
+	}
+
+	@Override
+	public void writeNext(String str) throws IOException {
+		// TODO Auto-generated method stub
+		br.write(str+"\n");
+		br.newLine();
+	}
+
+	@Override
+	public void writeHeader(String line, int numElement) {
+		// TODO Auto-generated method stub
+		
 	}
 }
