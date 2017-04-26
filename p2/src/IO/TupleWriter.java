@@ -20,5 +20,5 @@ public void writeNext(String str) throws IOException;
  */
 public void close() throws IOException;
 
-public void writeHeader(String line, int numElement);
+public void writeHeader(String line) throws IOException;
 }

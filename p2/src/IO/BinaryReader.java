@@ -64,7 +64,7 @@ public class BinaryReader implements TupleReader {
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
 	}
-	
+
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
@@ -157,5 +157,14 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public int getCurPageTupleRead(){
 		return this.curPageTupleRead;
+	}
+
+	@Override
+	public String readNextLine() throws IOException {
+		// TODO Need to write a binary reader to debug some of our binary output file
+		//incorrect implementation !!! 
+//		String num = Integer.toString(buffer.getInt(count));
+//		count+=4;
+		return null;
 	}
 }

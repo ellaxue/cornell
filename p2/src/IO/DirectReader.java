@@ -120,4 +120,10 @@ public class DirectReader implements TupleReader {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public String readNextLine() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

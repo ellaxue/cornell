@@ -26,4 +26,6 @@ public void reset(int index) throws IOException;
 public int getCurTotalPageRead();
 
 public int getCurPageTupleRead();
+
+public String readNextLine() throws IOException;
 }

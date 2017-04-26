@@ -55,12 +55,12 @@ public class DirectWriter implements TupleWriter {
 	public void writeNext(String str) throws IOException {
 		// TODO Auto-generated method stub
 		br.write(str+"\n");
-		br.newLine();
+//		br.newLine();
 	}
 
 	@Override
-	public void writeHeader(String line, int numElement) {
+	public void writeHeader(String line) throws IOException {
 		// TODO Auto-generated method stub
-		
+		br.write(line+"\n");
 	}
 }

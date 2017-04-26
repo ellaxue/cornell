@@ -15,7 +15,7 @@ public class BinaryWriter implements TupleWriter{
 	FileChannel fc;
 	private catalog cl = catalog.getInstance();
 	ByteBuffer buffer = ByteBuffer.allocate(4096);
-	private int attribute_num;
+	private int attribute_num = 0;
 	private int firstCall = 0;
 	private int tuple_num = 0;
 	private int limit;
@@ -97,12 +97,31 @@ public class BinaryWriter implements TupleWriter{
 
 	@Override
 	public void writeNext(String str) throws IOException {
-		// TODO Auto-generated method stub		
+//		System.out.println("page " + str);
+		String values[] = str.split(" ");
+		buffer.clear();
+		for(int i = 0; i < values.length; i++){
+			buffer.putInt(Integer.parseInt(values[i]));
+		}
+		fillZero(buffer);
+		buffer.flip();
+		fc.write(buffer);
+		
 	}
 
 	@Override
-	public void writeHeader(String line, int numElement) {
-		// TODO Auto-generated method stub
+	public void writeHeader(String page) throws IOException {
+		System.out.println("header " + page);
+		String values[] = page.split(" ");
+		buffer.clear();
+		int offset = 0;
+		fc.position(offset);//set channel's write position to be the beginning of the file
+		for(int i = 0; i < values.length; i++){
+			buffer.putInt(Integer.parseInt(values[i]));
+		}
+		fillZero(buffer);
+		buffer.flip();
+		fc.write(buffer);
 		
 	}
 

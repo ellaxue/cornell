@@ -52,8 +52,6 @@ public class QueryPlan {
 		setUpFileDirectory(cl,args[0]);
 		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
 		
-		
-		
 		if(cl.shouldBuildIndex()) {
 			System.out.println("build index tree");
 			BufferedReader indexInfoReader = new BufferedReader(new FileReader(cl.getIndexInforFilePath()));
@@ -69,31 +67,22 @@ public class QueryPlan {
 					SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),list);
 					System.out.println("write to " + cl.getDatabaseDir()+File.separator+bt.getTableName());
 					sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName()+"_sorted");
+//					sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName());
 					reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()+"_sorted"),new String[]{bt.getTableName()});
+//					reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 				}
 				else{
 					System.out.println("dir " + cl.getDatabaseDir()+File.separator+bt.getTableName());
 					reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 				}
 				
-				System.out.println("index " + keyIndex);
 				Tuple tuple = null;
-				int count = 50;
 				while((tuple = reader.readNext()) != null){
-//					System.out.println(tuple.getComplete());
 					int key = Integer.parseInt(tuple.getTuple()[keyIndex]);
 					bt.addToRecordMap(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
-//					if(--count == 0){
-//						break;
-//					}
-//					bt.insert(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
-//					
 				}
 				bt.buildTree(cl.getOutputdir()+File.separator+bt.getTableName()+"."+bt.getColumnName());
-//				Utils.printTree(bt);
-				System.out.println("num of leaf nodes " + bt.numOfLeafNode);
 				line = indexInfoReader.readLine();
-//				line = null;
 			}
 			
 			indexInfoReader.close();

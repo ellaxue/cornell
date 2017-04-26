@@ -83,7 +83,7 @@ public class SortOperator extends Operator {
 		Tuple tu;
         TupleWriter writer= new BinaryWriter(filePath);
         TupleWriter writerReadable = null;
-        if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter(filePath+"readable");}
+        if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter(filePath+"_humanreadable");}
         
     	while ((tu=this.getNextTuple())!=null) {
 //    		System.out.println("write tuple" + tu.getComplete());
