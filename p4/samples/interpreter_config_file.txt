@@ -1,0 +1,5 @@
+samples/input
+samples/expected_indexes
+samples/tempdir
+1
+0

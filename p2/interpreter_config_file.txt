@@ -1,5 +1,0 @@
-/input
-/input/db/indexes
-/tempdir
-1
-0
