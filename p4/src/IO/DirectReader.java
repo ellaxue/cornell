@@ -106,6 +106,21 @@ public class DirectReader implements TupleReader {
 		for(int i=0;i<index;i++) {
 			bufferedReader.readLine();
 		}
-		
+
+	}
+	@Override
+	public void close() throws Exception{
+		bufferedReader.close();
+	}
+	@Override
+	public int getCurTotalPageRead() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getCurPageTupleRead() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

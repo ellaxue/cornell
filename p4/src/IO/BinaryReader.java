@@ -12,6 +12,11 @@ import project.SchemaPair;
 import project.Tuple;
 import project.catalog;
 
+/**
+ * This class reads in binary files
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class BinaryReader implements TupleReader {
 	private ByteBuffer buffer=ByteBuffer.allocate(QueryPlan.pageSize);
 	private catalog cl = catalog.getInstance();
@@ -26,6 +31,8 @@ public class BinaryReader implements TupleReader {
 	private int totalCount;
 	private int maxTupleNumber;
 	private int pageIndex=1;
+	private int curTotalPageRead = 0;
+	private int curPageTupleRead = -1;
 
 	public BinaryReader(String tablename) throws IOException {
 		this.tablename = new String[1];
@@ -53,7 +60,16 @@ public class BinaryReader implements TupleReader {
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
 	}
-	
+
+	public BinaryReader(FileInputStream stream, String tableName[]) throws IOException{
+		tablename = tableName;
+		fin = stream;
+		fc = fin.getChannel();
+		fc.read(buffer);
+		attribute_num = buffer.getInt(0);
+		tuple_num = buffer.getInt(4);
+	}
+
 	@Override
 	public Tuple readNext() throws IOException {
 		String [] tuple= new String[attribute_num];
@@ -76,15 +92,20 @@ public class BinaryReader implements TupleReader {
 					}
 				}
 			}
+			curPageTupleRead++; //count how many tuples read in current page
 			return new Tuple(tuple, schema);
 		}
 		else {
+			curTotalPageRead++; //count how many pages read
+			curPageTupleRead = -1; //reset the tuple number read for next page
 			buffer.clear();
 			if(fc.read(buffer)!=-1) {
 				attribute_num = buffer.getInt(0);
 				tuple_num = buffer.getInt(4);
 				count=8;
-				return readNext();}
+				return readNext();
+			}
+
 		}
 		fc.close();
 		fin.close();
@@ -92,6 +113,9 @@ public class BinaryReader implements TupleReader {
 	}
 
 
+	/**
+	 * reset the reader buffer
+	 */
 	@Override
 	public void reset() throws IOException {
 		count=8;
@@ -110,6 +134,9 @@ public class BinaryReader implements TupleReader {
 		return res;
 	}
 
+	/**
+	 * reset the reader buffer
+	 */
 	@Override
 	public void reset(int index) throws IOException {
 		maxTupleNumber = 4088/(attribute_num*4);
@@ -136,4 +163,25 @@ public class BinaryReader implements TupleReader {
 			count=0;
 		}
 	}
+	
+	@Override
+	public void close() throws Exception{
+		this.fc.close();
+		this.fin.close();
+	}
+	/**
+	 * return how many pages read so far
+	 */
+	@Override
+	public int getCurTotalPageRead(){
+		return this.curTotalPageRead;
+	}
+	/**
+	 * return how many tuple read in current page
+	 */
+	@Override
+	public int getCurPageTupleRead(){
+		return this.curPageTupleRead;
+	}
+
 }

@@ -15,7 +15,7 @@ public class BinaryWriter implements TupleWriter{
 	FileChannel fc;
 	private catalog cl = catalog.getInstance();
 	ByteBuffer buffer = ByteBuffer.allocate(4096);
-	private int attribute_num;
+	private int attribute_num = 0;
 	private int firstCall = 0;
 	private int tuple_num = 0;
 	private int limit;
@@ -31,7 +31,7 @@ public class BinaryWriter implements TupleWriter{
 	public  BinaryWriter(String fileName) throws IOException{
 		firstCall = 0;
 		tuple_num = 0;
-		fout = new FileOutputStream(cl.getTempFileDir()+File.separator+fileName, false);
+		fout = new FileOutputStream(fileName, false);
 		fc = fout.getChannel();
 	}
 	
@@ -93,6 +93,43 @@ public class BinaryWriter implements TupleWriter{
 		while(b.hasRemaining()){
 			b.putInt(0);
 		}
+	}
+
+	@Override
+	public void writeNext(String str) throws IOException {
+//		System.out.println("page " + str);
+		String values[] = str.split(" ");
+		buffer.clear();
+//		System.out.println("items ");
+		for(int i = 0; i < values.length; i++){
+//			System.out.print(" " + Integer.parseInt(values[i]));
+			buffer.putInt(Integer.parseInt(values[i]));
+		}
+//		System.out.println("");
+		fillZero(buffer);
+		buffer.flip();
+		fc.write(buffer);
+		
+	}
+	public void writeEmptyPage() throws Exception{
+		buffer.clear();
+		fillZero(buffer);
+		 buffer.flip();
+		fc.write(buffer);
+	}
+	@Override
+	public void writeHeader(String page) throws IOException {
+		System.out.println("header " + page);
+		String values[] = page.split(" ");
+		buffer.clear();
+		int offset = 0;
+		fc.position(offset);//set channel's write position to be the beginning of the file
+		for(int i = 0; i < values.length; i++){
+			buffer.putInt(Integer.parseInt(values[i]));
+		}
+		fillZero(buffer);
+		buffer.flip();
+		fc.write(buffer);	
 	}
 
 }

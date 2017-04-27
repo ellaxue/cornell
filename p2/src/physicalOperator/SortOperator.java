@@ -44,7 +44,6 @@ public class SortOperator extends Operator {
 		if(organized == false) {
 			this.sorted_tuples = organize(child, schema_pair);
 			organized = true;
-			
 		}
 		if (sorted_tuples.size() != count) {
 			count++;
@@ -81,6 +80,27 @@ public class SortOperator extends Operator {
 		QueryPlan.nextQuery();
 	}
 
+	public void dump(String filePath) throws Exception{
+       
+        
+        ArrayList<Tuple> sorted_tuples = organize(child, schema_pair);
+       if(this.child instanceof ScanOperator){
+    	   ((ScanOperator)child).close();
+       }
+       TupleWriter writer= new BinaryWriter(filePath);
+       TupleWriter writerReadable = null;
+       if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter(filePath+"_humanreadable");}
+        if(sorted_tuples!=null){
+	    	for(Tuple tuple: sorted_tuples) {
+	//    		System.out.println("write tuple" + tu.getComplete());
+	    		writer.writeNext(tuple);
+	    		if (QueryPlan.debuggingMode){writerReadable.writeNext(tuple);}
+	    	}
+        }
+    	writer.close();
+    	if (QueryPlan.debuggingMode){writerReadable.close();}
+	}
+	
 	private ArrayList<Tuple> organize(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
 		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
 		Tuple tu;
@@ -121,6 +141,7 @@ public class SortOperator extends Operator {
 	private void setSortingIndexOrder(Tuple tuple) {
 		int index = 0;
 		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
+
 		orderByIndex = new Integer [sortingTupleSchemaList.size()];
 		for(SchemaPair schemaPair: schema_pair){
 			int n = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
@@ -141,6 +162,7 @@ public class SortOperator extends Operator {
 	private int indexOfSortingTupleSchemaList(ArrayList<SchemaPair> sortingTupleSchemaList, SchemaPair schemaPair) {
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(sortingTupleSchemaList.get(i).equalsTo(schemaPair)){
+				System.out.println("index "  + i);
 				return i;
 			}
 		}

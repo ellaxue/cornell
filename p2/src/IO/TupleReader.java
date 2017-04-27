@@ -21,4 +21,11 @@ public void reset() throws IOException;
 /**
  * reset the reader to a specific tuple index
  */
-public void reset(int index) throws IOException; }
+public void reset(int index) throws IOException; 
+
+public int getCurTotalPageRead();
+
+public int getCurPageTupleRead();
+
+public void close() throws Exception;
+}

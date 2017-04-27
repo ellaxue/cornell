@@ -83,6 +83,12 @@ public class JoinOperator extends Operator {
 			rightChild.reset();
 			count ++;
 		}
+		if (leftChild instanceof ExternalSortOperator){
+			((ExternalSortOperator)leftChild).cleanFinalSortedFile();
+		}
+		if (rightChild instanceof ExternalSortOperator){
+			((ExternalSortOperator)rightChild).cleanFinalSortedFile();
+		}
 		return null;
 	}
 

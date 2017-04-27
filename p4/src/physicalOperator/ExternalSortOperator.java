@@ -55,24 +55,49 @@ public class ExternalSortOperator extends Operator{
 			mergeSort();
 			//finalSortedFileIdentifier example: 2_pass0  (file full name: tableName2_pass0)
 			finalSortedFileIdentifier = sortedRun+pass+passCount;
+<<<<<<< HEAD
 			if(tableName != null){
 				tupleReader = QueryPlan.debuggingMode? new DirectReader(tableName, finalSortedFileIdentifier) :
 				new BinaryReader(tableName, finalSortedFileIdentifier);
 			}
+=======
+			
+			if(tableName != null){
+				tupleReader = new BinaryReader(tableName, finalSortedFileIdentifier);
+			}
+			
+>>>>>>> ella/BPlusTree
 		}
 		Tuple tuple = null;
 		if(tupleReader != null){
 			tuple = tupleReader.readNext();
 		}
+<<<<<<< HEAD
 		
 		return tuple;
 	}
 	
+=======
+		 //delete the final sorted files after done reading the tuples
+//		if(tuple == null){cleanFinalSortedFile();}
+		return tuple;
+	}
+	
+	public void cleanFinalSortedFile() {
+		System.out.println("delete final file" );
+		File file = new File(cl.getTempFileDir()+File.separator+this.toString(tableName)+finalSortedFileIdentifier);
+		file.delete();
+	}
+
+>>>>>>> ella/BPlusTree
 	private void mergeSort() throws IOException {
 		Tuple tuple = null;
 		//pass 0 - sort B pages' tuples at a time
 		while((tuple = child.getNextTuple()) != null){
+<<<<<<< HEAD
 //			System.out.println("add tuple " + tuple.getComplete());
+=======
+>>>>>>> ella/BPlusTree
 			if(tableName == null){
 				setTempFileName(tuple);
 				setSortingIndexOrder(tuple);
@@ -138,6 +163,7 @@ public class ExternalSortOperator extends Operator{
 		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
 		int i = 0;
 		while(i < pageNumber - 1 && sortedRun >= 1){
+<<<<<<< HEAD
 			if(QueryPlan.debuggingMode){
 				directReaders.add(new DirectReader(tableName, (++readFileCounter)+pass+passCount));
 				sortedRun--;
@@ -153,6 +179,16 @@ public class ExternalSortOperator extends Operator{
 		Buffer buffer = new Buffer(pageNumber,this.attributeNumber);
 		TupleWriter writer = QueryPlan.debuggingMode ? new DirectWriter(this.toString(tableName)+(++countCurRuns)+pass+(passCount+1)):
 			new BinaryWriter(this.toString(tableName)+(++countCurRuns)+pass+(passCount+1));
+=======
+			binaryReaders.add(new BinaryReader(tableName, (++readFileCounter)+pass+passCount));
+			sortedRun--;
+			tupleList.add(binaryReaders.get(i++).readNext());
+		}
+		
+		Buffer buffer = new Buffer(pageNumber,this.attributeNumber);
+		TupleWriter writer = new BinaryWriter(catalog.getInstance().getTempFileDir()+File.separator+
+				this.toString(tableName)+(++countCurRuns)+pass+(passCount+1));
+>>>>>>> ella/BPlusTree
 		
 		int index = 0;
 		while((index = compareTuples(tupleList)) != -1){
@@ -165,7 +201,11 @@ public class ExternalSortOperator extends Operator{
 				buffer.clear();
 			}
 			
+<<<<<<< HEAD
 			Tuple tu = QueryPlan.debuggingMode ? directReaders.get(index).readNext() : binaryReaders.get(index).readNext();
+=======
+			Tuple tu = binaryReaders.get(index).readNext();
+>>>>>>> ella/BPlusTree
 			
 			if(tu != null){
 				//remove the written out tuple and replace it with the new read tuples
@@ -173,8 +213,12 @@ public class ExternalSortOperator extends Operator{
 				tupleList.add(index, tu);
 			}
 			else{//no more tuples on this reader buffer, remove the reader and the tuple spot
+<<<<<<< HEAD
 				if(QueryPlan.debuggingMode) {directReaders.remove(index);}
 				else{binaryReaders.remove(index);}
+=======
+				binaryReaders.remove(index);
+>>>>>>> ella/BPlusTree
 				tupleList.remove(index);
 			}
 		}
@@ -253,10 +297,15 @@ public class ExternalSortOperator extends Operator{
 	 */
 	private void writeToFile(String fileIdetifier) throws IOException {
 		//create a file writer and set the combined table name as the file name
+<<<<<<< HEAD
 		TupleWriter writer = QueryPlan.debuggingMode? new DirectWriter(this.toString(tableName)+fileIdetifier)
 				:new BinaryWriter(this.toString(tableName)+fileIdetifier);
 		for(Tuple tuple:buffer){
 //			System.out.println("write to file " + tuple.getComplete());
+=======
+		TupleWriter writer = new BinaryWriter(catalog.getInstance().getTempFileDir()+File.separator+this.toString(tableName)+fileIdetifier);
+		for(Tuple tuple:buffer){
+>>>>>>> ella/BPlusTree
 			writer.writeNext(tuple);
 		}
 		
@@ -266,12 +315,15 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	private void sort(){
+<<<<<<< HEAD
 //		System.out.println("================order by===================== ");
 //		System.out.println("order by " + schema_pair);
 //		for(int i = 0; i < orderByIndex.length;i++){
 //			System.out.print(orderByIndex[i] + " ");
 //		}
 //		System.out.println();
+=======
+>>>>>>> ella/BPlusTree
 		buffer.sort(new Comparator<Tuple>(){
 			@Override
 			public int compare(Tuple t1, Tuple t2) {

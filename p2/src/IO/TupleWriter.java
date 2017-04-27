@@ -12,9 +12,13 @@ public interface TupleWriter {
  */
 public void writeNext(Tuple tu) throws IOException;
 
+public void writeNext(String str) throws IOException;
+
 
 /**
  * close the writer
  */
 public void close() throws IOException;
+
+public void writeHeader(String line) throws IOException;
 }
