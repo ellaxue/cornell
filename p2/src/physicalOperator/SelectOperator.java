@@ -3,7 +3,6 @@ import project.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import IO.BinaryWriter;
 import IO.DirectWriter;
@@ -31,7 +30,7 @@ public class SelectOperator extends Operator {
 	 * @return (Tuple) the tuple matches the selection condition
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException{		
+	public Tuple getNextTuple() throws Exception{		
 	Tuple tu;
 	while((tu= child.getNextTuple())!=null) {
 		if(ex == null) {return tu;}
@@ -47,7 +46,7 @@ public class SelectOperator extends Operator {
 	 * Method to reset
 	 */
 	@Override
-	public void reset() throws IOException{
+	public void reset() throws Exception{
     child.reset();		
 	}
 
@@ -55,7 +54,7 @@ public class SelectOperator extends Operator {
 	 * Method to dump the results
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -89,7 +88,7 @@ public class SelectOperator extends Operator {
 		return this.ex;
 	}
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

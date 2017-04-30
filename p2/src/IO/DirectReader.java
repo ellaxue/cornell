@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import project.SchemaPair;
@@ -27,7 +26,7 @@ public class DirectReader implements TupleReader {
 	 * @param tablename 
 	 * 				  table to be read
 	 */
-	public DirectReader(String tablename) throws IOException {	
+	public DirectReader(String tablename) throws Exception {	
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
 		String fileDirectory;
@@ -52,7 +51,7 @@ public class DirectReader implements TupleReader {
 	 * This method reads next line of the input file
 	 */
 	@Override
-	public Tuple readNext() throws IOException {
+	public Tuple readNext() throws Exception {
 		String line = bufferedReader.readLine();
 		if (line == null) {
 			bufferedReader.close();
@@ -79,7 +78,7 @@ public class DirectReader implements TupleReader {
 	 * reset input reader
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		String fileDirectory;
 		if (cl.UseAlias()) {
 			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(this.toString(tablename)));
@@ -100,7 +99,7 @@ public class DirectReader implements TupleReader {
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		File file=	new File(cl.getTempFileDir()+File.separator+toString(tablename)+filenameID);
 		bufferedReader = new BufferedReader(new FileReader(file));
 		for(int i=0;i<index;i++) {

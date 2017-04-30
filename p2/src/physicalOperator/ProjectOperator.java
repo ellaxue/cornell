@@ -5,7 +5,6 @@ import java.awt.print.Printable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import IO.BinaryWriter;
@@ -35,7 +34,7 @@ public class ProjectOperator extends Operator{
 	 * @return (Tuple) result of the projection operator
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		Tuple tu;
 		String[] t;
 		StringBuffer sb = new StringBuffer();
@@ -62,7 +61,7 @@ public class ProjectOperator extends Operator{
 	 * Method to reset after projection by reset its child
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		child.reset();
 	}
 
@@ -70,7 +69,7 @@ public class ProjectOperator extends Operator{
 	 * Method to dump the results of the projection operator
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -110,7 +109,7 @@ public class ProjectOperator extends Operator{
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

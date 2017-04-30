@@ -1,5 +1,4 @@
 package physicalOperator;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale.FilteringMode;
 
@@ -30,9 +29,9 @@ public class DuplicateEliminationOperator extends Operator {
 	 * the columns in the select clause.
 	 * @param child of the operator (which must be a sort operator here)
 	 * @param schema_pair the list containing <tablename,columnnmae> pair which is in the select clause
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public DuplicateEliminationOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
+	public DuplicateEliminationOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws Exception {
 		this.child = child;
 		this.schema_pair = schema_pair;
 		flag = true;
@@ -41,9 +40,9 @@ public class DuplicateEliminationOperator extends Operator {
 	/** 
 	 * Constructor to deal with "select distinct *" 
 	 * @param child of the operator (which must be a sort operator here)
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public DuplicateEliminationOperator(Operator child) throws IOException {
+	public DuplicateEliminationOperator(Operator child) throws Exception {
 		this.child = child;
 		flag = false;
 	}
@@ -54,7 +53,7 @@ public class DuplicateEliminationOperator extends Operator {
 	 *  the required schemas
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		if(this.flag == true){return ReturnWithOrderBy();}
 		else{ return ReturnWithoutOrderBy();}
 	}
@@ -63,7 +62,7 @@ public class DuplicateEliminationOperator extends Operator {
 	 * Method to reset after projection by reset all its fields
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		child.reset();
 	}
 
@@ -71,7 +70,7 @@ public class DuplicateEliminationOperator extends Operator {
 	 * Method to dump the results of the DISTINCT
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 		Tuple tu;
 		TupleWriter writer= new BinaryWriter();
 		TupleWriter writerReadable = null;
@@ -87,9 +86,9 @@ public class DuplicateEliminationOperator extends Operator {
 
 	/**
 	 * store distinct tuples with order by query
-	 * @throws IOException IOexception
+	 * @throws Exception Exception
 	 */
-	private Tuple ReturnWithOrderBy() throws IOException{
+	private Tuple ReturnWithOrderBy() throws Exception{
 		Tuple tu=null;
 		if(firstTime) {
 			firstTuple = child.getNextTuple();
@@ -131,9 +130,9 @@ public class DuplicateEliminationOperator extends Operator {
 
 	/**
 	 * store distinct tuples witout orderby query
-	 * @throws IOException IOexception
+	 * @throws Exception Exception
 	 */
-	private Tuple ReturnWithoutOrderBy() throws IOException{
+	private Tuple ReturnWithoutOrderBy() throws Exception{
 		Tuple tu=null;
 		if(firstTime) {
 			firstTuple = child.getNextTuple();
@@ -190,7 +189,7 @@ public class DuplicateEliminationOperator extends Operator {
 	public Expression getExpression() {return null;}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 
 	}
