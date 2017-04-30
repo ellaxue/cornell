@@ -48,20 +48,20 @@ public final class catalog {
 	}
 
 	public void setIndexInfo(String tableName, String column, Boolean cluster){
-		if(!indexes.containsKey(tableName)){
-			indexes.put(tableName, new IndexInfo(column, cluster));
+		if(!getIndexes().containsKey(tableName)){
+			getIndexes().put(tableName, new IndexInfo(column, cluster));
 		}
 	}
 	
 	public IndexInfo hasIndex(String tableName){
-		if(indexes.containsKey(tableName)){
-			return indexes.get(tableName);
+		if(getIndexes().containsKey(tableName)){
+			return getIndexes().get(tableName);
 		}
 		return null;
 	}
 	
 	public void printIndexInfo(){
-		for(Map.Entry<String, IndexInfo> entry:indexes.entrySet()){
+		for(Map.Entry<String, IndexInfo> entry:getIndexes().entrySet()){
 			System.out.println("Table " + entry.getKey() + " has an index on " + 
 		entry.getValue().getIndexCol() + ", is cluster = " + entry.getValue().getClustered());
 		}
@@ -184,5 +184,13 @@ public final class catalog {
 
 	public void setEvalQuery(boolean flag) {
 		this.evalQuery = flag;
+	}
+
+	public HashMap<String, IndexInfo> getIndexes() {
+		return indexes;
+	}
+
+	public void setIndexes(HashMap<String, IndexInfo> indexes) {
+		this.indexes = indexes;
 	}
 }

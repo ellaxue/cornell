@@ -2,6 +2,7 @@ package IO;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ public class BinaryReader implements TupleReader {
 	private int pageIndex=1;
 	private int curTotalPageRead = 0;
 	private int curPageTupleRead = -1;
-	public BinaryReader(String tablename) throws Exception {
+	boolean firstReadNext = true;
+	public BinaryReader(String tablename) throws IOException {
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
 		if (cl.UseAlias()) {
@@ -48,7 +50,7 @@ public class BinaryReader implements TupleReader {
 		tuple_num = buffer.getInt(4);
 	}
 	
-	public BinaryReader(String tableName[], String fileName) throws Exception{
+	public BinaryReader(String tableName[], String fileName) throws IOException{
 		tablename = tableName;
 		this.filename=fileName;
 		File file = new File(cl.getTempFileDir()+File.separator+toString(tableName)+fileName);
@@ -60,7 +62,7 @@ public class BinaryReader implements TupleReader {
 		tuple_num = buffer.getInt(4);
 	}
 	
-	public BinaryReader(FileInputStream stream, String tableName[]) throws Exception{
+	public BinaryReader(FileInputStream stream, String tableName[]) throws IOException{
 		tablename = tableName;
 		fin = stream;
 		fc = fin.getChannel();
@@ -70,7 +72,57 @@ public class BinaryReader implements TupleReader {
 	}
 
 	@Override
-	public Tuple readNext() throws Exception {
+	public Tuple readNext() throws IOException {
+		String [] tuple= new String[attribute_num];
+		int actualcount=totalCount-(pageIndex-1)*4096+count;
+		if(count<tuple_num*attribute_num*4+8 && count+attribute_num*4<=buffer.limit()) {
+			for(int i=0;i<attribute_num;i++) {
+				tuple[i]=Integer.toString((buffer.getInt(count)));
+				count+=4;
+			}
+			ArrayList<SchemaPair> schema = new ArrayList<SchemaPair>();
+			for(int i = 0; i < tablename.length; i++){
+				String curTableName = tablename[i];
+				if (cl.UseAlias()) {
+					for (String s : cl.getTableSchema().get(cl.getAlias().get(curTableName))) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
+				} else {
+					for (String s : cl.getTableSchema().get(curTableName)) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
+				}
+			}
+			curPageTupleRead++; //count how many tuples read in current page
+			return new Tuple(tuple, schema);
+		}
+		else {
+			curTotalPageRead++; //count how many pages read
+			curPageTupleRead = -1; //reset the tuple number read for next page
+			buffer.clear();
+			if(fc.read(buffer)!=-1) {
+				attribute_num = buffer.getInt(0);
+				tuple_num = buffer.getInt(4);
+				count=8;
+				return readNext();
+			}
+		}
+		fc.close();
+		fin.close();
+		return null;
+	}
+	
+	/**
+	 * Read next tuple from a certain location
+	 *
+	 */
+	@Override
+	public Tuple readNext(int pageID, int tupleID, boolean unclustered) throws IOException {
+		boolean enter = unclustered||firstReadNext;
+		if(enter){
+			count = count+pageID*4096+tupleID*4*attribute_num;
+			firstReadNext = false;
+		}
 		String [] tuple= new String[attribute_num];
 		int actualcount=totalCount-(pageIndex-1)*4096+count;
 		if(count<tuple_num*attribute_num*4+8 && count+attribute_num*4<=buffer.limit()) {
@@ -110,12 +162,11 @@ public class BinaryReader implements TupleReader {
 		return null;
 	}
 
-
 	/**
 	 * reset the reader buffer
 	 */
 	@Override
-	public void reset() throws Exception {
+	public void reset() throws IOException {
 		count=8;
 		fin = new FileInputStream(fileDirectory);
 		fc = fin.getChannel();
@@ -123,6 +174,7 @@ public class BinaryReader implements TupleReader {
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
+		firstReadNext = true;
 	}
 	public String toString(String name[]){
 		String res = "";
@@ -136,7 +188,7 @@ public class BinaryReader implements TupleReader {
 	 * reset the reader buffer
 	 */
 	@Override
-	public void reset(int index) throws Exception {
+	public void reset(int index) throws IOException {
 		maxTupleNumber = 4088/(attribute_num*4);
 		pageIndex = (int)Math.ceil((double)index/(double)maxTupleNumber);
 		totalCount = (index/maxTupleNumber)*4096+(index%maxTupleNumber)*attribute_num*4;
