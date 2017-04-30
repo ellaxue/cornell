@@ -1,8 +1,6 @@
 package physicalOperator;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
 import IO.BinaryWriter;
 import IO.DirectWriter;
 import IO.TupleWriter;
@@ -35,7 +33,7 @@ public class SMJoinOperator extends Operator {
 	private int firstCall=0;
 
 	public SMJoinOperator(Operator leftChild, Operator rightChild, ArrayList<SchemaPair> leftSchema,
-			ArrayList<SchemaPair> rightSchema) throws IOException {
+			ArrayList<SchemaPair> rightSchema) throws Exception {
 		this.leftChild = leftChild;
 		this.rightChild = rightChild;
 		this.leftSchema = leftSchema;
@@ -43,7 +41,7 @@ public class SMJoinOperator extends Operator {
 	}
 
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		if (firstCall==0) {
 			tl = leftChild.getNextTuple(); 
 			if(tl!=null) {leftIndex = joinIndexOrder(tl, leftSchema);}
@@ -105,14 +103,14 @@ public class SMJoinOperator extends Operator {
 	}
 
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		// TODO Auto-generated method stub
 
 	}
 
 	
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 		Tuple tu;
 		TupleWriter writer= new BinaryWriter();
 		TupleWriter writerReadable = null;
@@ -128,7 +126,7 @@ public class SMJoinOperator extends Operator {
 	}
 
 	@Override
-	public void setLeftChild(Operator child) throws IOException {
+	public void setLeftChild(Operator child) throws Exception {
 		this.actualLeftChild=child;
 		if (sortMethod == 0) {
 			this.leftChild = new SortOperator(child, leftSchema);
@@ -138,7 +136,7 @@ public class SMJoinOperator extends Operator {
 	}
 
 	@Override
-	public void setRightChild(Operator child) throws IOException {
+	public void setRightChild(Operator child) throws Exception {
 		this.actualRightChild=child;
 		if (sortMethod == 0) {
 			this.rightChild = new SortOperator(child, rightSchema);
@@ -204,7 +202,7 @@ public class SMJoinOperator extends Operator {
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 	}
 

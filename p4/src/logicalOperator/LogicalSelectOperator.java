@@ -1,7 +1,4 @@
 package logicalOperator;
-
-import java.io.IOException;
-
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import project.OperationVisitor;
@@ -21,7 +18,7 @@ public class LogicalSelectOperator extends TreeNode{
 	}
 
 	@Override
-	public void accept(OperationVisitor visitor) throws IOException {
+	public void accept(OperationVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
 

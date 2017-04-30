@@ -1,8 +1,6 @@
 package physicalOperator;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
 import IO.BinaryWriter;
 import IO.DirectWriter;
 import IO.TupleWriter;
@@ -30,7 +28,7 @@ public class BNLJOperator extends Operator{
 	private boolean addedToSet = false;
 	
 	
-	public BNLJOperator(Operator leftChild, Operator rightChild, Expression ex, int pageSize) throws IOException {
+	public BNLJOperator(Operator leftChild, Operator rightChild, Expression ex, int pageSize) throws Exception {
 		
 		//The leftChild is the Outer Child and the rightChild is the Inner Child
 		//System.out.println("leftChild:::::::::::::::::::::: "+leftChild.toString());
@@ -57,7 +55,7 @@ public class BNLJOperator extends Operator{
 	   tuples are returned)
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		Tuple temp;
 		if(first_enter == true&&(temp=leftChild.getNextTuple())!=null){//Initiate buffer
 			this.Outer_attr = temp.getTuple().length;
@@ -121,7 +119,7 @@ public class BNLJOperator extends Operator{
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		rightChild.reset();
 		leftChild.reset();
 		count = 0;
@@ -137,7 +135,7 @@ public class BNLJOperator extends Operator{
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub	
 	}
 
@@ -146,7 +144,7 @@ public class BNLJOperator extends Operator{
 	 * Method to dump the results of the join operator
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 		Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -164,7 +162,7 @@ public class BNLJOperator extends Operator{
 	/**
 	 * Method to read and store outer tuples in blocks
 	 */
-	private void addLeftTableToBuffer() throws IOException{
+	private void addLeftTableToBuffer() throws Exception{
 		Tuple left;
 		while ( (!buf.isFull() &&(left = leftChild.getNextTuple()) != null)) {
 			this.buf.add(left);
@@ -172,7 +170,7 @@ public class BNLJOperator extends Operator{
 	}
 	
 	@Override
-	public void setLeftChild(Operator child) throws IOException {
+	public void setLeftChild(Operator child) throws Exception {
 		this.leftChild = child;
 	}
 

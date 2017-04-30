@@ -3,7 +3,6 @@ import project.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +28,7 @@ public class SortOperator extends Operator {
 	private int count = 0;
 	private Integer orderByIndex[];
 	
-	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
+	public SortOperator(Operator child, ArrayList<SchemaPair> schema_pair) throws Exception {
 		this.child = child;
 		this.schema_pair = schema_pair;
 	}
@@ -40,7 +39,7 @@ public class SortOperator extends Operator {
 	 * @return (Tuple) the tuple sorted according to the required columns
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		if(organized == false) {
 			this.sorted_tuples = organize(child, schema_pair);
 			organized = true;
@@ -56,7 +55,7 @@ public class SortOperator extends Operator {
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		child.reset();
 		count = 0; 
 	}
@@ -65,7 +64,7 @@ public class SortOperator extends Operator {
 	 * Method to dump the results
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -101,7 +100,7 @@ public class SortOperator extends Operator {
     	if (QueryPlan.debuggingMode){writerReadable.close();}
 	}
 	
-	private ArrayList<Tuple> organize(Operator child, ArrayList<SchemaPair> schema_pair) throws IOException {
+	private ArrayList<Tuple> organize(Operator child, ArrayList<SchemaPair> schema_pair) throws Exception {
 		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
 		Tuple tu;
 		while ((tu = child.getNextTuple()) != null) {
@@ -184,7 +183,7 @@ public class SortOperator extends Operator {
 		return false;
 	}
 	@Override
-	public void setLeftChild(Operator child) throws IOException {
+	public void setLeftChild(Operator child) throws Exception {
 		this.child = child;
 		
 	}
@@ -210,7 +209,7 @@ public class SortOperator extends Operator {
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		count=index;
 	}
 	

@@ -2,7 +2,6 @@ package IO;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -21,14 +20,14 @@ public class BinaryWriter implements TupleWriter{
 	private int limit;
 	private int count=0;
 	
-	public  BinaryWriter() throws IOException{
+	public  BinaryWriter() throws Exception{
 		firstCall = 0;
 		tuple_num = 0;
 		fout = new FileOutputStream(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount(), false);
 		fc = fout.getChannel();
 	}
 	
-	public  BinaryWriter(String fileName) throws IOException{
+	public  BinaryWriter(String fileName) throws Exception{
 		firstCall = 0;
 		tuple_num = 0;
 		fout = new FileOutputStream(fileName, false);
@@ -36,7 +35,7 @@ public class BinaryWriter implements TupleWriter{
 	}
 	
 	@Override
-	public void writeNext(Tuple tu) throws IOException {
+	public void writeNext(Tuple tu) throws Exception {
 		count++;
 		if(firstCall == 0){
 			attribute_num = tu.getTuple().length;
@@ -73,7 +72,7 @@ public class BinaryWriter implements TupleWriter{
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws Exception {
 		if(attribute_num==0){
 			fc.close();
 			fout.close();
@@ -96,7 +95,7 @@ public class BinaryWriter implements TupleWriter{
 	}
 
 	@Override
-	public void writeNext(String str) throws IOException {
+	public void writeNext(String str) throws Exception {
 //		System.out.println("page " + str);
 		String values[] = str.split(" ");
 		buffer.clear();
@@ -118,7 +117,7 @@ public class BinaryWriter implements TupleWriter{
 		fc.write(buffer);
 	}
 	@Override
-	public void writeHeader(String page) throws IOException {
+	public void writeHeader(String page) throws Exception {
 		System.out.println("header " + page);
 		String values[] = page.split(" ");
 		buffer.clear();

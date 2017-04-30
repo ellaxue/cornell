@@ -1,7 +1,4 @@
 package logicalOperator;
-
-import java.io.IOException;
-
 import project.OperationVisitor;
 
 /**
@@ -20,7 +17,7 @@ public class LogicalJoinOperator extends TreeNode{
 		this.rightChild = rightChild;
 	}
 	@Override
-	public void accept(OperationVisitor visitor) throws IOException {
+	public void accept(OperationVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
 

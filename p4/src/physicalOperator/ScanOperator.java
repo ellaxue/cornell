@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import IO.BinaryReader;
@@ -23,7 +22,7 @@ import net.sf.jsqlparser.expression.Expression;
 public class ScanOperator extends Operator {
 	TupleReader reader;
 
-	public ScanOperator(String tablename) throws IOException {
+	public ScanOperator(String tablename) throws Exception {
 		reader= new BinaryReader(tablename);
 	}
 
@@ -33,7 +32,7 @@ public class ScanOperator extends Operator {
 	 * @return (Tuple)  the next tuple
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 	  return reader.readNext();
 	}
 
@@ -41,7 +40,7 @@ public class ScanOperator extends Operator {
 	 * Method to reset 
 	 */
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		reader.reset();
 	}
 
@@ -49,7 +48,7 @@ public class ScanOperator extends Operator {
 	 * Method to dump the results 
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -85,7 +84,7 @@ public class ScanOperator extends Operator {
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

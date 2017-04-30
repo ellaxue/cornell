@@ -1,7 +1,5 @@
 package logicalOperator;
 
-import java.io.IOException;
-
 import project.OperationVisitor;
 
 /**
@@ -14,7 +12,7 @@ public class LogicalDulplicateEliminationOperator extends TreeNode {
 	}
 	
 	@Override
-	public void accept(OperationVisitor visitor) throws IOException {
+	public void accept(OperationVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
 	

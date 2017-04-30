@@ -2,7 +2,6 @@ package physicalOperator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import IO.BinaryWriter;
@@ -29,7 +28,7 @@ public class JoinOperator extends Operator {
 	private int count;
 	private boolean addedToSet = false;
 	private int printcount = 0;
-	public JoinOperator(Operator leftChild, Operator rightChild, Expression ex) throws IOException {
+	public JoinOperator(Operator leftChild, Operator rightChild, Expression ex) throws Exception {
 		
 		this.leftset = new ArrayList<>();
 		this.leftChild = leftChild;
@@ -46,7 +45,7 @@ public class JoinOperator extends Operator {
 	   tuples are returned)
 	 */
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		if(addedToSet == false) {addLeftTableToSet();addedToSet = true;}
 		Tuple left;
 		String[] lt;
@@ -96,7 +95,7 @@ public class JoinOperator extends Operator {
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() throws IOException  {
+	public void reset() throws Exception  {
 		leftChild.reset();
 		rightChild.reset();
 		count = 0;
@@ -107,7 +106,7 @@ public class JoinOperator extends Operator {
 	 * Method to dump the results of the join operator
 	 */
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -122,7 +121,7 @@ public class JoinOperator extends Operator {
 		QueryPlan.nextQuery();
 	}
 	
-	private void addLeftTableToSet() throws IOException{
+	private void addLeftTableToSet() throws Exception{
 		Tuple left;
 		while ((left = leftChild.getNextTuple()) != null) {
 			this.leftset.add(left);
@@ -130,7 +129,7 @@ public class JoinOperator extends Operator {
 	}
 	
 	@Override
-	public void setLeftChild(Operator child) throws IOException {
+	public void setLeftChild(Operator child) throws Exception {
 		this.leftChild = child;
 	}
 
@@ -155,7 +154,7 @@ public class JoinOperator extends Operator {
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

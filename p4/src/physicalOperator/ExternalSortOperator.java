@@ -1,7 +1,6 @@
 package physicalOperator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -39,9 +38,9 @@ public class ExternalSortOperator extends Operator{
 	/**
 	 * Constructor 
 	 * @param BPages Buffer size with B pages
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public ExternalSortOperator(Operator child,ArrayList<SchemaPair> schema_pair, int pageNumber) throws IOException{
+	public ExternalSortOperator(Operator child,ArrayList<SchemaPair> schema_pair, int pageNumber) throws Exception{
 		this.child = child;
 		this.schema_pair = schema_pair;
 		this.pageNumber = pageNumber;		
@@ -50,7 +49,7 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	@Override
-	public Tuple getNextTuple() throws IOException {
+	public Tuple getNextTuple() throws Exception {
 		if(finalSortedFileIdentifier == null){
 			mergeSort();
 			//finalSortedFileIdentifier example: 2_pass0  (file full name: tableName2_pass0)
@@ -76,7 +75,7 @@ public class ExternalSortOperator extends Operator{
 		file.delete();
 	}
 
-	private void mergeSort() throws IOException {
+	private void mergeSort() throws Exception {
 		Tuple tuple = null;
 		//pass 0 - sort B pages' tuples at a time
 		while((tuple = child.getNextTuple()) != null){
@@ -135,9 +134,9 @@ public class ExternalSortOperator extends Operator{
 
 	/**
 	 * This method merges sorted tuples in multiple files
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private void merge() throws IOException{
+	private void merge() throws Exception{
 		
 		ArrayList<DirectReader> directReaders = new ArrayList<DirectReader>();
 		ArrayList<BinaryReader> binaryReaders =  new ArrayList<BinaryReader>();
@@ -191,9 +190,9 @@ public class ExternalSortOperator extends Operator{
 	 * Compare the tuple list based on ORDERBY elements and return the index of the smallest tuple
 	 * @param tupleList the tuple list to be compared
 	 * @return the index of the smallest tuple
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private int compareTuples(ArrayList<Tuple> tupleList) throws IOException {
+	private int compareTuples(ArrayList<Tuple> tupleList) throws Exception {
 		if(tupleList.size() == 0) return -1;
 		int smallestTupleIndex = 0;
 		String[] smallestTuple = tupleList.get(0).getTuple();
@@ -248,9 +247,9 @@ public class ExternalSortOperator extends Operator{
 	/**
 	 * Write current sorted tuples to files
 	 * @param fileIdetifier to identify which file for the same table
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private void writeToFile(String fileIdetifier) throws IOException {
+	private void writeToFile(String fileIdetifier) throws Exception {
 		//create a file writer and set the combined table name as the file name
 		TupleWriter writer = new BinaryWriter(catalog.getInstance().getTempFileDir()+File.separator+this.toString(tableName)+fileIdetifier);
 		for(Tuple tuple:buffer){
@@ -288,9 +287,9 @@ public class ExternalSortOperator extends Operator{
 	 * 
 	 * @param tuple the tuple to be sorted which contains table names.
 	 * Make the combined table names as the temp file name
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	private void setTempFileName(Tuple tuple) throws IOException {
+	private void setTempFileName(Tuple tuple) throws Exception {
 		ArrayList<SchemaPair> sortingTupleSchemaList = tuple.getSchemaList();
 		String str = "";
 		
@@ -311,13 +310,13 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	@Override
-	public void reset() throws IOException {
+	public void reset() throws Exception {
 		child.reset();
 		count = 0; 
 	}
 
 	@Override
-	public void dump() throws IOException {
+	public void dump() throws Exception {
 	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -333,7 +332,7 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	@Override
-	public void setLeftChild(Operator child) throws IOException {this.child = child;}
+	public void setLeftChild(Operator child) throws Exception {this.child = child;}
 
 	@Override
 	public void setRightChild(Operator child) {}
@@ -395,7 +394,7 @@ public class ExternalSortOperator extends Operator{
 	}
 
 	@Override
-	public void reset(int index) throws IOException {
+	public void reset(int index) throws Exception {
 		tupleReader.reset(index);
 	}
 }

@@ -1,8 +1,6 @@
 package logicalOperator;
 
-import java.io.IOException;
 import java.util.List;
-
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import project.OperationVisitor;
 
@@ -24,7 +22,7 @@ public class LogicalSortOperator extends TreeNode{
 	}
 
 	@Override
-	public void accept(OperationVisitor visitor) throws IOException {
+	public void accept(OperationVisitor visitor) throws Exception {
 		visitor.visit(this);
 	}
 }

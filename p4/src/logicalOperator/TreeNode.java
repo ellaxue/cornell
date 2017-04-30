@@ -19,7 +19,7 @@ public abstract class TreeNode {
 	
 	TreeNode(){leftChild = null;rightChild = null;expression = null;table = null;}
 	
-	public abstract void accept(OperationVisitor visitor) throws IOException;
+	public abstract void accept(OperationVisitor visitor) throws Exception;
 	
 	public TreeNode getLeftChild(){ return this.leftChild; }
 	

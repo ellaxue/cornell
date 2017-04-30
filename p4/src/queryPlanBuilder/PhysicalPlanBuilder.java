@@ -3,7 +3,6 @@ package queryPlanBuilder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import logicalOperator.*;
@@ -35,9 +34,9 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
 	 * @param queryInterpreter query interpreter
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
-	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws IOException
+	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws Exception
 	{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
@@ -56,7 +55,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * this visit method recursively creates new children for the current operator
 	 * to form a query operator tree
 	 */
-	public void visit(LogicalSelectOperator node) throws IOException {
+	public void visit(LogicalSelectOperator node) throws Exception {
 		String tableName = getTableName(node);
 		SelectOperator selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());
 		if(rootOperator == null){
@@ -91,7 +90,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * to form a query operator tree
 	 */
 	@Override
-	public void visit(LogicalJoinOperator node) throws IOException {
+	public void visit(LogicalJoinOperator node) throws Exception {
 		
 		Operator joinOperator = null;
 		if(joinMethod == 0){
@@ -124,7 +123,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * to form a query operator tree
 	 */
 	@Override
-	public void visit(LogicalProjectOperator node) throws IOException {
+	public void visit(LogicalProjectOperator node) throws Exception {
 
 		ProjectOperator projectOperator = new ProjectOperator(null,QueryPlan.schema_pair);
 		if(rootOperator == null){
@@ -142,7 +141,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * to form a query operator tree
 	 */
 	@Override
-	public void visit(LogicalSortOperator node) throws IOException {
+	public void visit(LogicalSortOperator node) throws Exception {
 		// call different constructor depends on if query contains orderBy
 		Operator sortOperator;
 		if(sortMethod == 0){
@@ -166,7 +165,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * to form a query operator tree
 	 */
 	@Override
-	public void visit(LogicalDulplicateEliminationOperator node) throws IOException {
+	public void visit(LogicalDulplicateEliminationOperator node) throws Exception {
 		//call different constructor depends on if projection is needed  
 		DuplicateEliminationOperator distinctOperator;
 		if(queryInterpreter.getSelectItemList().get(0) instanceof AllColumns){
@@ -196,9 +195,9 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	
 	/**
 	 * Read the config file and set join method and sorting method
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	private void setOperatorMethod() throws IOException {
+	private void setOperatorMethod() throws Exception {
 		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
 		String line = configReader.readLine();
 		if(line != null){
