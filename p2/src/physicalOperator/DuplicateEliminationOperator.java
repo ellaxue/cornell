@@ -86,7 +86,7 @@ public class DuplicateEliminationOperator extends Operator {
 
 	/**
 	 * store distinct tuples with order by query
-	 * @throws Exception Exception
+	 * @throws Exception IOexception
 	 */
 	private Tuple ReturnWithOrderBy() throws Exception{
 		Tuple tu=null;
@@ -130,7 +130,7 @@ public class DuplicateEliminationOperator extends Operator {
 
 	/**
 	 * store distinct tuples witout orderby query
-	 * @throws Exception Exception
+	 * @throws Exception IOexception
 	 */
 	private Tuple ReturnWithoutOrderBy() throws Exception{
 		Tuple tu=null;

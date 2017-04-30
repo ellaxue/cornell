@@ -1,7 +1,9 @@
 package IO;
 
 import project.Tuple;
+
 public interface TupleWriter {
+
 	
 /**
  * write next tuple	
@@ -16,5 +18,5 @@ public void writeNext(String str) throws Exception;
  */
 public void close() throws Exception;
 
-public void writeHeader(String line) throws  Exception;
+public void writeHeader(String line) throws Exception;
 }

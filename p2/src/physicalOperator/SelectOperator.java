@@ -16,11 +16,11 @@ import net.sf.jsqlparser.expression.Expression;
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
 public class SelectOperator extends Operator {
-    private ScanOperator child;
+    private Operator child;
     private Expression ex;
 
 	
-	public SelectOperator(ScanOperator child, Expression ex) {
+	public SelectOperator(Operator child, Expression ex) {
       this.child=child;
       this.ex=ex;
 	}
@@ -70,7 +70,7 @@ public class SelectOperator extends Operator {
 	}
 	@Override
 	public void setLeftChild(Operator child) {
-		this.child = (ScanOperator)child;
+		this.child = (Operator)child;
 	}
 	@Override
 	public void setRightChild(Operator child) {

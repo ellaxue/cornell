@@ -5,15 +5,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import BPlusTree.IndexInfo;
 import logicalOperator.*;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Join;
 import physicalOperator.*;
+import project.IndexScanConditionExtration;
 import project.JoinAttributesExtraction;
 import project.OperationVisitor;
 import project.QueryInterpreter;
 import project.QueryPlan;
 import project.catalog;
+import project.conditionEvaluator;
 
 /**
  * This class recursively builds a physical query plan with a tree structure
@@ -30,6 +33,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private String configDir;
 	private static int sortMethod;
 	private int joinMethod;
+	private Boolean useIndex=false;
 	/**
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
@@ -50,14 +54,29 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	public Operator result(){
 		return this.rootOperator;
 	}
-	
+
 	/**
 	 * this visit method recursively creates new children for the current operator
 	 * to form a query operator tree
 	 */
 	public void visit(LogicalSelectOperator node) throws Exception {
+		Operator selectOperator=null;
 		String tableName = getTableName(node);
-		SelectOperator selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());
+		IndexInfo index= cl.getIndexes().get(node.getTable().getName());
+		if(!useIndex || index==null) {selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());}
+		else {
+			IndexScanConditionExtration condition= new IndexScanConditionExtration(node.getExpressoin(), index);
+			if(condition.getLowKey()==null && condition.getHighKey() == null){
+				selectOperator= new SelectOperator(new ScanOperator(tableName), condition.getFullScan());}	
+			else if (condition.getFullScan()==null) {
+				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+			}
+			else {
+				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+				selectOperator=new SelectOperator(selectOperator, condition.getFullScan());
+			}
+		}
+		
 		if(rootOperator == null){
 			rootOperator = selectOperator;
 		}
@@ -72,7 +91,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		}
 		else{curOperator.setLeftChild(selectOperator);}
 	}
-	
+
 	/**
 	 * This method return a table's name in a string format
 	 * @param node the logical operator that contain table information
@@ -91,7 +110,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 */
 	@Override
 	public void visit(LogicalJoinOperator node) throws Exception {
-		
+
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(null, null,node.getExpressoin());
@@ -107,17 +126,17 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
 			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
 		}
-		
+
 		if(rootOperator == null){ rootOperator = joinOperator; }
 		else{curOperator.setLeftChild(joinOperator);}
-		
+
 		curOperator = joinOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 		//reset the current operator to this joinOperator for attaching the right child
 		curOperator = joinOperator;
 		if(node.getRightChild() != null) {node.getRightChild().accept(this);}
 	}
-	
+
 	/**
 	 * this visit method recursively creates new children for the current operator
 	 * to form a query operator tree
@@ -152,10 +171,10 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
 			System.out.println("external sort method chosen with sort page size " + sortPageSize);
 		}
-			
+
 		if(rootOperator == null){rootOperator = sortOperator;}
 		else{curOperator.setLeftChild(sortOperator);}
-		
+
 		curOperator = sortOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 	}
@@ -174,14 +193,14 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		else{
 			distinctOperator = new DuplicateEliminationOperator(null,QueryPlan.schema_pair);
 		}
-		
+
 		if(rootOperator == null){rootOperator = distinctOperator;}
 		else{curOperator.setLeftChild(distinctOperator);}
-		
+
 		curOperator = distinctOperator;
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 	}
-	
+
 	/**
 	 * prints out the built physical plan tree for debugging purpose in postfix order
 	 * @param op the root operator
@@ -192,7 +211,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		printPhysicalPlanTree(op.getRightChild());
 		System.out.println("physical operator " + op.getClass());
 	}
-	
+
 	/**
 	 * Read the config file and set join method and sorting method
 	 * @throws Exception
@@ -213,14 +232,21 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 					sortPageSize = Integer.parseInt(splitLine[1]);
 				}
 			}
+			if((line = configReader.readLine()) != null){
+				splitLine = line.split(" ");
+				Integer IndexMethod = Integer.parseInt(splitLine[0]);
+				if(IndexMethod != 0){
+					useIndex = true;
+				}
+			}
 		}
 		configReader.close();
 	}
-	
+
 	public static int getSortMethod() {
 		return sortMethod;
 	}
-	
+
 	public static int getSortPageNumber() {
 		return sortPageSize;
 	}

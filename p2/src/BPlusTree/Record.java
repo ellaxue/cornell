@@ -19,6 +19,14 @@ public class Record {
 		this.tupleId = tupleId;
 	}
 	
+	public int getPageId() {
+		return pageId;
+	}
+	
+	public int getTupleid() {
+		return tupleId;
+	}
+	
 	@Override
 	public String toString(){
 		return " " +pageId+" "+tupleId;

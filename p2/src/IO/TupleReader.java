@@ -1,6 +1,7 @@
 package IO;
 
 import javax.swing.tree.ExpandVetoException;
+
 import project.Tuple;
 
 public interface TupleReader {
@@ -12,7 +13,6 @@ public Tuple readNext() throws Exception;
 
 /**
  * reset the reader to the starting position
- * @throws Exception 
  */
 public void reset() throws Exception;
 
@@ -26,4 +26,6 @@ public int getCurTotalPageRead();
 public int getCurPageTupleRead();
 
 public void close() throws Exception;
+
+Tuple readNext(int pageID, int tupleID, boolean unclustered) throws Exception;
 }
