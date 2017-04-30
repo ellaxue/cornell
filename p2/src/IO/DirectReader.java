@@ -27,7 +27,7 @@ public class DirectReader implements TupleReader {
 	 * @param tablename 
 	 * 				  table to be read
 	 */
-	public DirectReader(String tablename) throws IOException {	
+	public DirectReader(String tablename) throws Exception {	
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
 		String fileDirectory;

@@ -45,7 +45,7 @@ public class QueryPlan {
 	 * result
 	 * 
 	 * @param input directory and out put directory
-	 * @throws Exception
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws Exception {
 		catalog cl = catalog.getInstance();
@@ -102,26 +102,24 @@ public class QueryPlan {
 		while(line != null){
 			BPlusTree<Integer, Record> bt = new BPlusTree<Integer, Record>(line);
 			cl.setIndexInfo(bt.getTableName(), bt.getColumnName(), bt.getIsCluster());
-			
+			ArrayList<SchemaPair> list = new ArrayList<SchemaPair>();
+			list.add(new SchemaPair(bt.getTableName(),bt.getColumnName()));
 			TupleReader reader = null;
 			int keyIndex = getColumnIndex(cl,bt);
 			if(bt.getIsCluster()){
-				ArrayList<SchemaPair> sortList = new ArrayList<SchemaPair>();
-				sortList.add(new SchemaPair(bt.getTableName(),bt.getColumnName()));
-				SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),sortList);
+				SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),list);
 				sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName());
 				reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			}
 			else{reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});}
 			
 			Tuple tuple = null;
-			int count = 44;
+			int count = 15;
 			while((tuple = reader.readNext()) != null){
 				int key = Integer.parseInt(tuple.getTuple()[keyIndex]);
-				if(key != -1)bt.addToRecordMap(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
+				bt.addToRecordMap(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
 //				if(count-- ==0){break;} //debugging
 			}
-			reader.close();
 			bt.buildTree(cl.getIndexDir()+File.separator+bt.getTableName()+"."+bt.getColumnName());
 			line = indexInfoReader.readLine();
 		}
@@ -142,7 +140,7 @@ public class QueryPlan {
 			}
 			index++;
 		}
-		return -1;
+		return index;
 	}
 
 	/**
