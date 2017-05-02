@@ -62,8 +62,12 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	public void visit(LogicalSelectOperator node) throws Exception {
 		Operator selectOperator=null;
 		String tableName = getTableName(node);
+<<<<<<< HEAD
 		IndexInfo index= cl.getIndexes().get(node.getTable().getName());
 		String indexFileName= cl.getIndexDir()+File.separator+node.getTable().getName()+"."+index.getIndexCol();
+=======
+		IndexInfo index= cl.getTableIndexInfo(node.getTable().getName());
+>>>>>>> origin/master
 		if(!useIndex || index==null) {selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());}
 		else {
 			IndexScanConditionExtration condition= new IndexScanConditionExtration(node.getExpressoin(), index);
