@@ -48,13 +48,16 @@ public final class catalog {
 	}
 
 	public void setIndexInfo(String tableName, String column, Boolean cluster){
-		if(!indexes.containsKey(tableName)){
-			indexes.put(tableName, new IndexInfo(column, cluster));
+		if(!getIndexes().containsKey(tableName)){
+			getIndexes().put(tableName, new IndexInfo(column, cluster));
 		}
 	}
 	
-	public IndexInfo getTableIndexInfo(String tableName){
-		return indexes.get(tableName);
+	public IndexInfo hasIndex(String tableName){
+		if(getIndexes().containsKey(tableName)){
+			return getIndexes().get(tableName);
+		}
+		return null;
 	}
 	
 	public void printIndexInfo(){
