@@ -44,7 +44,11 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
-
+/**
+ * Separate condition of indexscan and fullscan
+ * @author anorakj
+ *
+ */
 public class IndexScanConditionExtration implements ExpressionVisitor {
 	
 	private Integer lowKey=null;
@@ -53,7 +57,7 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 	private String indexColumn=null;
 
 	
-	public IndexScanConditionExtration(Expression ex, IndexInfo index) {
+	public IndexScanConditionExtration(Expression ex, IndexInfo index) throws Exception {
 		indexColumn = index.getIndexCol();
 		if (ex!=null) ex.accept(this);
 	}
@@ -177,12 +181,12 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 			leftValue= (int)((LongValue) left).getValue();
 		}
 		else lcolumn=((Column)left).getColumnName();
-		if (right instanceof Column) {
+		if (right instanceof LongValue) {
 			rightValue= (int)((LongValue) right).getValue();
 		}
 		else rcolumn=((Column)right).getColumnName();
-		if((lcolumn!=null && rcolumn!=null) || (!lcolumn.equals(indexColumn) && !rcolumn.equals(indexColumn))) {
-			if (getFullScan()!=null) setFullScan(arg0);
+		if((lcolumn!=null && rcolumn!=null) || (!indexColumn.equals(lcolumn) && !indexColumn.equals(rcolumn))) {
+			if (getFullScan()==null) setFullScan(arg0);
 			else setFullScan(new AndExpression(arg0, getFullScan()));
 		}
 		else {
@@ -207,18 +211,18 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 			leftValue= (int)((LongValue) left).getValue();
 		}
 		else lcolumn=((Column)left).getColumnName();
-		if (right instanceof Column) {
+		if (right instanceof LongValue) {
 			rightValue= (int)((LongValue) right).getValue();
 		}
 		else rcolumn=((Column)right).getColumnName();
-		if((lcolumn!=null && rcolumn!=null) || (!lcolumn.equals(indexColumn) && !rcolumn.equals(indexColumn))) {
-			if (getFullScan()!=null) setFullScan(arg0);
+		if((lcolumn!=null && rcolumn!=null) || (!indexColumn.equals(lcolumn) && !indexColumn.equals(rcolumn))) {
+			if (getFullScan()==null) setFullScan(arg0);
 			else setFullScan(new AndExpression(arg0, getFullScan()));
 		}
 		else {
 			if (leftValue!=null) {
-				if (getLowKey()==null) setLowKey(leftValue+1);
-				else if (getLowKey()<leftValue+1) setLowKey(leftValue+1);
+				if (getHighKey()==null) setHighKey(leftValue-1);
+				else if (getHighKey()>leftValue-1) setHighKey(leftValue-1);
 			}
 			else {
 				if (getLowKey()==null) setLowKey(rightValue+1);
@@ -238,18 +242,18 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 			leftValue= (int)((LongValue) left).getValue();
 		}
 		else lcolumn=((Column)left).getColumnName();
-		if (right instanceof Column) {
+		if (right instanceof LongValue) {
 			rightValue= (int)((LongValue) right).getValue();
 		}
 		else rcolumn=((Column)right).getColumnName();
-		if((lcolumn!=null && rcolumn!=null) || (!lcolumn.equals(indexColumn) && !rcolumn.equals(indexColumn))) {
-			if (getFullScan()!=null) setFullScan(arg0);
+		if((lcolumn!=null && rcolumn!=null) || (!indexColumn.equals(lcolumn) && !indexColumn.equals(rcolumn))) {
+			if (getFullScan()==null) setFullScan(arg0);
 			else setFullScan(new AndExpression(arg0, getFullScan()));
 		}
 		else {
 			if (leftValue!=null) {
-				if (getLowKey()==null) setLowKey(leftValue);
-				else if (getLowKey()<leftValue) setLowKey(leftValue);
+				if (getHighKey()==null) setHighKey(leftValue);
+				else if (getHighKey()>leftValue) setHighKey(leftValue);
 			}
 			else {
 				if (getLowKey()==null) setLowKey(rightValue);
@@ -287,18 +291,18 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 			leftValue= (int)((LongValue) left).getValue();
 		}
 		else lcolumn=((Column)left).getColumnName();
-		if (right instanceof Column) {
+		if (right instanceof LongValue) {
 			rightValue= (int)((LongValue) right).getValue();
 		}
 		else rcolumn=((Column)right).getColumnName();
-		if((lcolumn!=null && rcolumn!=null) || (!lcolumn.equals(indexColumn) && !rcolumn.equals(indexColumn))) {
-			if (getFullScan()!=null) setFullScan(arg0);
+		if((lcolumn!=null && rcolumn!=null) || (!indexColumn.equals(lcolumn) && !indexColumn.equals(rcolumn))) {
+			if (getFullScan()==null) setFullScan(arg0);
 			else setFullScan(new AndExpression(arg0, getFullScan()));
 		}
 		else {
 			if (leftValue!=null) {
-				if (getHighKey()==null) setHighKey(leftValue-1);
-				else if (getHighKey()>leftValue-1) setHighKey(leftValue-1);
+				if (getLowKey()==null) setLowKey(leftValue+1);
+				else if (getLowKey()<leftValue+1) setLowKey(leftValue+1);
 			}
 			else {
 				if (getHighKey()==null) setHighKey(rightValue-1);
@@ -318,18 +322,18 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 			leftValue= (int)((LongValue) left).getValue();
 		}
 		else lcolumn=((Column)left).getColumnName();
-		if (right instanceof Column) {
+		if (right instanceof LongValue) {
 			rightValue= (int)((LongValue) right).getValue();
 		}
 		else rcolumn=((Column)right).getColumnName();
-		if((lcolumn!=null && rcolumn!=null) || (!lcolumn.equals(indexColumn) && !rcolumn.equals(indexColumn))) {
-			if (getFullScan()!=null) setFullScan(arg0);
+		if((lcolumn!=null && rcolumn!=null) || (!indexColumn.equals(lcolumn) && !indexColumn.equals(rcolumn))) {
+			if (getFullScan()==null) setFullScan(arg0);
 			else setFullScan(new AndExpression(arg0, getFullScan()));
 		}
 		else {
 			if (leftValue!=null) {
-				if (getHighKey()==null) setHighKey(leftValue);
-				else if (getHighKey()>leftValue) setHighKey(leftValue);
+				if (getLowKey()==null) setLowKey(leftValue);
+				else if (getLowKey()<leftValue) setLowKey(leftValue);
 			}
 			else {
 				if (getHighKey()==null) setHighKey(rightValue);
@@ -339,7 +343,7 @@ public class IndexScanConditionExtration implements ExpressionVisitor {
 
 	@Override
 	public void visit(NotEqualsTo arg0) {
-		if (getFullScan()!=null) setFullScan(arg0);
+		if (getFullScan()==null) setFullScan(arg0);
 		else setFullScan(new AndExpression(arg0, getFullScan()));	
 		}
 

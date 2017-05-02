@@ -128,4 +128,10 @@ public class DirectReader implements TupleReader {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Tuple readNext(int pageID, int tupleID) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

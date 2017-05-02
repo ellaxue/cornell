@@ -11,6 +11,11 @@ import java.util.Collections;
 import project.QueryPlan;
 import project.catalog;
 
+/**
+ * 
+ * This class builds a BPlusTree deserializer 
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ */
 public class deserializer {
 	private String filename;	        // the index file
 	private catalog cl = catalog.getInstance();
@@ -24,7 +29,7 @@ public class deserializer {
 	private Integer lowKey;					// low key of the (included) search range
 	private Integer highKey;				// high key of the (included) search range.  lowKey<= search range<= highKey
 	private int curNodeAdr;
-
+	private int totalRid;
 	private ArrayList<Record> ridList;  // a list of RID in search range
 	
 	private int times = 0;    //the times to get next rid
@@ -33,12 +38,12 @@ public class deserializer {
 		filename = indexFileName;
 		this.lowKey = lowKey;
 		this.highKey = highKey;
-
-		fileDirectory = cl.getTableLocation().get(filename);
-
-		System.out.println("read path" + fileDirectory);
+		this.totalRid = 0;
+//		System.out.println("lowKey is: " + this.lowKey);
+//		System.out.println("highKey is: " + this.highKey);
+//		System.out.println("file name is: " + filename);
 		try {
-			fin = new FileInputStream(fileDirectory);
+			fin = new FileInputStream(indexFileName);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -53,29 +58,31 @@ public class deserializer {
 		treeOrder = buffer.getInt(8);
 
 		//for lowKey
-		if(lowKey == null) lowKey = Integer.MIN_VALUE ;
-		if(highKey == null) highKey = Integer.MAX_VALUE ;
-		if(lowKey>highKey) ridList = null;
+		if(lowKey == null) this.lowKey = Integer.MIN_VALUE ;
+		if(highKey == null) this.highKey = Integer.MAX_VALUE ;
+		if(this.lowKey>this.highKey) ridList = null;
 		else{
 			ridList = new ArrayList<Record>();
 			
-			curNodeAdr = readIndexPage(rootAdr,lowKey);
+			curNodeAdr = readIndexPage(rootAdr,this.lowKey);
 			while(curNodeAdr>leafSize){//search through the index pages
-				curNodeAdr = readIndexPage(curNodeAdr,lowKey);
+				curNodeAdr = readIndexPage(curNodeAdr,this.lowKey);
 			}
 			int leftAdr = curNodeAdr;
 
 		//for highKey
-			curNodeAdr = readIndexPage(rootAdr,highKey);
+			curNodeAdr = readIndexPage(rootAdr,this.highKey);
 			while(curNodeAdr>leafSize){//search through the index pages
-				curNodeAdr = readIndexPage(curNodeAdr,highKey);
+				curNodeAdr = readIndexPage(curNodeAdr,this.highKey);
 			}
 			int rightAdr = curNodeAdr;
 			
+			//System.out.println("Left page: " + leftAdr+"; Right Page: "+rightAdr);
+			
 			if(leftAdr == rightAdr){
-				readLeafPage(leftAdr,lowKey,highKey);
+				readLeafPage(leftAdr,this.lowKey,this.highKey);
 			}else{
-				readLeafPage(leftAdr, rightAdr, lowKey, highKey);
+				readLeafPage(leftAdr, rightAdr, this.lowKey, this.highKey);
 			}
 		}
 	}
@@ -84,10 +91,10 @@ public class deserializer {
 		readLeafPage(leftAdr, lowKey, Integer.MAX_VALUE);
 		leftAdr++;
 		while(leftAdr<rightAdr){
-			readLeafPage(leftAdr, Integer.MAX_VALUE, Integer.MAX_VALUE);
+			readLeafPage(leftAdr, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			leftAdr++;
 		}
-		readLeafPage(leftAdr, Integer.MAX_VALUE, highKey);
+		readLeafPage(leftAdr, Integer.MIN_VALUE, highKey);
 	}
 	
 	public void readLeafPage(int nodeAdr,Integer lowKey, Integer highKey) throws IOException{
@@ -104,26 +111,36 @@ public class deserializer {
 		for(int i = 0; i<keyNum; i++){
 			int curPosition = lastPosition+(count+1)*8;
 			positions.add(curPosition);//store each key's location
-			keys.add(buffer.getInt(curPosition));
+			int key = buffer.getInt(curPosition);
+			keys.add(key);
 			lastPosition = curPosition;
 			count = buffer.getInt(curPosition+4);
+			//System.out.println("key "+key+" number is :"+count);
 			counts.add(count);//store the number of each key
 		}
 		int position = Collections.binarySearch(keys, lowKey);
-		if(position<0) position = -position-1;
+		if(position<0){
+			position = -position-1;
+		}
 		int keyVal = lowKey;
 		while(keyVal<=highKey && position<keyNum){
 			int p = positions.get(position);
 			int c = counts.get(position);
+			int k = 0;
+			if(position+1<keyNum) k = keys.get(position+1);
+			totalRid = totalRid+c;
 			for(int i = 0; i<c; i++){
 				int pid = buffer.getInt(p+(i+1)*8);
 				int tid = buffer.getInt(p+(i+1)*8+4);
 				Record rd = new Record(pid,tid);
 				ridList.add(rd);
 			}
+			//System.out.println("position = "+p);
+			//System.out.println("keyVal = "+keyVal);
+			//System.out.println("totalRid: "+totalRid);
 			position++;
 			if(position<keyNum){
-				keyVal = buffer.getInt(position);
+				keyVal = k;
 			}
 		}
 	}
@@ -150,9 +167,21 @@ public class deserializer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return the last Rid information of the required tuple
+	 */
 	public Record getLastRecord(){
 		return ridList.get(ridList.size()-1);
 	}
+	
+	public int totalRid(){
+		return this.totalRid;
+	}
+	/**
+	 * 
+	 * @return the next Rid information of the required tuple
+	 */
 	public Record getNextRecord(){
 		int temp = times;
 		times++;

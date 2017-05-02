@@ -49,7 +49,7 @@ import net.sf.jsqlparser.statement.select.SubSelect;
 /**
  * Extract join attributes from join expression which only contains equijoin.
  */
-public class JoinAttributesExtraction implements ExpressionVisitor {
+public class JoinAttributesExtraction  implements ExpressionVisitor  {
 	private ArrayList<SchemaPair> leftRelaionSchema=new ArrayList<SchemaPair>();
 	private ArrayList<SchemaPair> rightRelationSchema=new ArrayList<SchemaPair>();
 	private ArrayList<String> JoinOrder;

@@ -33,6 +33,8 @@ public class BinaryReader implements TupleReader {
 	private int curTotalPageRead = 0;
 	private int curPageTupleRead = -1;
 	boolean firstReadNext = true;
+	int times = 0;
+	
 	public BinaryReader(String tablename) throws Exception {
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
@@ -41,7 +43,7 @@ public class BinaryReader implements TupleReader {
 		} else {
 			fileDirectory = cl.getTableLocation().get(tablename);
 		}
-		System.out.println("read path" + fileDirectory);
+		// System.out.println("read path" + fileDirectory);
 		fin = new FileInputStream(fileDirectory);
 		fc = fin.getChannel();
 		fc.read(buffer);
@@ -111,6 +113,35 @@ public class BinaryReader implements TupleReader {
 		return null;
 	}
 	
+	@Override
+	public Tuple readNext(int pageID, int tupleID) throws Exception {
+		buffer.clear();
+		fc.position((long)4096*pageID);
+		fc.read(buffer);
+		buffer.flip();
+			count = 8+tupleID*4*attribute_num;
+
+		String [] tuple= new String[attribute_num];
+			for(int i=0;i<attribute_num;i++) {
+				tuple[i]=Integer.toString((buffer.getInt(count)));
+				count+=4;
+			}
+			ArrayList<SchemaPair> schema = new ArrayList<SchemaPair>();
+			for(int i = 0; i < tablename.length; i++){
+				String curTableName = tablename[i];
+				if (cl.UseAlias()) {
+					for (String s : cl.getTableSchema().get(cl.getAlias().get(curTableName))) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
+				} else {
+					for (String s : cl.getTableSchema().get(curTableName)) {
+						schema.add(new SchemaPair(curTableName, s));
+					}
+				}
+			}
+			return new Tuple(tuple, schema);
+		}
+	
 	/**
 	 * Read next tuple from a certain location
 	 *
@@ -119,11 +150,16 @@ public class BinaryReader implements TupleReader {
 	public Tuple readNext(int pageID, int tupleID, boolean unclustered) throws Exception {
 		boolean enter = unclustered||firstReadNext;
 		if(enter){
-			count = count+pageID*4096+tupleID*4*attribute_num;
+			times++;
+			//count = 8+pageID*4096+tupleID*4*attribute_num;
+			buffer.clear();
+			fc.position((long)4096*pageID);
+			fc.read(buffer);
+			buffer.flip();
 			firstReadNext = false;
+			count = 8+tupleID*4*attribute_num;
 		}
 		String [] tuple= new String[attribute_num];
-		int actualcount=totalCount-(pageIndex-1)*4096+count;
 		if(count<tuple_num*attribute_num*4+8 && count+attribute_num*4<=buffer.limit()) {
 			for(int i=0;i<attribute_num;i++) {
 				tuple[i]=Integer.toString((buffer.getInt(count)));

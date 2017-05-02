@@ -38,7 +38,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
 	 * @param queryInterpreter query interpreter
-	 * @throws Exception 
+	 * @t hrows Exception 
 	 */
 	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws Exception
 	{
@@ -63,16 +63,17 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator selectOperator=null;
 		String tableName = getTableName(node);
 		IndexInfo index= cl.getIndexes().get(node.getTable().getName());
+		String indexFileName= cl.getIndexDir()+File.separator+node.getTable().getName()+"."+index.getIndexCol();
 		if(!useIndex || index==null) {selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());}
 		else {
 			IndexScanConditionExtration condition= new IndexScanConditionExtration(node.getExpressoin(), index);
 			if(condition.getLowKey()==null && condition.getHighKey() == null){
 				selectOperator= new SelectOperator(new ScanOperator(tableName), condition.getFullScan());}	
 			else if (condition.getFullScan()==null) {
-				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
 			}
 			else {
-				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
 				selectOperator=new SelectOperator(selectOperator, condition.getFullScan());
 			}
 		}
@@ -114,14 +115,14 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(null, null,node.getExpressoin());
-			System.out.println("TNLJ method chosen");
+			//System.out.println("TNLJ method chosen");
 		}
 		else if(joinMethod == 1){
-			System.out.println("BNLJ method chosen with join page size " + joinPageSize);
+			//System.out.println("BNLJ method chosen with join page size " + joinPageSize);
 			joinOperator = new BNLJOperator(null, null, node.getExpressoin(), joinPageSize);
 		}
 		else{
-			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
+			//System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
 			JoinAttributesExtraction jae = new JoinAttributesExtraction
 					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
 			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
@@ -165,11 +166,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator sortOperator;
 		if(sortMethod == 0){
 			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
-			System.out.println("internal sort method chosen");
+			//System.out.println("internal sort method chosen");
 		}
 		else{
 			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
-			System.out.println("external sort method chosen with sort page size " + sortPageSize);
+			//System.out.println("external sort method chosen with sort page size " + sortPageSize);
 		}
 
 		if(rootOperator == null){rootOperator = sortOperator;}
@@ -209,7 +210,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if (op == null) return;
 		printPhysicalPlanTree(op.getLeftChild());
 		printPhysicalPlanTree(op.getRightChild());
-		System.out.println("physical operator " + op.getClass());
+		//System.out.println("physical operator " + op.getClass());
 	}
 
 	/**

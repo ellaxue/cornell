@@ -161,7 +161,7 @@ public class SortOperator extends Operator {
 	private int indexOfSortingTupleSchemaList(ArrayList<SchemaPair> sortingTupleSchemaList, SchemaPair schemaPair) {
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(sortingTupleSchemaList.get(i).equalsTo(schemaPair)){
-				System.out.println("index "  + i);
+				// System.out.println("index "  + i);
 				return i;
 			}
 		}

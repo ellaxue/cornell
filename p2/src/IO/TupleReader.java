@@ -28,4 +28,6 @@ public int getCurPageTupleRead();
 public void close() throws Exception;
 
 Tuple readNext(int pageID, int tupleID, boolean unclustered) throws Exception;
+
+Tuple readNext(int pageID, int tupleID) throws Exception;
 }
