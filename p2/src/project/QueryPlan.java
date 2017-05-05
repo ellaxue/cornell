@@ -37,7 +37,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = true;
+	public static boolean debuggingMode = false;
 
 	
 	/**
@@ -56,17 +56,21 @@ public class QueryPlan {
 			buildIndex(cl);
 		}
 		
-		System.out.println("index info" );
-		cl.printIndexInfo();
+		else {findIndex(cl);}
+		System.out.println(cl.shouldEvalQuery());
+		//System.out.println("index info" );
+	//	cl.printIndexInfo();
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
 		if(cl.shouldEvalQuery()){
+			System.out.println("============================Read statement=========================================");
 			queryCount = 1;
 			try {
 				while ((statement = parser.Statement()) != null) {
 					Long t=System.currentTimeMillis();
 					System.out.println("============================Read statement=========================================");
+					System.out.println("satemnet " + statement);
 					//store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
 					setSchemaPair();
@@ -82,7 +86,7 @@ public class QueryPlan {
 				}
 			} 
 			catch (Exception e) {
-				System.err.println("Exception occurred during parsing");
+				// System.err.println("Exception occurred during parsing");
 				e.printStackTrace();
 			}
 		}
@@ -112,15 +116,32 @@ public class QueryPlan {
 				reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			}
 			else{reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});}
-			
 			Tuple tuple = null;
 			int count = 15;
+			
 			while((tuple = reader.readNext()) != null){
 				int key = Integer.parseInt(tuple.getTuple()[keyIndex]);
 				bt.addToRecordMap(key, new Record(reader.getCurTotalPageRead(),reader.getCurPageTupleRead()));
 //				if(count-- ==0){break;} //debugging
 			}
 			bt.buildTree(cl.getIndexDir()+File.separator+bt.getTableName()+"."+bt.getColumnName());
+			line = indexInfoReader.readLine();
+		}
+		indexInfoReader.close();
+		
+	}
+	
+	/** 
+	 * if don't need to build index, find the index available.
+	 * @param cl
+	 * @throws Exception
+	 */
+	private static void findIndex(catalog cl) throws Exception {
+		BufferedReader indexInfoReader = new BufferedReader(new FileReader(cl.getIndexInforFilePath()));
+		String line = indexInfoReader.readLine();
+		while(line != null){
+			BPlusTree<Integer, Record> bt = new BPlusTree<Integer, Record>(line);
+			cl.setIndexInfo(bt.getTableName(), bt.getColumnName(), bt.getIsCluster());
 			line = indexInfoReader.readLine();
 		}
 		indexInfoReader.close();
@@ -134,6 +155,7 @@ public class QueryPlan {
 	 */
 	private static int getColumnIndex(catalog cl,BPlusTree<Integer, Record> bt) {
 		int index = 0;
+		System.out.println("build table name " +bt.getTableName());
 		for(String str: cl.getTableSchema().get(bt.getTableName())){
 			if(bt.getColumnName().equals(str)){
 				return index;
@@ -150,7 +172,7 @@ public class QueryPlan {
 	 * @throws Exception the exception
 	 */
 	private static void setUpFileDirectory(catalog cl, String args) throws Exception {
-		String configDir = args + File.separator + "interpreter_config_file.txt";
+		String configDir = args;
 		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
 		
 		cl.setInputDir(configReader.readLine());

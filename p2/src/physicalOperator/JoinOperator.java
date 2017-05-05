@@ -114,6 +114,7 @@ public class JoinOperator extends Operator {
         
     	while ((tu=this.getNextTuple())!=null) {
     		writer.writeNext(tu);
+//    		System.out.println("tuple " + tu.getComplete());
     		if (QueryPlan.debuggingMode){writerReadable.writeNext(tu);}
     	}
     	writer.close();

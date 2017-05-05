@@ -54,6 +54,7 @@ public class BPlusTree<K extends Comparable<K>, T> {
 		int lastTwoNodeElementCounter = 0;
 		
 		//build leafnode level
+		
 		while(!recordMap.isEmpty()){
 			Entry<Integer, ArrayList<Record>> entry = recordMap.pollFirstEntry();
 			leafNode.addToRecordList(entry.getKey(), entry.getValue());
@@ -116,10 +117,12 @@ public class BPlusTree<K extends Comparable<K>, T> {
 				else{builtNodeListSwap.clear();}
 			}			
 		}
+		
 		if(QueryPlan.debuggingMode)directWriter.writeHeader("root address: " + root.address+ ", number of leafnode: " + numOfLeafNode + ", with order: " +order);
 		binaryWriter.writeHeader(root.address+ " " + numOfLeafNode + " " +order);
 		if(QueryPlan.debuggingMode)directWriter.close();
 		binaryWriter.close();
+		
 	}
 	
 	/**

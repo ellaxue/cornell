@@ -38,7 +38,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
 	 * @param queryInterpreter query interpreter
-	 * @throws Exception 
+	 * @t hrows Exception 
 	 */
 	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws Exception
 	{
@@ -62,17 +62,19 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	public void visit(LogicalSelectOperator node) throws Exception {
 		Operator selectOperator=null;
 		String tableName = getTableName(node);
-		IndexInfo index= cl.getTableIndexInfo(node.getTable().getName());
+		IndexInfo index= cl.getIndexes().get(node.getTable().getName());
+		String indexFileName= cl.getIndexDir()+File.separator+node.getTable().getName()+"."+index.getIndexCol();
 		if(!useIndex || index==null) {selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());}
 		else {
 			IndexScanConditionExtration condition= new IndexScanConditionExtration(node.getExpressoin(), index);
 			if(condition.getLowKey()==null && condition.getHighKey() == null){
 				selectOperator= new SelectOperator(new ScanOperator(tableName), condition.getFullScan());}	
 			else if (condition.getFullScan()==null) {
-				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
+				System.out.println("IndexScanOperator ");
 			}
 			else {
-				selectOperator= new IndexScanOperator(tableName, null, condition.getLowKey(), condition.getHighKey(), index.getClustered(), null);
+				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
 				selectOperator=new SelectOperator(selectOperator, condition.getFullScan());
 			}
 		}
@@ -165,11 +167,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator sortOperator;
 		if(sortMethod == 0){
 			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
-			System.out.println("internal sort method chosen");
+			//System.out.println("internal sort method chosen");
 		}
 		else{
 			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
-			System.out.println("external sort method chosen with sort page size " + sortPageSize);
+			//System.out.println("external sort method chosen with sort page size " + sortPageSize);
 		}
 
 		if(rootOperator == null){rootOperator = sortOperator;}
@@ -209,7 +211,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if (op == null) return;
 		printPhysicalPlanTree(op.getLeftChild());
 		printPhysicalPlanTree(op.getRightChild());
-		System.out.println("physical operator " + op.getClass());
+		//System.out.println("physical operator " + op.getClass());
 	}
 
 	/**

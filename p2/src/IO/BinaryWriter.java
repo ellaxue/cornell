@@ -118,7 +118,7 @@ public class BinaryWriter implements TupleWriter{
 	}
 	@Override
 	public void writeHeader(String page) throws Exception {
-		System.out.println("header " + page);
+		//System.out.println("header " + page);
 		String values[] = page.split(" ");
 		buffer.clear();
 		int offset = 0;
