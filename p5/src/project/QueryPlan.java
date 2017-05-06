@@ -12,7 +12,7 @@ import queryPlanBuilder.PhysicalPlanBuilder;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.expression.*;
 import java.util.*;
-
+import ChooseSelectionImp.RelationInfo;
 import BPlusTree.BPlusTree;
 import BPlusTree.Record;
 //import BPlusTree.Utils;
@@ -52,28 +52,22 @@ public class QueryPlan {
 		setUpFileDirectory(cl,args[0]);
 		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
 		
-		if(cl.shouldBuildIndex()) {
 			buildIndex(cl);
-		}
+//		else {findIndex(cl);}
 		
-		else {findIndex(cl);}
-
 		//System.out.println("index info" );
 	//	cl.printIndexInfo();
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
-		if(cl.shouldEvalQuery()){
-			System.out.println("============================Read statement=========================================");
+		
 			queryCount = 1;
 			try {
 				while ((statement = parser.Statement()) != null) {
 					Long t=System.currentTimeMillis();
 					System.out.println("============================Read statement=========================================");
-					System.out.println("satemnet " + statement);
-
-
-					//store alias information and interprets query statement
+					System.out.println(statement);
+//					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
@@ -83,7 +77,7 @@ public class QueryPlan {
 					logicalPlan.getRootOperator().accept(physicalPlan);
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
 					 
-					physicalPlan.result().dump();
+//					physicalPlan.result().dump();
 					//System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
 				}
 			} 
@@ -91,7 +85,6 @@ public class QueryPlan {
 				// System.err.println("Exception occurred during parsing");
 				e.printStackTrace();
 			}
-		}
 	}
 	
 /*---------------------move logic from the main to helper functions---------------*/	
@@ -157,7 +150,6 @@ public class QueryPlan {
 	 */
 	private static int getColumnIndex(catalog cl,BPlusTree<Integer, Record> bt) {
 		int index = 0;
-		System.out.println("build table name " +bt.getTableName());
 		for(String str: cl.getTableSchema().get(bt.getTableName())){
 			if(bt.getColumnName().equals(str)){
 				return index;
@@ -174,15 +166,13 @@ public class QueryPlan {
 	 * @throws Exception the exception
 	 */
 	private static void setUpFileDirectory(catalog cl, String args) throws Exception {
+		
 		String configDir = args;
 		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
 		
 		cl.setInputDir(configReader.readLine());
 		cl.setOutputdir(configReader.readLine());
 		cl.setTempFileDir(configReader.readLine());
-		cl.setBuildIndex(configReader.readLine().equals("1")? true : false);
-		cl.setEvalQuery(configReader.readLine().equals("1")? true : false);
-		
 		configReader.close();
 	}
 
@@ -196,6 +186,7 @@ public class QueryPlan {
 	public static void initSchema(String schemadr,String database, catalog cl) throws Exception{
 		// store database information
 		BufferedReader schemaReader = new BufferedReader(new FileReader(schemadr));
+		BufferedWriter writer  = new BufferedWriter(new FileWriter(cl.getStatFilePath(),false));;
 		String line = schemaReader.readLine();
 		while (line != null) {
 			String tableName = line.substring(0, line.indexOf(' '));
@@ -205,11 +196,29 @@ public class QueryPlan {
 				schema.add(s);
 			}
 			cl.storeTableInfo(tableName, database + File.separator + tableName, schema);
+			storeStatistic(writer,tableName,schemadr,database,cl,schemaSt);
 			line = schemaReader.readLine();
 		}
 		schemaReader.close();
+		writer.close();
 	}
 	
+
+	private static void storeStatistic(BufferedWriter writer, String tableName, String schemadr, String database,catalog cl, String[] schema) throws Exception {
+		BinaryReader statReader = new BinaryReader(tableName);
+		Tuple tuple = statReader.readNext();
+		while(tuple!= null){
+			tuple = statReader.readNext();
+		}		
+		RelationInfo relation = cl.getRelation(tableName);
+		writer.write(tableName +" "+relation.getTotalTupleInRelation()+ " ");
+		
+		for(int i = 0; i < schema.length;i++){
+			writer.write(schema[i]+","+relation.getAttributeMin()[i]+","+relation.getAttributeMax()[i]+" ");
+		}
+		writer.write("\n");
+		statReader.close();
+	}
 
 	/**
 	 * This method stores table column's data with corresponding position of 

@@ -72,6 +72,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 			else if (condition.getFullScan()==null) {
 				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
 				System.out.println("IndexScanOperator ");
+
 			}
 			else {
 				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
@@ -116,14 +117,14 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(null, null,node.getExpressoin());
-			System.out.println("TNLJ method chosen");
+			//System.out.println("TNLJ method chosen");
 		}
 		else if(joinMethod == 1){
-			System.out.println("BNLJ method chosen with join page size " + joinPageSize);
+			//System.out.println("BNLJ method chosen with join page size " + joinPageSize);
 			joinOperator = new BNLJOperator(null, null, node.getExpressoin(), joinPageSize);
 		}
 		else{
-			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
+			//System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
 			JoinAttributesExtraction jae = new JoinAttributesExtraction
 					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
 			joinOperator= new SMJoinOperator(null, null, jae.getLeft(), jae.getRight());
