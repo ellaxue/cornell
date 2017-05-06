@@ -57,6 +57,13 @@ public final class catalog {
 			map.put(column, cluster);
 			indexes.put(tableName,map);			
 		}
+		else{
+			if(!indexes.get(tableName).containsKey(column)){
+				HashMap<String, Boolean> map = indexes.get(tableName);
+				map.put(column, cluster);
+				indexes.put(tableName,map);	
+			}
+		}
 	}
 	
 	public HashMap<String,Boolean> getAllTableIndexes(String tableName){

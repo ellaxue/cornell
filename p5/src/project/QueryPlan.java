@@ -37,7 +37,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = false;
+	public static boolean debuggingMode = true;
 
 	
 	/**
@@ -55,8 +55,8 @@ public class QueryPlan {
 		buildIndex(cl);
 //		else {findIndex(cl);}
 		
-		//System.out.println("index info" );
-	//	cl.printIndexInfo();
+		System.out.println("index info" );
+		cl.printIndexInfo();
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
@@ -109,9 +109,8 @@ public class QueryPlan {
 			if(bt.getIsCluster()){
 				SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),list);
 				sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName());
-				reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			}
-			else{reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});}
+			reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			Tuple tuple = null;
 			int count = 15;
 			
