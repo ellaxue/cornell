@@ -52,7 +52,7 @@ public class QueryPlan {
 		setUpFileDirectory(cl,args[0]);
 		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
 		
-			buildIndex(cl);
+		buildIndex(cl);
 //		else {findIndex(cl);}
 		
 		//System.out.println("index info" );
@@ -69,6 +69,7 @@ public class QueryPlan {
 					System.out.println(statement);
 //					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
+					queryInterpreter.readStat(cl.getStatFilePath());
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 					logicalPlan.buildQueryPlan();

@@ -39,7 +39,9 @@ public class BinaryReader implements TupleReader {
 	private int tupleNumInRelation;
 	private int attributeMin[];
 	private int attributeMax[];
+	private String attributeNames[];
 	private boolean readStat = true;
+	private int attrNameIndex = 0;
 	public BinaryReader(String tablename) throws Exception {
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
@@ -59,6 +61,7 @@ public class BinaryReader implements TupleReader {
 		Arrays.fill(attributeMin,Integer.MAX_VALUE);
 		attributeMax = new int[attribute_num];
 		Arrays.fill(attributeMax,Integer.MIN_VALUE);
+		attributeNames = new String[attribute_num];
 	}
 	
 	public BinaryReader(String tableName[], String fileName) throws Exception{
@@ -99,11 +102,13 @@ public class BinaryReader implements TupleReader {
 				String curTableName = tablename[i];
 				if (cl.UseAlias()) {
 					for (String s : cl.getTableSchema().get(cl.getAlias().get(curTableName))) {
-						
+						if(readStat && attrNameIndex++ < attribute_num) attributeNames[attrNameIndex-1] = s;
 						schema.add(new SchemaPair(curTableName, s));
 					}
+					  
 				} else {
 					for (String s : cl.getTableSchema().get(curTableName)) {
+						if(readStat && attrNameIndex++ < attribute_num) attributeNames[attrNameIndex-1] = s;
 						schema.add(new SchemaPair(curTableName, s));
 					}
 				}
@@ -126,7 +131,7 @@ public class BinaryReader implements TupleReader {
 		fc.close();
 		fin.close();
 		if(readStat == true){
-			RelationInfo Rinfo = new RelationInfo(attributeMin, attributeMax, tupleNumInRelation, tablename[0]);
+			RelationInfo Rinfo = new RelationInfo(attributeMin, attributeMax, tupleNumInRelation, tablename[0],attributeNames);
 			cl.setRelationInfo(Rinfo);
 		}
 		return null;

@@ -13,19 +13,14 @@ public class RelationInfo {
 	private int[] attributeMax;
 	private int totalAttribute;
 	private catalog cl = catalog.getInstance();
-	private ArrayList<String> attributeNameList;
-	public RelationInfo(int[] attrMin, int[] attrMax, int totalTuple, String name){
-		this.tableName = name;
+	private String attributeNames[];
+	public RelationInfo(int[] attrMin, int[] attrMax, int totalTuple, String tablename, String[] attriName){
+		this.tableName = tablename;
 		this.totalTupleInRelation = totalTuple;
 		this.attributeMax = attrMax;
 		this.attributeMin = attrMin;
 		this.totalAttribute = attrMin.length;
-		if (cl.UseAlias()){
-			this.attributeNameList = cl.getTableSchema().get(cl.getAlias().get(tableName));
-		}
-		else{
-			this.attributeNameList = cl.getTableSchema().get(tableName);
-		}
+		this.attributeNames = attriName;
 	}
 	
 	public int getNumOfAttribute(){
@@ -88,8 +83,8 @@ public class RelationInfo {
 	}
 
 	public Integer getMinValOfAttr(String colName) {
-		for(int i = 0; i< attributeNameList.size();i++){
-			if(attributeNameList.get(i).equals(colName)){
+		for(int i = 0; i< attributeNames.length;i++){
+			if(attributeNames[i].equals(colName)){
 				return attributeMin[i];
 			}
 		}
@@ -97,8 +92,8 @@ public class RelationInfo {
 	}
 	
 	public Integer getMaxValOfAttr(String colName) {
-		for(int i = 0; i< attributeNameList.size();i++){
-			if(attributeNameList.get(i).equals(colName)){
+		for(int i = 0; i< attributeNames.length;i++){
+			if(attributeNames[i].equals(colName)){
 				return attributeMax[i];
 			}
 		}

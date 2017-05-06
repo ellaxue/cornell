@@ -235,4 +235,9 @@ public final class catalog {
 		}
 		return false;
 	}
+
+	public HashMap<String, RelationInfo> getRelationMap() {
+		// TODO Auto-generated method stub
+		return this.relationInfoMap;
+	}
 }

@@ -61,12 +61,9 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
 		this.configDir = inputDir+File.separator+"plan_builder_config.txt";
-//		setOperatorMethod(); //not using it any more, hard code for now
+		setOperatorMethod();
 		joinPageSize = 4;
 		sortPageSize = 4;
-		joinMethod = 2;
-		sortMethod = 1;
-		useIndex = true;	
 	}
 
 	/**

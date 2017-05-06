@@ -2,6 +2,7 @@ package project;
 import java.io.*;
 import java.util.*;
 
+import ChooseSelectionImp.RelationInfo;
 import logicalOperator.TreeNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
@@ -66,7 +67,37 @@ public class QueryInterpreter {
 			tupleList = null;
 		}
 	}
-	
+	public void readStat(String filePath) throws Exception{
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		String line = reader.readLine();
+		catalog cl = catalog.getInstance();
+		
+		while(line != null){
+			String splitStr[] = line.split(" ");
+			String tableName = splitStr[0];
+			
+//			if(cl.getRelation(tableName) == null){
+				int numOfTuple =Integer.parseInt(splitStr[1]);
+				int attributeNum = splitStr.length - 2;
+				int	attributeMin[] = new int[attributeNum];
+				int attributeMax[] = new int[attributeNum];
+				String attributeNames[] = new String[attributeNum];
+				System.out.print("table name " + tableName + " num of tuples " + numOfTuple  + " ");
+				for(int i = 2; i < splitStr.length; i++){
+					String splitAttribute[] = splitStr[i].split(",");
+					attributeNames[i-2] = splitAttribute[0];
+					attributeMin[i-2] = Integer.parseInt(splitAttribute[1]);
+					attributeMax[i-2] = Integer.parseInt(splitAttribute[2]);
+					System.out.print(attributeNames[i-2] + ", " +attributeMin[i-2] + ", " + attributeMax[i-2]+ " ");
+				}
+				System.out.println();
+				RelationInfo relationInfo = new RelationInfo(attributeMin,attributeMax,numOfTuple,tableName,attributeNames);
+				cl.getRelationMap().put(tableName, relationInfo);
+//			}
+			line = reader.readLine();
+		}
+		reader.close();
+	}
 	/** get query plan from query plan builder
 	 * @param queryPlan
 	 */
