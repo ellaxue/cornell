@@ -197,27 +197,19 @@ public class QueryPlan {
 				schema.add(s);
 			}
 			cl.storeTableInfo(tableName, database + File.separator + tableName, schema);
-			storeStatistic(writer,tableName,schemadr,database,cl,schemaSt);
+			storeStatistic(writer,tableName);
 			line = schemaReader.readLine();
 		}
 		schemaReader.close();
 		writer.close();
 	}
 	
-
-	private static void storeStatistic(BufferedWriter writer, String tableName, String schemadr, String database,catalog cl, String[] schema) throws Exception {
-		BinaryReader statReader = new BinaryReader(tableName);
+	private static void storeStatistic(BufferedWriter writer, String tableName) throws Exception {
+		BinaryReader statReader = new BinaryReader(tableName,writer);
 		Tuple tuple = statReader.readNext();
 		while(tuple!= null){
 			tuple = statReader.readNext();
 		}		
-		RelationInfo relation = cl.getRelation(tableName);
-		writer.write(tableName +" "+relation.getTotalTupleInRelation()+ " ");
-		
-		for(int i = 0; i < schema.length;i++){
-			writer.write(schema[i]+","+relation.getAttributeMin()[i]+","+relation.getAttributeMax()[i]+" ");
-		}
-		writer.write("\n");
 		statReader.close();
 	}
 

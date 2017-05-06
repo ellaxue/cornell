@@ -1,7 +1,10 @@
 package IO;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -40,9 +43,32 @@ public class BinaryReader implements TupleReader {
 	private int attributeMin[];
 	private int attributeMax[];
 	private String attributeNames[];
-	private boolean readStat = true;
+	private boolean readStat = false;
 	private int attrNameIndex = 0;
+	private BufferedWriter stateWriter;
 	public BinaryReader(String tablename) throws Exception {
+		this.tablename = new String[1];
+		this.tablename[0]=tablename;
+		if (cl.UseAlias()) {
+			fileDirectory = cl.getTableLocation().get(cl.getAlias().get(tablename));
+		} else {
+			fileDirectory = cl.getTableLocation().get(tablename);
+		}
+//		 System.out.println("read path" + fileDirectory);
+		fin = new FileInputStream(fileDirectory);
+		fc = fin.getChannel();
+		fc.read(buffer);
+		attribute_num = buffer.getInt(0);
+		tuple_num = buffer.getInt(4);
+	}
+	/**
+	 * Reader for writing stat of each relation
+	 * @param tablename
+	 * @param writer
+	 * @throws Exception
+	 */
+	public BinaryReader(String tablename, BufferedWriter writer) throws Exception{
+		stateWriter = writer;
 		this.tablename = new String[1];
 		this.tablename[0]=tablename;
 		if (cl.UseAlias()) {
@@ -62,6 +88,7 @@ public class BinaryReader implements TupleReader {
 		attributeMax = new int[attribute_num];
 		Arrays.fill(attributeMax,Integer.MIN_VALUE);
 		attributeNames = new String[attribute_num];
+		readStat = true;
 	}
 	
 	public BinaryReader(String tableName[], String fileName) throws Exception{
@@ -74,7 +101,6 @@ public class BinaryReader implements TupleReader {
 		fc.read(buffer);
 		attribute_num = buffer.getInt(0);
 		tuple_num = buffer.getInt(4);
-		readStat = false; //not read relation for recording stat.txt
 	}
 	
 	public BinaryReader(FileInputStream stream, String tableName[]) throws Exception{
@@ -131,12 +157,21 @@ public class BinaryReader implements TupleReader {
 		fc.close();
 		fin.close();
 		if(readStat == true){
-			RelationInfo Rinfo = new RelationInfo(attributeMin, attributeMax, tupleNumInRelation, tablename[0],attributeNames);
-			cl.setRelationInfo(Rinfo);
+			writeStatToFile();
+//			RelationInfo Rinfo = new RelationInfo(attributeMin, attributeMax, tupleNumInRelation, tablename[0],attributeNames);
+//			cl.setRelationInfo(Rinfo);
 		}
 		return null;
 	}
 	
+	private void writeStatToFile() throws Exception {
+		// TODO Auto-generated method stub
+		stateWriter.write(tablename[0] +" "+tupleNumInRelation+ " ");		
+		for(int i = 0; i < attributeNames.length;i++){
+			stateWriter.write(attributeNames[i]+","+attributeMin[i]+","+attributeMax[i]+" ");
+		}
+		stateWriter.write("\n");
+	}
 	private void findMinAndMaxForAttribute(String[] tuple) {
 		for(int i = 0; i < tuple.length; i++){
 			if(Integer.parseInt(tuple[i]) > attributeMax[i]){
