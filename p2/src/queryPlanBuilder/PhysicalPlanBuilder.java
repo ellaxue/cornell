@@ -71,6 +71,8 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 				selectOperator= new SelectOperator(new ScanOperator(tableName), condition.getFullScan());}	
 			else if (condition.getFullScan()==null) {
 				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
+				System.out.println("IndexScanOperator ");
+
 			}
 			else {
 				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);

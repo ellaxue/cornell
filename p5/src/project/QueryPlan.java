@@ -37,7 +37,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = false;
+	public static boolean debuggingMode = true;
 
 	
 	/**
@@ -52,11 +52,11 @@ public class QueryPlan {
 		setUpFileDirectory(cl,args[0]);
 		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
 		
-			buildIndex(cl);
+		buildIndex(cl);
 //		else {findIndex(cl);}
 		
-		//System.out.println("index info" );
-	//	cl.printIndexInfo();
+		System.out.println("index info" );
+		cl.printIndexInfo();
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
@@ -69,6 +69,7 @@ public class QueryPlan {
 					System.out.println(statement);
 //					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
+					queryInterpreter.readStat(cl.getStatFilePath());
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 					logicalPlan.buildQueryPlan();
@@ -108,9 +109,8 @@ public class QueryPlan {
 			if(bt.getIsCluster()){
 				SortOperator sortOperator = new SortOperator(new ScanOperator(bt.getTableName()),list);
 				sortOperator.dump(cl.getDatabaseDir()+File.separator+bt.getTableName());
-				reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			}
-			else{reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});}
+			reader = new BinaryReader(new FileInputStream(cl.getDatabaseDir()+File.separator+bt.getTableName()),new String[]{bt.getTableName()});
 			Tuple tuple = null;
 			int count = 15;
 			
@@ -196,27 +196,19 @@ public class QueryPlan {
 				schema.add(s);
 			}
 			cl.storeTableInfo(tableName, database + File.separator + tableName, schema);
-			storeStatistic(writer,tableName,schemadr,database,cl,schemaSt);
+			storeStatistic(writer,tableName);
 			line = schemaReader.readLine();
 		}
 		schemaReader.close();
 		writer.close();
 	}
 	
-
-	private static void storeStatistic(BufferedWriter writer, String tableName, String schemadr, String database,catalog cl, String[] schema) throws Exception {
-		BinaryReader statReader = new BinaryReader(tableName);
+	private static void storeStatistic(BufferedWriter writer, String tableName) throws Exception {
+		BinaryReader statReader = new BinaryReader(tableName,writer);
 		Tuple tuple = statReader.readNext();
 		while(tuple!= null){
 			tuple = statReader.readNext();
 		}		
-		RelationInfo relation = cl.getRelation(tableName);
-		writer.write(tableName +" "+relation.getTotalTupleInRelation()+ " ");
-		
-		for(int i = 0; i < schema.length;i++){
-			writer.write(schema[i]+","+relation.getAttributeMin()[i]+","+relation.getAttributeMax()[i]+" ");
-		}
-		writer.write("\n");
 		statReader.close();
 	}
 

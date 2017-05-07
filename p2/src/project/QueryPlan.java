@@ -37,7 +37,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = true;
+	public static boolean debuggingMode = false;
 
 	
 	/**
@@ -57,18 +57,22 @@ public class QueryPlan {
 		}
 		
 		else {findIndex(cl);}
-		
+
 		//System.out.println("index info" );
 	//	cl.printIndexInfo();
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
 		if(cl.shouldEvalQuery()){
+			System.out.println("============================Read statement=========================================");
 			queryCount = 1;
 			try {
 				while ((statement = parser.Statement()) != null) {
-				//	Long t=System.currentTimeMillis();
-					//System.out.println("============================Read statement=========================================");
+					Long t=System.currentTimeMillis();
+					System.out.println("============================Read statement=========================================");
+					System.out.println("satemnet " + statement);
+
+
 					//store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
 					setSchemaPair();
@@ -153,6 +157,7 @@ public class QueryPlan {
 	 */
 	private static int getColumnIndex(catalog cl,BPlusTree<Integer, Record> bt) {
 		int index = 0;
+		System.out.println("build table name " +bt.getTableName());
 		for(String str: cl.getTableSchema().get(bt.getTableName())){
 			if(bt.getColumnName().equals(str)){
 				return index;
