@@ -82,8 +82,6 @@ public class SortOperator extends Operator {
 	}
 
 	public void dump(String filePath) throws Exception{
-       
-        
         ArrayList<Tuple> sorted_tuples = organize(child, schema_pair);
        if(this.child instanceof ScanOperator){
     	   ((ScanOperator)child).close();

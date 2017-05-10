@@ -1,9 +1,12 @@
 package queryPlanBuilder;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -49,6 +52,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private Boolean useIndex=false;
 	public static int level = 0; 
 	private IndexInfo index;
+	private BufferedWriter planWriter;
 	
 	/**
 	 * Constructor
@@ -61,16 +65,18 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
 		this.configDir = inputDir+File.separator+"plan_builder_config.txt";
-		setOperatorMethod();
+//		setOperatorMethod();
 		joinPageSize = 4;
 		sortPageSize = 4;
+		sortMethod = 1;
+		joinMethod = 2;
+		planWriter = new BufferedWriter(new FileWriter(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount()+"_physicalplan",false));
 	}
 
 	/**
 	 * @return the root of the physical query plan tree
 	 */
 	public Operator result(){
-		System.out.println("root ===>"+ rootOperator.getClass());
 		return this.rootOperator;
 	}
 
@@ -141,7 +147,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @throws Exception THE EXPCETION
 	 */
 	private SELECT_METHOD computeSelectCost(String tableName, Expression exp) throws Exception {
-		System.out.println("table name : " +tableName );
+//		System.out.println("table name : " +tableName );
 		//get relation information such as tuple #, # of attribute per tuple
 		RelationInfo relation = cl.getRelation(tableName);
 		int totalTupleInTheRelation = relation.getTotalTupleInRelation();
@@ -191,8 +197,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 						Integer equal = element.getEqualityConstraint() == null? null:element.getEqualityConstraint().intValue();
 						Integer indexLowBound = equal == null? (element.getLowerBound() == null? null :element.getLowerBound().intValue()):equal;
 						Integer indexUpBound = equal == null? (element.getUpperBound() == null? null: element.getUpperBound().intValue()): equal;
+						//if no upperBound or lowerBound for this attribute, set the attribute as the relation stat value
+						indexLowBound = indexLowBound == null?  relation.getMinValOfAttr(colName): indexLowBound;
+						indexUpBound = indexUpBound == null?  relation.getMaxValOfAttr(colName) : indexUpBound;
 						index = new IndexInfo(tableName,colName,isCluster,indexLowBound, indexUpBound);
-					}
+					} 
 				}
 			}
 		}
@@ -337,16 +346,23 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	/**
 	 * prints out the built physical plan tree for debugging purpose in postfix order
 	 * @param op the root operator
+	 * @throws Exception 
 	 */
-	public void printPhysicalPlanTree(Operator op){
+	public void printPhysicalPlanTreeHelper(Operator op) throws Exception{
 		if (op == null) return;
+		planWriter.write(op+"\n");
+//		System.out.println(op.getClass());
 		System.out.println(op);
 		level++;
-		printPhysicalPlanTree(op.getLeftChild());
-		printPhysicalPlanTree(op.getRightChild());
+		printPhysicalPlanTreeHelper(op.getLeftChild());
+		printPhysicalPlanTreeHelper(op.getRightChild());
 		
 	}
 
+	public void printPhysicalPlanTree(Operator op) throws Exception{
+		printPhysicalPlanTreeHelper(op);
+		planWriter.close();
+	}
 	/**
 	 * Read the config file and set join method and sorting method
 	 * @throws Exception

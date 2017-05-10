@@ -97,25 +97,28 @@ public class SelectOperator extends Operator {
 		// TODO Auto-generated method stub
 		
 	}
-	
+	private String printDash(){
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
+			sb.append("-");
+		}
+		return sb.toString();
+	}
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		
 		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
 			sb.append("-");
-		}		
-		if(ex == null){
-			sb.append("Leaf[").append(tableName).append("]\n");
 		}
-		else{
+		
+		if(ex != null){
 			sb.append("Select[").append(ex).append("]\n");
-			
-			for(int i = 0; i < PhysicalPlanBuilder.level+1; i++){
-				sb.append("-");
-			}	
-			sb.append("Leaf[").append(tableName).append("]\n");
 		}	
+		PhysicalPlanBuilder.level++;
+		//print scan
+//		sb.append(printDash());
+		sb.append(child);
+		PhysicalPlanBuilder.level--;
 		return sb.toString();
 	}
 	@Override

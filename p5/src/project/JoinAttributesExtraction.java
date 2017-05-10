@@ -56,7 +56,7 @@ public class JoinAttributesExtraction  implements ExpressionVisitor  {
 
 	public JoinAttributesExtraction(Expression ex, ArrayList<String> JoinOrder) {
 		this.JoinOrder = JoinOrder;
-		ex.accept(this);
+		if(ex != null) ex.accept(this);
 	}
 
 	public ArrayList<SchemaPair> getLeft(){

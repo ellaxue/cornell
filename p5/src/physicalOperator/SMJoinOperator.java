@@ -165,12 +165,14 @@ public class SMJoinOperator extends Operator {
 
 	@Override
 	public Operator getLeftChild() {
-		return actualLeftChild;
+		return null;
+//		return actualLeftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return actualRightChild;
+		return null;
+//		return actualRightChild;
 	}
 
 	@Override
@@ -259,13 +261,16 @@ public class SMJoinOperator extends Operator {
 		}
 		sb.append("SMJoin").append(residualJoinExpression).append("\n");
 		
+		//print union find join expression list
 		for(Element e:unionFindJoinExpList){
 			sb.append(e);
 		}
 //		
 		PhysicalPlanBuilder.level++;
 		for(Operator op: children){
+//			System.out.println("children " + op.getClass());
 			sb.append(op);
+//			System.out.println("table scan " + sb.toString());
 		}
 		return sb.toString();
 	}

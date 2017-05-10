@@ -27,13 +27,15 @@ public class QueryInterpreter {
 	private Table firstTable = null;
 	private TreeNode queryPlan;
 	ArrayList<Tuple> tupleList;
+	private BufferedWriter writer;
 	public static int level = 0;
 	
 	/**
 	 *  Constructor
 	 *  @param statement SQL query statement
+	 * @throws Exception 
 	 */
-	public QueryInterpreter(Statement statement,catalog cl){
+	public QueryInterpreter(Statement statement,catalog cl) throws Exception{
 		this.statement = statement;
 		// System.out.println("Query " +  QueryPlan.getCount()+" : " + statement);
 		if(statement instanceof Select){
@@ -65,13 +67,14 @@ public class QueryInterpreter {
 			/*---------------- Edited from main------------------------*/
 			
 			tupleList = null;
+			writer = new BufferedWriter(new FileWriter(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount()+"_logicalplan",false));
 		}
 	}
 	public void readStat(String filePath) throws Exception{
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		String line = reader.readLine();
 		catalog cl = catalog.getInstance();
-		
+		System.out.print("<====================================Relation statistics====================================>\n ");
 		while(line != null){
 			String splitStr[] = line.split(" ");
 			String tableName = splitStr[0];
@@ -96,6 +99,7 @@ public class QueryInterpreter {
 //			}
 			line = reader.readLine();
 		}
+		System.out.print("<====================================Relation statistics====================================> \n\n\n");
 		reader.close();
 	}
 	/** get query plan from query plan builder
@@ -107,16 +111,22 @@ public class QueryInterpreter {
 
 	/**
 	 * @param root print the constructed query plan tree
+	 * @throws Exception 
 	 */
-	public void printQueryPlan(TreeNode root){
+	public void printQueryPlanHelper(TreeNode root) throws Exception{
 		if (root == null) return;
+		writer.write(root+"\n");
 		System.out.println(root);
 		level++;
-		printQueryPlan(root.getLeftChild());		
-		printQueryPlan(root.getRightChild());
+		printQueryPlanHelper(root.getLeftChild());		
+		printQueryPlanHelper(root.getRightChild());
 		
 	}
-
+	
+	public void printQueryPlan(TreeNode root) throws Exception{
+		printQueryPlanHelper(root);
+		writer.close();
+	}
 	
 	public Table getFirstTable(){
 		return this.firstTable;

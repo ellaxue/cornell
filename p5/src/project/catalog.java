@@ -215,8 +215,7 @@ public final class catalog {
 	 * @param rinfo relation info, the table name is the original name (not alias name)
 	 */
 	public void setRelationInfo(RelationInfo rinfo) {
-		// TODO Auto-generated method stub
-		System.out.println("===============> " + rinfo.getTableName());
+//		System.out.println("===============> " + rinfo.getTableName());
 		relationInfoMap.put(rinfo.getTableName(), rinfo);
 	}
 	

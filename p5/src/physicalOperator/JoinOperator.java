@@ -160,12 +160,14 @@ public class JoinOperator extends Operator {
 
 	@Override
 	public Operator getLeftChild() {
-		return this.leftChild;
+		return null;
+//		return this.leftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return this.rightChild;
+		return null;
+//		return this.rightChild;
 	}
 	
 	@Override
@@ -180,7 +182,7 @@ public class JoinOperator extends Operator {
 	}
 
 	public void addChildren(Operator operator){
-		System.out.println("join operator adding child ==========>" + operator.getClass());
+//		System.out.println("join operator adding child ==========>" + operator.getClass());
 		children.add(operator);
 	}
 	
