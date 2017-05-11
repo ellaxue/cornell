@@ -19,7 +19,7 @@ public class RelationInfo {
 		this.attributeMax = attrMax;
 		this.attributeMin = attrMin;
 		this.totalAttribute = attrMin.length;
-		this.attributeNames = attriName;
+		this.setAttributeNames(attriName);
 	}
 	
 	public int getNumOfAttribute(){
@@ -82,8 +82,8 @@ public class RelationInfo {
 	}
 
 	public Integer getMinValOfAttr(String colName) {
-		for(int i = 0; i< attributeNames.length;i++){
-			if(attributeNames[i].equals(colName)){
+		for(int i = 0; i< getAttributeNames().length;i++){
+			if(getAttributeNames()[i].equals(colName)){
 				return attributeMin[i];
 			}
 		}
@@ -91,11 +91,19 @@ public class RelationInfo {
 	}
 	
 	public Integer getMaxValOfAttr(String colName) {
-		for(int i = 0; i< attributeNames.length;i++){
-			if(attributeNames[i].equals(colName)){
+		for(int i = 0; i< getAttributeNames().length;i++){
+			if(getAttributeNames()[i].equals(colName)){
 				return attributeMax[i];
 			}
 		}
 		return null;
+	}
+
+	public String[] getAttributeNames() {
+		return attributeNames;
+	}
+
+	public void setAttributeNames(String attributeNames[]) {
+		this.attributeNames = attributeNames;
 	}
 }

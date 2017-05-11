@@ -74,7 +74,11 @@ public class LogicalPlanBuilder {
 				System.out.println("add children==================********");
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
 				joinOperator.setTable((Table)join.getRightItem());
-			} 
+//				if(JoinEx != null && JoinEx.containsKey(tableName)){
+//					joinOperator.addExpression(JoinEx.get(tableName));
+//				}
+			}
+			ChooseJoinOrder c=new ChooseJoinOrder(joinOperator, this,queryInterpreter.getWhereCondition());
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}
