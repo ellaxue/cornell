@@ -54,6 +54,7 @@ public class LogicalPlanBuilder {
 	 */
 	public TreeNode buildQueryPlan(){	
 		
+		
 		//create first select operator and set up select condition
 		TreeNode curOperator = new LogicalSelectOperator();
 		curOperator.setTable(queryInterpreter.getFirstTable());
@@ -70,7 +71,11 @@ public class LogicalPlanBuilder {
 				
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
 				joinOperator.setTable((Table)join.getRightItem());
-			} 
+//				if(JoinEx != null && JoinEx.containsKey(tableName)){
+//					joinOperator.addExpression(JoinEx.get(tableName));
+//				}
+			}
+			ChooseJoinOrder c=new ChooseJoinOrder(joinOperator, this,queryInterpreter.getWhereCondition());
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}

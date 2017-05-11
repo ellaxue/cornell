@@ -1,5 +1,6 @@
 package queryPlanBuilder;
 
+import java.awt.SystemTray;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -203,12 +204,15 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @param colName the table's column name
 	 * @return reduction factor value
 	 */
-	private double computeReductionFactor(Element element, RelationInfo relation, String colName) {
+	protected static double computeReductionFactor(Element element, RelationInfo relation, String colName) {
 		// If equality exists in this element, the attribute's lowerBound == upperBound
+		// System.out.println(element+"element");
 		Integer equal = element.getEqualityConstraint() == null? null:element.getEqualityConstraint().intValue();
 		Integer indexLowBound = equal == null? element.getLowerBound() == null? null:element.getLowerBound().intValue():equal;
 		Integer indexUpBound = equal == null? element.getUpperBound() == null? null:element.getUpperBound().intValue() :equal;
-		
+		System.out.println("indexlow"+indexLowBound);
+		System.out.println("indexup"+indexUpBound);
+
 		//current relation's min - max value
 		int attributeMinVal = relation.getMinValOfAttr(colName);
 		int attributeMaxVal = relation.getMaxValOfAttr(colName);

@@ -29,7 +29,7 @@ public class LogicalJoinOperator extends TreeNode{
 	 */
 	public LogicalJoinOperator(UnionFind unionfind, ArrayList<Expression> joinExp,HashMap<String, Expression> selectExp){
 		unionFind = unionfind;
-		children = new ArrayList<TreeNode>();
+		setChildren(new ArrayList<TreeNode>());
 		expressions = new ArrayList<Expression>();
 		if(unionFind != null){
 			unionFindSelectExpMap = unionFind.getUnionFindSelectExpMap();
@@ -48,7 +48,7 @@ public class LogicalJoinOperator extends TreeNode{
 		return unionFindJoinExpList;
 	}
 	public LogicalJoinOperator(TreeNode leftChild, TreeNode rightChild) {
-		children = new ArrayList<TreeNode>();
+		setChildren(new ArrayList<TreeNode>());
 		expressions = new ArrayList<Expression>();
 		this.leftChild = leftChild;
 		this.rightChild = rightChild;
@@ -73,7 +73,7 @@ public class LogicalJoinOperator extends TreeNode{
 		else if(residualSelectExpression.containsKey(tableName)){
 			selectOperator.setExpressoin(residualSelectExpression.get(tableName));
 		}
-		children.add(selectOperator);		
+		getChildren().add(selectOperator);		
 	}
 	
 	public void addExpression(Expression exp){
@@ -93,9 +93,13 @@ public class LogicalJoinOperator extends TreeNode{
 		}
 		
 		QueryInterpreter.level++;
-		for(TreeNode node: children){
+		for(TreeNode node: getChildren()){
 			sb.append(node);
 		}
 		return sb.toString();
+	}
+
+	public void setChildren(ArrayList<TreeNode> children) {
+		this.children = children;
 	}
 }
