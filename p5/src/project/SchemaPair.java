@@ -57,6 +57,6 @@ public class SchemaPair {
 	 * @return (String) table name and table name stored in the schema pair
 	 */
 	public String toString() {
-		return "["+tablename+"."+schema+"]";
+		return tablename+"."+schema;
 	}
 }

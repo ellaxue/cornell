@@ -51,7 +51,7 @@ public class QueryPlan {
 		catalog cl = catalog.getInstance();
 		setUpFileDirectory(cl,args[0]);
 		initSchema(cl.getSchemaFilePath(),cl.getDatabaseDir(),cl);
-		
+		QueryInterpreter.readStat(cl.getStatFilePath());
 		buildIndex(cl);
 //		else {findIndex(cl);}
 		
@@ -67,25 +67,26 @@ public class QueryPlan {
 				while ((statement = parser.Statement()) != null) {
 					Long t=System.currentTimeMillis();
 					System.out.println("============================Read statement=========================================");
-					System.out.println(statement+"\n=======================================================================================\n\n\n");
+					System.out.println(statement+"\n=======================================================================================\n");
 //					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
-					queryInterpreter.readStat(cl.getStatFilePath());
+					
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 					logicalPlan.buildQueryPlan();
-					System.out.println("\n\n\n=================================Print logical plan =========================================\n");
+					System.out.println("=================================Print logical plan =========================================\n");
 					
 					queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
-					System.out.println("\n=======================================================================================\n\n\n");
+					System.out.println("=======================================================================================\n");
 					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir());
 					logicalPlan.getRootOperator().accept(physicalPlan);
-					System.out.println("\n\n\n=================================Print physical plan =========================================\n");
+					System.out.println("=================================Print physical plan =========================================\n");
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
-					System.out.println("\n=======================================================================================\n\n\n");
-					 
+					System.out.println("=======================================================================================\n");
 //					physicalPlan.result().dump();
+					
 					System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
+					nextQuery();
 				}
 			} 
 			catch (Exception e) {

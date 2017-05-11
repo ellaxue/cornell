@@ -23,10 +23,12 @@ import net.sf.jsqlparser.expression.Expression;
  */
 public class ScanOperator extends Operator {
 	private TupleReader reader;
-	private String tableName;
+	private String tableOriginalName;
+	
 	public ScanOperator(String tablename) throws Exception {
-		System.out.println("read file" + tablename);
-		this.tableName= tablename;
+		catalog cl = catalog.getInstance();
+		if(cl.UseAlias())this.tableOriginalName= cl.getAlias().get(tablename);
+		else this.tableOriginalName = tablename;
 		reader= new BinaryReader(tablename);
 	}
 
@@ -96,12 +98,12 @@ public class ScanOperator extends Operator {
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-//		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-//			sb.append("-");
-//		}
+		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
+			sb.append("-");
+		}
 		//TODO:
 //		System.out.println("scan PhysicalPlanBuilder.level " + PhysicalPlanBuilder.level + " sb " + sb.toString());
-		sb.append("TableScan").append("[").append(tableName).append("]\n");
+		sb.append("TableScan").append("[").append(tableOriginalName).append("]\n");
 		return sb.toString();
 	}
 	@Override

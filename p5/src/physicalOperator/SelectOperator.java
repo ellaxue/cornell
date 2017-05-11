@@ -20,12 +20,10 @@ import net.sf.jsqlparser.expression.Expression;
 public class SelectOperator extends Operator {
     private Operator child;
     private Expression ex;
-    private String tableName;
 	
-	public SelectOperator(Operator child, Expression ex, String tableName) {
+	public SelectOperator(Operator child, Expression ex) {
       this.child=child;
       this.ex=ex;
-      this.tableName = tableName;
 	}
 	/**
 	 * Method to obtain the next tuple from its child and check

@@ -74,11 +74,19 @@ public class UnionFind {
 			disjointSet.put(disjointSetCount, new Element(A));
 			disjointSet.get(disjointSetCount).addAttribute(B);
 		}
+		//Both columns are in the map, but not in the same element set yet. combine them into one element set
+		else if(KeyA != null && KeyB != null){
+			if(KeyA != KeyB){
+				attributeMap.put(B.getColumnName(), KeyA);
+				disjointSet.get(KeyA).addAttribute(B);
+					disjointSet.remove(KeyB);
+			}
+		}
 		else if(KeyA == null){
 			attributeMap.put(A.getColumnName(),KeyB);
 			disjointSet.get(KeyB).addAttribute(A);
 		}
-		else{
+		else if(KeyB == null){
 			attributeMap.put(B.getColumnName(),KeyA);
 			disjointSet.get(KeyA).addAttribute(B);
 		}		    
@@ -125,13 +133,15 @@ public class UnionFind {
 					storeExpressionToMAP(tableName, exp,col,new LongValue(entry.getValue().getEqualityConstraint()));
 					continue;
 				}
-				if(entry.getValue().getLowerBound() != null){			
-					exp = new GreaterThanEquals();
-					storeExpressionToMAP(tableName, exp,col,new LongValue(entry.getValue().getLowerBound()));
-				}
-				if(entry.getValue().getUpperBound() != null){
-					exp = new MinorThanEquals();
-					storeExpressionToMAP(tableName, exp,col,new LongValue(entry.getValue().getUpperBound()));
+				else{
+					if(entry.getValue().getLowerBound() != null){			
+						exp = new GreaterThanEquals();
+						storeExpressionToMAP(tableName, exp,col,new LongValue(entry.getValue().getLowerBound()));
+					}
+					if(entry.getValue().getUpperBound() != null){
+						exp = new MinorThanEquals();
+						storeExpressionToMAP(tableName, exp,col,new LongValue(entry.getValue().getUpperBound()));
+					}
 				}
 			}
 		}		

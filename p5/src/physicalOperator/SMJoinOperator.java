@@ -222,7 +222,7 @@ public class SMJoinOperator extends Operator {
 	}
 	@Override
 	public void addChildren(Operator operator){
-		System.out.println("SMjoin operator adding child ==========>" + operator.getClass());
+//		System.out.println("SMjoin operator adding child ==========>" + operator.getClass());
 		children.add(operator);
 	}
 	@Override

@@ -13,27 +13,31 @@ public class Element {
 		attributes = new HashSet<Column>();
 		attributes.add(col);
 	}
-	
+
 	public void addAttribute(Column attr){
 		attributes.add(attr);
 	}
-	
+
 	public HashSet<Column> getAttributes(){
 		return attributes;
 	}
-	
+
 	public void setNumericConstarints(Long value){
 		this.lowerBound = value;
 		this.upperBound = value;
 		this.equalityConstraint = value;
 	}
-	
+
 	public void setLowerBound(Long value){
-		lowerBound = equalityConstraint == null? value.intValue() : equalityConstraint;
+		//in case of Sailor.A > 100 AND Sailor.A > 90
+		if(lowerBound != null && value < lowerBound) value = lowerBound;
+		lowerBound = equalityConstraint == null? value : equalityConstraint;
 	}
-	
+
 	public void setUpperBound(Long value){
-		upperBound = equalityConstraint == null? value.intValue() : equalityConstraint;
+		//in case of Sailor.A < 100 AND Sailor.A < 110
+		if(upperBound != null && value > upperBound) value = upperBound;
+		upperBound = equalityConstraint == null? value : equalityConstraint;
 	}
 
 	public Long getLowerBound(){
@@ -43,11 +47,11 @@ public class Element {
 	public Long upperBound(){
 		return upperBound;
 	}
-	
+
 	public Long getEqualityConstraint() {
 		return equalityConstraint;
 	}
-	
+
 	public Long getUpperBound(){
 		return upperBound;
 	}
@@ -55,7 +59,7 @@ public class Element {
 	public boolean allNull() {
 		return lowerBound == null && upperBound == null && equalityConstraint == null;
 	}
-	
+
 	@Override
 	public String toString(){ 
 		StringBuilder sb = new StringBuilder();
@@ -70,4 +74,6 @@ public class Element {
 		append(lowerBound).append(", max ").append(upperBound).append("]\n");
 		return sb.toString();
 	}
+
+
 }

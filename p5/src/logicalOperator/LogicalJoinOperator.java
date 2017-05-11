@@ -64,8 +64,6 @@ public class LogicalJoinOperator extends TreeNode{
 	}
 	public void addChild(LogicalSelectOperator selectOperator) {
 		String tableName = cl.UseAlias() ? selectOperator.getTable().getAlias() : selectOperator.getTable().getName();
-//		System.out.println("table name to add expression " + tableName);
-//		addResidualSelectExpToRelation();
 		//set unionFind selection condition for current selection operator first
 		selectOperator.setExpressoin(unionFindSelectExpMap.get(tableName));
 		//set additional selection condition for current selection operator

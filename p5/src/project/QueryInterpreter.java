@@ -36,6 +36,7 @@ public class QueryInterpreter {
 	 * @throws Exception 
 	 */
 	public QueryInterpreter(Statement statement,catalog cl) throws Exception{
+		level = 0;
 		this.statement = statement;
 		// System.out.println("Query " +  QueryPlan.getCount()+" : " + statement);
 		if(statement instanceof Select){
@@ -70,7 +71,8 @@ public class QueryInterpreter {
 			writer = new BufferedWriter(new FileWriter(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount()+"_logicalplan",false));
 		}
 	}
-	public void readStat(String filePath) throws Exception{
+	public static void readStat(String filePath) throws Exception{
+		
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		String line = reader.readLine();
 		catalog cl = catalog.getInstance();
