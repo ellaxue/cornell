@@ -56,18 +56,8 @@ public class LogicalPlanBuilder {
 		
 		
 		//create first select operator and set up select condition
-		TreeNode curOperator = new LogicalSelectOperator(new LogicalScanOperator());
+		TreeNode curOperator = new LogicalSelectOperator();
 		curOperator.setTable(queryInterpreter.getFirstTable());
-		
-		//get original table name or table's alias name
-//		String firstTableName;
-//		if(cl.UseAlias()){firstTableName = queryInterpreter.getFirstTable().getAlias();}
-//		else {firstTableName= queryInterpreter.getFirstTable().getName();}
-		 
-		//get selection condition if exists for the current select operator
-//		if(SelectEx != null && SelectEx.containsKey(firstTableName)){
-//			curOperator.setExpressoin(SelectEx.get(firstTableName));
-//		}
 		
 		// add join operators based on the number of join elements in the list
 		List<Join> joinList = queryInterpreter.getJoinList();
@@ -75,25 +65,21 @@ public class LogicalPlanBuilder {
 			LogicalJoinOperator joinOperator = new LogicalJoinOperator(unionFindConditions,residualJoinExpression,residualSelectExpression);
 			joinOperator.addChild((LogicalSelectOperator)curOperator);
 			for(Join join: joinList){
-//				System.out.println("join table " + ((Table)join.getRightItem()).getName());
 				//set up right operator condition
-				TreeNode selectOperator = new LogicalSelectOperator(new LogicalScanOperator());
+				TreeNode selectOperator = new LogicalSelectOperator();
 				selectOperator.setTable((Table)join.getRightItem());
 				
-//				String tableName;
-//				if(cl.UseAlias()){tableName = ((Table)join.getRightItem()).getAlias();}
-//				else {tableName= ((Table)join.getRightItem()).getName();}
-//				
-//				if(SelectEx != null && SelectEx.containsKey(tableName)){
-//					selectOperator.setExpressoin(SelectEx.get(tableName));
-//				}
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
 				joinOperator.setTable((Table)join.getRightItem());
+<<<<<<< HEAD
 //				if(JoinEx != null && JoinEx.containsKey(tableName)){
 //					joinOperator.addExpression(JoinEx.get(tableName));
 //				}
 			}
 			ChooseJoinOrder c=new ChooseJoinOrder(joinOperator, this,queryInterpreter.getWhereCondition());
+=======
+			} 
+>>>>>>> master
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}

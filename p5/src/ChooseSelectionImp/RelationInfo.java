@@ -12,7 +12,6 @@ public class RelationInfo {
 	private int[] attributeMin;
 	private int[] attributeMax;
 	private int totalAttribute;
-	private catalog cl = catalog.getInstance();
 	private String attributeNames[];
 	public RelationInfo(int[] attrMin, int[] attrMax, int totalTuple, String tablename, String[] attriName){
 		this.tableName = tablename;

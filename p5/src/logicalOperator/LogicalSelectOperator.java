@@ -15,7 +15,7 @@ public class LogicalSelectOperator extends TreeNode{
 	public LogicalSelectOperator(LogicalScanOperator leftChild) {
 		this.leftChild = leftChild;
 	}
-
+	public LogicalSelectOperator(){}
 	@Override
 	public void accept(OperationVisitor visitor) throws Exception {
 		visitor.visit(this);

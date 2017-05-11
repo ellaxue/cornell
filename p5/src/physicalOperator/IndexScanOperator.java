@@ -155,7 +155,7 @@ public class IndexScanOperator extends Operator{
 			sb.append("-");
 		}
 		//TODO:
-		sb.append("IndexScan").append("[)").append(tableName+",").append("colName"+",").append(lowKey+",").append(highKey+"]\n");
+		sb.append("IndexScan").append("[").append(originalTableName+",").append(indexCol+",").append(lowKey+",").append(highKey+"]\n");
 		return sb.toString();
 	}
 

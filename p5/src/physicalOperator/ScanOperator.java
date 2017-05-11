@@ -1,5 +1,7 @@
 package physicalOperator;
 import project.*;
+import queryPlanBuilder.PhysicalPlanBuilder;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,10 +22,13 @@ import net.sf.jsqlparser.expression.Expression;
  * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
 public class ScanOperator extends Operator {
-	TupleReader reader;
-
+	private TupleReader reader;
+	private String tableOriginalName;
+	
 	public ScanOperator(String tablename) throws Exception {
-		System.out.println("read file" + tablename);
+		catalog cl = catalog.getInstance();
+		if(cl.UseAlias())this.tableOriginalName= cl.getAlias().get(tablename);
+		else this.tableOriginalName = tablename;
 		reader= new BinaryReader(tablename);
 	}
 
@@ -89,7 +94,18 @@ public class ScanOperator extends Operator {
 		// TODO Auto-generated method stub
 		
 	}
-
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		
+		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
+			sb.append("-");
+		}
+		//TODO:
+//		System.out.println("scan PhysicalPlanBuilder.level " + PhysicalPlanBuilder.level + " sb " + sb.toString());
+		sb.append("TableScan").append("[").append(tableOriginalName).append("]\n");
+		return sb.toString();
+	}
 	@Override
 	public void addChildren(Operator operator) {
 		// TODO Auto-generated method stub

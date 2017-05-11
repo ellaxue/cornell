@@ -195,6 +195,7 @@ public class BNLJOperator extends Operator{
 	
 	@Override
 	public void setLeftChild(Operator child) throws Exception {
+		
 		this.leftChild = child;
 	}
 
@@ -205,12 +206,14 @@ public class BNLJOperator extends Operator{
 
 	@Override
 	public Operator getLeftChild() {
-		return this.leftChild;
+		return null;
+//		return this.leftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return this.rightChild;
+		return null;
+//		return this.rightChild;
 	}
 	
 	@Override

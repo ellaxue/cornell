@@ -2,9 +2,12 @@ package queryPlanBuilder;
 
 import java.awt.SystemTray;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private Boolean useIndex=false;
 	public static int level = 0; 
 	private IndexInfo index;
+	private BufferedWriter planWriter;
 	
 	/**
 	 * Constructor
@@ -59,19 +63,22 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 */
 	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws Exception
 	{
+		level = 0; 
 		this.cl = cl;
 		this.queryInterpreter = queryInterpreter;
 		this.configDir = inputDir+File.separator+"plan_builder_config.txt";
-		setOperatorMethod();
+//		setOperatorMethod();
 		joinPageSize = 4;
 		sortPageSize = 4;
+		sortMethod = 1;
+		joinMethod = 2;
+		planWriter = new BufferedWriter(new FileWriter(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount()+"_physicalplan",false));
 	}
 
 	/**
 	 * @return the root of the physical query plan tree
 	 */
 	public Operator result(){
-		System.out.println("root ===>"+ rootOperator.getClass());
 		return this.rootOperator;
 	}
 
@@ -91,7 +98,8 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 
 		switch(selectionMethod){
 			case FULL_SCAN:
-				selectOperator = new SelectOperator(new ScanOperator(tableName),exp,tableOriginalName);
+				if(exp == null) selectOperator = new ScanOperator(tableName);
+				else selectOperator = new SelectOperator(new ScanOperator(tableName),exp);
 				System.out.println("full scan opterator chosen with table name " + tableName + " exp " + exp );
 				break;
 			case INDEX_SCAN:
@@ -100,28 +108,11 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 					System.out.println("index scan opterator chosen with table name " + tableName + " exp " + exp);
 				}
 				else {
-					selectOperator= new IndexScanOperator(tableName,index);
-					selectOperator=new SelectOperator(selectOperator, exp,tableOriginalName);
+					selectOperator=new SelectOperator(new IndexScanOperator(tableName,index), exp);
 					System.out.println("index scan and select opterator chosen with table name " + tableName + " exp " + exp);
 				}
 			default:break;
 		}
-		
-//		if(!useIndex || index==null) {
-//			selectOperator = new SelectOperator(new ScanOperator(tableName),node.getExpressoin());
-//			}
-//		else {
-//			IndexScanConditionExtration condition= new IndexScanConditionExtration(node.getExpressoin(), index);
-//			if(condition.getLowKey()==null && condition.getHighKey() == null){
-//				selectOperator= new SelectOperator(new ScanOperator(tableName), condition.getFullScan());}	
-//			else if (condition.getFullScan()==null) {
-//				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
-//			}
-//			else {
-//				selectOperator= new IndexScanOperator(tableName,condition.getLowKey(), condition.getHighKey(), index.getClustered(), indexFileName);
-//				selectOperator=new SelectOperator(selectOperator, condition.getFullScan());
-//			}
-//		}
 		
 		if(rootOperator == null){
 			rootOperator = selectOperator;
@@ -142,13 +133,13 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @throws Exception THE EXPCETION
 	 */
 	private SELECT_METHOD computeSelectCost(String tableName, Expression exp) throws Exception {
-		System.out.println("table name : " +tableName );
+//		System.out.println("table name : " +tableName );
 		//get relation information such as tuple #, # of attribute per tuple
 		RelationInfo relation = cl.getRelation(tableName);
 		int totalTupleInTheRelation = relation.getTotalTupleInRelation();
 		int numOfAttribute = relation.getNumOfAttribute();
-		int fullScanCost = totalTupleInTheRelation * numOfAttribute * 4 / QueryPlan.pageSize;
-		
+		int fullScanCost = (int)Math.ceil(totalTupleInTheRelation * numOfAttribute * 4 / QueryPlan.pageSize);
+//		System.out.println("TableName " + tableName +  " Page number "  + fullScanCost);
 		if (exp == null) {return SELECT_METHOD.FULL_SCAN;}
 		//get all attributes for current relation's select condition
 		ExtractColumnFromExpression ext = new ExtractColumnFromExpression();
@@ -167,11 +158,13 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 				Boolean isCluster = false;
 				if(cl.hasIndex(colName,tableName)){
 					reductionFactor = computeReductionFactor(element, relation,colName);
+//					System.out.println("reduction factor ==++++> " + reductionFactor);
 					int curIndexCost = 0;
 					
 					//compute indexScan cost if index is clustered on this attribute
 					if(cl.isIndexClustered(colName, tableName)){
-						curIndexCost = (int)(3 + reductionFactor*pageNumber);
+//						System.out.println("page number " + pageNumber + "  reductionFacotr " + reductionFactor);
+						curIndexCost = (int) Math.ceil(3 + reductionFactor*pageNumber);
 						isCluster = true;
 					}
 					else{//compute indexScan cost if index is not clustered on this attribute
@@ -192,11 +185,15 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 						Integer equal = element.getEqualityConstraint() == null? null:element.getEqualityConstraint().intValue();
 						Integer indexLowBound = equal == null? (element.getLowerBound() == null? null :element.getLowerBound().intValue()):equal;
 						Integer indexUpBound = equal == null? (element.getUpperBound() == null? null: element.getUpperBound().intValue()): equal;
+						//if no upperBound or lowerBound for this attribute, set the attribute as the relation stat value
+						indexLowBound = indexLowBound == null?  relation.getMinValOfAttr(colName): indexLowBound;
+						indexUpBound = indexUpBound == null?  relation.getMaxValOfAttr(colName) : indexUpBound;
 						index = new IndexInfo(tableName,colName,isCluster,indexLowBound, indexUpBound);
-					}
+					} 
 				}
 			}
 		}
+		System.out.println("=========| full scan cost " + fullScanCost + " indexCost " + indexCost + " |==============");
 		return fullScanCost < indexCost ? SELECT_METHOD.FULL_SCAN : SELECT_METHOD.INDEX_SCAN;
 	}
 
@@ -223,6 +220,19 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		// if either lowerBound or upperBound's value is null, set it to be table's min/max value
 		int min = indexLowBound != null? indexLowBound :attributeMinVal;
 		int max = indexUpBound != null? indexUpBound :attributeMaxVal;
+<<<<<<< HEAD
+=======
+//		System.out.println("indexLowBound " + indexLowBound);
+//		System.out.println("indexUpBound " + indexUpBound);
+//		System.out.println("attributeMinVal " + attributeMinVal);
+//		System.out.println("attributeMaxVal " + attributeMaxVal);
+//		System.out.println("min " + min);
+//		System.out.println("max " + max);
+//		System.out.println(" (max - min + 1.0) " +  (max - min + 1.0));
+//		System.out.println(" ((attributeMaxVal - attributeMinVal + 1.0) ) " +  (attributeMaxVal - attributeMinVal + 1.0) );
+//		System.out.println("Reduction factor " + (max - min + 1.0) / (attributeMaxVal - attributeMinVal + 1.0) );
+
+>>>>>>> master
 		return (max - min + 1.0) / (attributeMaxVal - attributeMinVal + 1.0) ;
 	}
 	
@@ -249,18 +259,15 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(node.GetResidualJoinExpression(), node.GetUnionFindJoinExpression(),node.getExpressoin());
-//			((JoinOperator)joinOperator).setResidualJoinExpression(node.GetResidualJoinExpression());
-//			((JoinOperator)joinOperator).setUnionFindJoinExpList(node.GetUnionFindJoinExpression());;
-			System.out.println("TNLJ method chosen");
+//			System.out.println("TNLJ method chosen");
 		}
 		else if(joinMethod == 1){
-			System.out.println("BNLJ method chosen with join page size " + joinPageSize);
+//			System.out.println("BNLJ method chosen with join page size " + joinPageSize);
 			joinOperator = new BNLJOperator(node.GetResidualJoinExpression(), node.GetUnionFindJoinExpression(), node.getExpressoin(), joinPageSize);
 		}
 		else{
-			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
-			JoinAttributesExtraction jae = new JoinAttributesExtraction
-					(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
+//			System.out.println("SMJoin method chosen with sort page size " + sortPageSize);
+			JoinAttributesExtraction jae = new JoinAttributesExtraction(node.getExpressoin(),LogicalPlanBuilder.getJoinOrder());
 			joinOperator= new SMJoinOperator(node.GetResidualJoinExpression(), node.GetUnionFindJoinExpression(), jae.getLeft(), jae.getRight());
 		}
 
@@ -301,7 +308,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Operator sortOperator;
 		if(sortMethod == 0){
 			sortOperator = new SortOperator(null,QueryPlan.schema_pair_order);
-			System.out.println("internal sort method chosen");
+//			System.out.println("internal sort method chosen");
 		}
 		else{
 			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
@@ -340,16 +347,23 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	/**
 	 * prints out the built physical plan tree for debugging purpose in postfix order
 	 * @param op the root operator
+	 * @throws Exception 
 	 */
-	public void printPhysicalPlanTree(Operator op){
+	public void printPhysicalPlanTreeHelper(Operator op) throws Exception{
 		if (op == null) return;
+		planWriter.write(op+"\n");
+//		System.out.println(op.getClass());
 		System.out.println(op);
 		level++;
-		printPhysicalPlanTree(op.getLeftChild());
-		printPhysicalPlanTree(op.getRightChild());
+		printPhysicalPlanTreeHelper(op.getLeftChild());
+		printPhysicalPlanTreeHelper(op.getRightChild());
 		
 	}
 
+	public void printPhysicalPlanTree(Operator op) throws Exception{
+		printPhysicalPlanTreeHelper(op);
+		planWriter.close();
+	}
 	/**
 	 * Read the config file and set join method and sorting method
 	 * @throws Exception
