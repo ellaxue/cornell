@@ -68,17 +68,13 @@ public class LogicalPlanBuilder {
 			joinOperator.addChild((LogicalSelectOperator)curOperator);
 			for(Join join: joinList){
 				//set up right operator condition
-				LogicalSelectOperator selectOperator = new LogicalSelectOperator(new LogicalScanOperator(firstTable.getName()),unionFindConditions.getUnionFindSelectExpMap(),residualSelectExpression);
-//				selectOperator.setTable((Table)join.getRightItem());
+				LogicalSelectOperator selectOperator = new LogicalSelectOperator(new LogicalScanOperator(((Table)join.getRightItem()).getName()),
+						unionFindConditions.getUnionFindSelectExpMap(),residualSelectExpression);
 				selectOperator.setExpressoin((Table)join.getRightItem());
-				System.out.println("add children==================********");
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
-				joinOperator.setTable((Table)join.getRightItem());
-//				if(JoinEx != null && JoinEx.containsKey(tableName)){
-//					joinOperator.addExpression(JoinEx.get(tableName));
-//				}
+//				joinOperator.setTable((Table)join.getRightItem());
 			}
-			ChooseJoinOrder c=new ChooseJoinOrder(unionFindConditions,joinOperator, this,queryInterpreter.getWhereCondition());
+//			ChooseJoinOrder c=new ChooseJoinOrder(unionFindConditions,joinOperator, this,queryInterpreter.getWhereCondition());
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}
