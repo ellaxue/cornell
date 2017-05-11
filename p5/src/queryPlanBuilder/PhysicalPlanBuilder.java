@@ -220,8 +220,6 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		// if either lowerBound or upperBound's value is null, set it to be table's min/max value
 		int min = indexLowBound != null? indexLowBound :attributeMinVal;
 		int max = indexUpBound != null? indexUpBound :attributeMaxVal;
-<<<<<<< HEAD
-=======
 //		System.out.println("indexLowBound " + indexLowBound);
 //		System.out.println("indexUpBound " + indexUpBound);
 //		System.out.println("attributeMinVal " + attributeMinVal);
@@ -232,7 +230,6 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 //		System.out.println(" ((attributeMaxVal - attributeMinVal + 1.0) ) " +  (attributeMaxVal - attributeMinVal + 1.0) );
 //		System.out.println("Reduction factor " + (max - min + 1.0) / (attributeMaxVal - attributeMinVal + 1.0) );
 
->>>>>>> master
 		return (max - min + 1.0) / (attributeMaxVal - attributeMinVal + 1.0) ;
 	}
 	
