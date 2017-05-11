@@ -23,10 +23,7 @@ public class LogicalScanOperator extends TreeNode {
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		
-		for(int i = 0; i < QueryInterpreter.level; i++){
-			sb.append("-");
-		}		
+	
 		sb.append("Leaf[").append(tableName).append("]\n");
 		return sb.toString();
 	}

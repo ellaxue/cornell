@@ -8,6 +8,7 @@ import ChooseSelectionImp.UnionFind;
 import ChooseSelectionImp.WhereProcessForUnionFind;
 import logicalOperator.*;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Join;
@@ -22,7 +23,7 @@ public class LogicalPlanBuilder {
 	private HashMap<String, Expression> JoinEx;
 	private HashMap<String, Expression> SelectEx;
 	private catalog cl;
-	public static UnionFind unionFindConditions;
+	public UnionFind unionFindConditions;
 	private ArrayList<Expression> residualJoinExpression;
 	private HashMap<String, Expression> residualSelectExpression;
 	private static ArrayList<String> tableList;
@@ -37,6 +38,7 @@ public class LogicalPlanBuilder {
 		this.JoinEx = null;
 		this.SelectEx = null;
 		this.cl = cl;
+		unionFindConditions = new UnionFind();
 		residualJoinExpression = new ArrayList<Expression>();
 		residualSelectExpression = new HashMap<String, Expression>();
 		processUnionFindWhereExp();
@@ -53,21 +55,23 @@ public class LogicalPlanBuilder {
 	 * @return the root of query plan tree
 	 */
 	public TreeNode buildQueryPlan(){	
-		
+		Table firstTable = queryInterpreter.getFirstTable();
 		//create first select operator and set up select condition
-		TreeNode curOperator = new LogicalSelectOperator();
-		curOperator.setTable(queryInterpreter.getFirstTable());
+		TreeNode curOperator = new LogicalSelectOperator(new LogicalScanOperator(firstTable.getName()),unionFindConditions.getUnionFindSelectExpMap(),residualSelectExpression);
+		System.out.println("The table ===========> " + queryInterpreter.getFirstTable());
+		((LogicalSelectOperator)curOperator).setExpressoin(firstTable);
 		
 		// add join operators based on the number of join elements in the list
 		List<Join> joinList = queryInterpreter.getJoinList();
 		if(joinList != null){
-			LogicalJoinOperator joinOperator = new LogicalJoinOperator(unionFindConditions,residualJoinExpression,residualSelectExpression);
+			LogicalJoinOperator joinOperator = new LogicalJoinOperator(unionFindConditions,residualJoinExpression);
 			joinOperator.addChild((LogicalSelectOperator)curOperator);
 			for(Join join: joinList){
 				//set up right operator condition
-				TreeNode selectOperator = new LogicalSelectOperator();
-				selectOperator.setTable((Table)join.getRightItem());
-				
+				LogicalSelectOperator selectOperator = new LogicalSelectOperator(new LogicalScanOperator(firstTable.getName()),unionFindConditions.getUnionFindSelectExpMap(),residualSelectExpression);
+//				selectOperator.setTable((Table)join.getRightItem());
+				selectOperator.setExpressoin((Table)join.getRightItem());
+				System.out.println("add children==================********");
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
 				joinOperator.setTable((Table)join.getRightItem());
 			} 
@@ -105,7 +109,6 @@ public class LogicalPlanBuilder {
 		
 		return root = curOperator;
 	}
-	
 	public void processUnionFindWhereExp(){
 		Expression ex = queryInterpreter.getWhereCondition();
 		WhereProcessForUnionFind process = new WhereProcessForUnionFind(ex);

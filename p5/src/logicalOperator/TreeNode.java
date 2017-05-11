@@ -35,6 +35,11 @@ public abstract class TreeNode {
 	public void setExpressoin(Expression expression){this.expression = expression;}
 	
 	public Expression getExpressoin(){return this.expression;}
+
+	public ArrayList<TreeNode> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 //	public ArrayList<Expression> getExpressionList(){ };
 }

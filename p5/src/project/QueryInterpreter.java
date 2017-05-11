@@ -3,11 +3,13 @@ import java.io.*;
 import java.util.*;
 
 import ChooseSelectionImp.RelationInfo;
+import logicalOperator.LogicalSelectOperator;
 import logicalOperator.TreeNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.*;
 import net.sf.jsqlparser.statement.select.*;
+import physicalOperator.Operator;
 
 /**
  *  QueryInterpreter.java
@@ -52,7 +54,7 @@ public class QueryInterpreter {
 			firstTable = (Table)fromItem; //same as fromItem, cast to Table
 			if (firstTable.getAlias() != null) {
 				cl.setUseAlias(true);
-			}
+			}else {cl.setUseAlias(false);}
 			cl.storeAlias(firstTable.getAlias(), firstTable.getName());
 			
 			joinList = plainSelect.getJoins(); 
@@ -115,21 +117,44 @@ public class QueryInterpreter {
 	 * @param root print the constructed query plan tree
 	 * @throws Exception 
 	 */
-	public void printQueryPlanHelper(TreeNode root) throws Exception{
+	public void printQueryPlanHelper(TreeNode root, int dash) throws Exception{
 		if (root == null) return;
-		writer.write(root+"\n");
-		System.out.println(root);
-		level++;
-		printQueryPlanHelper(root.getLeftChild());		
-		printQueryPlanHelper(root.getRightChild());
+		if(root instanceof LogicalSelectOperator && root.getExpressoin() == null){ 
+			dash--;
+		}
+		else{
+			writer.write(dash(dash)+root);
+			System.out.print(dash(dash)+root);
+		}
 		
+//		System.out.println(root.getClass());
+		ArrayList<TreeNode> operatorList = root.getChildren();
+		if(operatorList != null){
+			for(TreeNode operator:operatorList){
+				printQueryPlanHelper(operator,dash+1);
+			}
+		}
+		else{
+			printQueryPlanHelper(root.getLeftChild(),dash+1);
+		}
 	}
 	
 	public void printQueryPlan(TreeNode root) throws Exception{
-		printQueryPlanHelper(root);
+		int dash = 0;
+		printQueryPlanHelper(root,dash);
 		writer.close();
 	}
-	
+	/**
+	 * this method prints dashes
+	 * @return
+	 */
+	public String dash(int dash){
+		StringBuilder sb = new StringBuilder();
+		for(int i =0 ; i < dash; i++){
+			sb.append("-");
+		}
+		return sb.toString();
+	}
 	public Table getFirstTable(){
 		return this.firstTable;
 	}

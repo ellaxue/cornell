@@ -1,5 +1,7 @@
 
 package physicalOperator;
+import java.util.ArrayList;
+
 import logicalOperator.TreeNode;
 import net.sf.jsqlparser.expression.Expression;
 import project.Tuple;
@@ -41,5 +43,7 @@ public abstract class Operator {
         public abstract Expression getExpression();
         
         public abstract void addChildren(Operator operator);
+
+		public abstract ArrayList<Operator> getChildren();
         
 }

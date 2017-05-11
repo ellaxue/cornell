@@ -78,7 +78,7 @@ public class QueryPlan {
 					
 					queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
 					System.out.println("=======================================================================================\n");
-					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir());
+					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir(),logicalPlan.getUnionFind());
 					logicalPlan.getRootOperator().accept(physicalPlan);
 					System.out.println("=================================Print physical plan =========================================\n");
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
@@ -130,7 +130,6 @@ public class QueryPlan {
 			line = indexInfoReader.readLine();
 		}
 		indexInfoReader.close();
-		
 	}
 	
 	/** 

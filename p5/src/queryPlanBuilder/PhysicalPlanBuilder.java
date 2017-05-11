@@ -18,6 +18,7 @@ import ChooseSelectionImp.Element;
 import ChooseSelectionImp.ExtractColumnFromExpression;
 import ChooseSelectionImp.RelationInfo;
 import ChooseSelectionImp.SELECT_METHOD;
+import ChooseSelectionImp.UnionFind;
 import IO.BinaryReader;
 import logicalOperator.*;
 import net.sf.jsqlparser.expression.Expression;
@@ -50,17 +51,17 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	private static int sortMethod;
 	private int joinMethod;
 	private Boolean useIndex=false;
-	public static int level = 0; 
+	public static int level; 
 	private IndexInfo index;
 	private BufferedWriter planWriter;
-	
+	private UnionFind unionFindConditions;
 	/**
 	 * Constructor
 	 * @param cl the catalog store table information and tables' alias 
 	 * @param queryInterpreter query interpreter
 	 * @t hrows Exception 
 	 */
-	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir) throws Exception
+	public PhysicalPlanBuilder(catalog cl,QueryInterpreter queryInterpreter, String inputDir, UnionFind unionFindConditions) throws Exception
 	{
 		level = 0; 
 		this.cl = cl;
@@ -71,6 +72,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		sortPageSize = 4;
 		sortMethod = 1;
 		joinMethod = 2;
+		this.unionFindConditions = unionFindConditions;
 		planWriter = new BufferedWriter(new FileWriter(cl.getOutputdir()+File.separator+"query"+QueryPlan.getCount()+"_physicalplan",false));
 	}
 
@@ -90,11 +92,8 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		String tableOriginalName = node.getTable().getName();
 		String tableName = getTableName(node);
 		Expression exp = node.getExpressoin();
-//		System.out.println("exp ====>" + exp + " table name " + tableName);
 		SELECT_METHOD selectionMethod = computeSelectCost(tableOriginalName, exp);
 		
-//		String indexFileName= index != null? cl.getIndexDir()+File.separator+node.getTable().getName()+"."+index.getIndexCol() : null;
-
 		switch(selectionMethod){
 			case FULL_SCAN:
 				if(exp == null) selectOperator = new ScanOperator(tableName);
@@ -151,7 +150,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		if(colSet!=null)
 		for(Column col: colSet){
 			String colName = col.getColumnName();
-			Element element = LogicalPlanBuilder.unionFindConditions.findElement(colName);
+			Element element = unionFindConditions.findElement(colName);
 			//element != null means it's operator is ==, >= , <= , > or < which are qualified for index scan
 			if(element != null){
 				Boolean isCluster = false;
@@ -248,7 +247,6 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 */
 	@Override
 	public void visit(LogicalJoinOperator node) throws Exception {
-
 		Operator joinOperator = null;
 		if(joinMethod == 0){
 			joinOperator = new JoinOperator(node.GetResidualJoinExpression(), node.GetUnionFindJoinExpression(),node.getExpressoin());
@@ -280,7 +278,6 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 */
 	@Override
 	public void visit(LogicalProjectOperator node) throws Exception {
-
 		ProjectOperator projectOperator = new ProjectOperator(null,QueryPlan.schema_pair);
 		if(rootOperator == null){
 			rootOperator = projectOperator;
@@ -342,51 +339,40 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 * @param op the root operator
 	 * @throws Exception 
 	 */
-	public void printPhysicalPlanTreeHelper(Operator op) throws Exception{
+	public void printPhysicalPlanTreeHelper(Operator op, int dash) throws Exception{
 		if (op == null) return;
-		planWriter.write(op+"\n");
-//		System.out.println(op.getClass());
-		System.out.println(op);
-		level++;
-		printPhysicalPlanTreeHelper(op.getLeftChild());
-		printPhysicalPlanTreeHelper(op.getRightChild());
 		
-	}
-
-	public void printPhysicalPlanTree(Operator op) throws Exception{
-		printPhysicalPlanTreeHelper(op);
-		planWriter.close();
-	}
-	/**
-	 * Read the config file and set join method and sorting method
-	 * @throws Exception
-	 */
-	private void setOperatorMethod() throws Exception {
-		BufferedReader configReader = new BufferedReader(new FileReader(configDir));
-		String line = configReader.readLine();
-		if(line != null){
-			String splitLine[] = line.split(" ");
-			joinMethod = Integer.parseInt(splitLine[0]);
-			if(joinMethod == 1){
-				joinPageSize = Integer.parseInt(splitLine[1]);
-			}
-			if((line = configReader.readLine()) != null){
-				splitLine = line.split(" ");
-				sortMethod = Integer.parseInt(splitLine[0]);
-				if(sortMethod != 0){
-					sortPageSize = Integer.parseInt(splitLine[1]);
-				}
-			}
-			if((line = configReader.readLine()) != null){
-				splitLine = line.split(" ");
-				Integer IndexMethod = Integer.parseInt(splitLine[0]);
-				if(IndexMethod != 0){
-					useIndex = true;
-				}
+		planWriter.write(dash(dash)+op);
+//		System.out.println(op.getClass());
+		System.out.print(dash(dash)+op);
+		
+		ArrayList<Operator> operatorList = op.getChildren();
+		if(operatorList != null){
+			for(Operator operator:operatorList){
+				printPhysicalPlanTreeHelper(operator,dash+1);
 			}
 		}
-		configReader.close();
+		else{
+			printPhysicalPlanTreeHelper(op.getLeftChild(),dash+1);
+		}
 	}
+	/**
+	 * this method prints dashes
+	 * @return
+	 */
+	public String dash(int dash){
+		StringBuilder sb = new StringBuilder();
+		for(int i =0 ; i < dash; i++){
+			sb.append("-");
+		}
+		return sb.toString();
+	}
+	public void printPhysicalPlanTree(Operator op) throws Exception{
+		int dash = 0;
+		printPhysicalPlanTreeHelper(op,dash);
+		planWriter.close();
+	}
+
 
 	public static int getSortMethod() {
 		return sortMethod;

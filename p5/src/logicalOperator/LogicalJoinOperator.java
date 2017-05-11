@@ -27,7 +27,7 @@ public class LogicalJoinOperator extends TreeNode{
 	/**
 	 * default constructor
 	 */
-	public LogicalJoinOperator(UnionFind unionfind, ArrayList<Expression> joinExp,HashMap<String, Expression> selectExp){
+	public LogicalJoinOperator(UnionFind unionfind, ArrayList<Expression> joinExp){
 		unionFind = unionfind;
 		children = new ArrayList<TreeNode>();
 		expressions = new ArrayList<Expression>();
@@ -36,13 +36,12 @@ public class LogicalJoinOperator extends TreeNode{
 			unionFindJoinExpList = unionFind.getUnionFindJoinExpList();
 		}
 		residualJoinExpression = joinExp;
-		residualSelectExpression = selectExp;
+//		residualSelectExpression = selectExp;
 	}
 	
 	public ArrayList<Expression> GetResidualJoinExpression(){
 		return residualJoinExpression;
 	}
-	
 	
 	public ArrayList<Element> GetUnionFindJoinExpression(){
 		return unionFindJoinExpList;
@@ -59,20 +58,8 @@ public class LogicalJoinOperator extends TreeNode{
 		visitor.visit(this);
 	}
 
-	public ArrayList<TreeNode> getChildren(){
-		return children;
-	}
+
 	public void addChild(LogicalSelectOperator selectOperator) {
-		String tableName = cl.UseAlias() ? selectOperator.getTable().getAlias() : selectOperator.getTable().getName();
-		//set unionFind selection condition for current selection operator first
-		selectOperator.setExpressoin(unionFindSelectExpMap.get(tableName));
-		//set additional selection condition for current selection operator
-		if(selectOperator.getExpressoin() != null && residualSelectExpression.containsKey(tableName)){
-			selectOperator.setExpressoin(new AndExpression(selectOperator.getExpressoin(),residualSelectExpression.get(tableName)));
-		}
-		else if(residualSelectExpression.containsKey(tableName)){
-			selectOperator.setExpressoin(residualSelectExpression.get(tableName));
-		}
 		children.add(selectOperator);		
 	}
 	
@@ -80,21 +67,16 @@ public class LogicalJoinOperator extends TreeNode{
 		expressions.add(exp);
 	}
 	
+	public ArrayList<TreeNode> getChildren(){
+		return children;
+	}
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < QueryInterpreter.level; i++){
-			sb.append("-");
-		}
 		sb.append("Join").append(residualJoinExpression).append("\n");
 		
 		for(Element e:unionFindJoinExpList){
 			sb.append(e);
-		}
-		
-		QueryInterpreter.level++;
-		for(TreeNode node: children){
-			sb.append(node);
 		}
 		return sb.toString();
 	}

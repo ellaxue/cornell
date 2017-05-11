@@ -98,18 +98,21 @@ public class ScanOperator extends Operator {
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
-		//TODO:
 //		System.out.println("scan PhysicalPlanBuilder.level " + PhysicalPlanBuilder.level + " sb " + sb.toString());
-		sb.append("TableScan").append("[").append(tableOriginalName).append("]\n");
-		return sb.toString();
+		sb.append("TableScan").append("[").append(tableOriginalName).append("]");
+		return sb.append("\n").toString();
 	}
+	
 	@Override
 	public void addChildren(Operator operator) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ArrayList<Operator> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

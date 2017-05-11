@@ -31,10 +31,7 @@ public class LogicalSortOperator extends TreeNode{
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < QueryInterpreter.level; i++){
-			sb.append("-");
-		}
 		sb.append("Sort").append(orderElementList);
-		return sb.toString();
+		return sb.append("\n").toString();
 	}
 }

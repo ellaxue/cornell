@@ -213,19 +213,18 @@ public class JoinOperator extends Operator {
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
+
 		sb.append("Join").append(residualJoinExpression).append("\n");
 		
+		//print union find join expression list
 		for(Element e:unionFindJoinExpList){
 			sb.append(e);
 		}
-		
-		PhysicalPlanBuilder.level++;
-		for(Operator op: children){
-			sb.append(op);
-		}
 		return sb.toString();
+	}
+	
+	@Override
+	public ArrayList<Operator> getChildren() {
+		return children;
 	}
 }

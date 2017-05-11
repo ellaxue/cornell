@@ -1,6 +1,7 @@
 package physicalOperator;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import BPlusTree.IndexInfo;
 import BPlusTree.Record;
@@ -151,17 +152,22 @@ public class IndexScanOperator extends Operator{
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
-		//TODO:
-		sb.append("IndexScan").append("[").append(originalTableName+",").append(indexCol+",").append(lowKey+",").append(highKey+"]\n");
-		return sb.toString();
+		
+		sb.append("IndexScan").append("[").
+		append(originalTableName+",").append(indexCol+",").append(lowKey+",").append(highKey+"]");
+		
+		return sb.append("\n").toString();
 	}
-
+	
 	@Override
 	public void addChildren(Operator operator) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ArrayList<Operator> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -120,20 +120,18 @@ public class ProjectOperator extends Operator{
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}		
 		sb.append("Project").append(schema_pair);
-//		for(SelectItem item: itemList){
-//			sb.append(item);
-//		}
-	
-		return sb.toString();
+		return sb.append("\n").toString();
 	}
-
 	@Override
 	public void addChildren(Operator operator) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ArrayList<Operator> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

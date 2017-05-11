@@ -5,6 +5,7 @@ import queryPlanBuilder.PhysicalPlanBuilder;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 import IO.BinaryWriter;
 import IO.DirectWriter;
@@ -95,33 +96,23 @@ public class SelectOperator extends Operator {
 		// TODO Auto-generated method stub
 		
 	}
-	private String printDash(){
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
-		return sb.toString();
-	}
+
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
 		
-		if(ex != null){
-			sb.append("Select[").append(ex).append("]\n");
-		}	
-		PhysicalPlanBuilder.level++;
-		//print scan
-//		sb.append(printDash());
-		sb.append(child);
-		PhysicalPlanBuilder.level--;
-		return sb.toString();
+		sb.append("Select[").append(ex).append("]");
+		return sb.append("\n").toString();
 	}
+	
 	@Override
 	public void addChildren(Operator operator) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public ArrayList<Operator> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

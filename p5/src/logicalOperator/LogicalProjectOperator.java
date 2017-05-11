@@ -31,14 +31,8 @@ public class LogicalProjectOperator extends TreeNode{
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < QueryInterpreter.level; i++){
-			sb.append("-");
-		}		
 		sb.append("Project").append(itemList);
-//		for(SelectItem item: itemList){
-//			sb.append(item);
-//		}
 	
-		return sb.toString();
+		return sb.append("\n").toString();
 	}
 }

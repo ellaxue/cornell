@@ -244,22 +244,26 @@ public class BNLJOperator extends Operator{
 	public ArrayList<Expression> getResidualJoinExpression() {
 		return residualJoinExpression;
 	}
+	
+	
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < PhysicalPlanBuilder.level; i++){
-			sb.append("-");
-		}
+		
 		sb.append("BNLJ").append(residualJoinExpression).append("\n");
 		
+		//print union find join expression list
 		for(Element e:unionFindJoinExpList){
 			sb.append(e);
 		}
-		PhysicalPlanBuilder.level++;
-		for(Operator op: children){
-			sb.append(op);
-		}
 		return sb.toString();
+	}
+
+
+	@Override
+	public ArrayList<Operator> getChildren() {
+		// TODO Auto-generated method stub
+		return children;
 	}
 
 }
