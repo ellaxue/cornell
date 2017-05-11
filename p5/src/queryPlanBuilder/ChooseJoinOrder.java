@@ -16,6 +16,7 @@ import javax.swing.tree.TreeNode;
 import ChooseSelectionImp.Element;
 import ChooseSelectionImp.ExtractColumnFromExpression;
 import ChooseSelectionImp.RelationInfo;
+import ChooseSelectionImp.UnionFind;
 import logicalOperator.LogicalJoinOperator;
 import logicalOperator.LogicalSelectOperator;
 import net.sf.jsqlparser.expression.Expression;
@@ -35,11 +36,12 @@ public class ChooseJoinOrder {
 	private ArrayList<HashMap<String, Integer>> cost=  new ArrayList<>();
 	private HashMap<String, ArrayList<String>> TableColumns = new HashMap<>();
 	private String FinalOrder;
+	private UnionFind unionFindConditions;
 
-
-	public ChooseJoinOrder(LogicalJoinOperator joinOperator,LogicalPlanBuilder lPlanBuilder,Expression ex) {
+	public ChooseJoinOrder(UnionFind unionFindConditions, LogicalJoinOperator joinOperator,LogicalPlanBuilder lPlanBuilder,Expression ex) {
 		ArrayList<logicalOperator.TreeNode> joinchild= joinOperator.getChildren();
 		EquijoinCondition equiJoin= new EquijoinCondition(ex);
+		this.unionFindConditions = unionFindConditions;
 		HashMap<String,ArrayList<String>> equalColumn= equiJoin.equiColumn;
 		System.out.println("equalColumn"+  equalColumn);
 
@@ -72,7 +74,7 @@ public class ChooseJoinOrder {
 				HashSet<Column> colSet = ext.getColumnResult();
 				for(Column col: colSet){
 					String colName = col.getColumnName();
-					Element element = LogicalPlanBuilder.unionFindConditions.findElement(colName);
+					Element element = unionFindConditions.findElement(colName);
 					double reductionFactor = PhysicalPlanBuilder.computeReductionFactor(element, stats,colName);
 					System.out.println(reductionFactor+" reduction");
 					totalReductionFactor=totalReductionFactor*reductionFactor;

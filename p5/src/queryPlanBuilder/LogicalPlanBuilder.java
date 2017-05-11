@@ -78,7 +78,7 @@ public class LogicalPlanBuilder {
 //					joinOperator.addExpression(JoinEx.get(tableName));
 //				}
 			}
-			ChooseJoinOrder c=new ChooseJoinOrder(joinOperator, this,queryInterpreter.getWhereCondition());
+			ChooseJoinOrder c=new ChooseJoinOrder(unionFindConditions,joinOperator, this,queryInterpreter.getWhereCondition());
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}
