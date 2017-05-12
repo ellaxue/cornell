@@ -48,4 +48,8 @@ public class Tuple{
 	public ArrayList<SchemaPair> getSchemaList() {
 		return schemaList;
 	}
+	
+	public void setSchemaList(ArrayList schema) {
+		schemaList=schema;
+	}
 	}

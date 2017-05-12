@@ -68,7 +68,7 @@ public class BNLJOperator extends Operator{
 		Tuple temp;
 		if(first_enter == true && (temp=leftChild.getNextTuple())!=null){//Initiate buffer
 			this.Outer_attr = temp.getTuple().length;
-			leftChild.reset();
+			// leftChild.reset();
 			this.first_enter = false;
 			this.buf = new Buffer(pageSize, Outer_attr);
 			
@@ -139,7 +139,7 @@ public class BNLJOperator extends Operator{
 		//int cst = BNLJ_Page_Bytes/(4*Outer_attr);
 		//buf = new Buffer(pageSize, cst);
 		buf.clear();
-		System.out.println("buffis"+buf);
+		// System.out.println("buffis"+buf);
 		first_enter = true;
 		addedToSet=false;
 	}

@@ -96,6 +96,7 @@ public class IndexScanOperator extends Operator{
 	 */
 	@Override
 	public void reset() throws Exception {
+		reader.close();
 		reader.reset();	
 	}
 	
