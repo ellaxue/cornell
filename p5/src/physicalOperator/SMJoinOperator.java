@@ -39,6 +39,9 @@ public class SMJoinOperator extends Operator {
 	private ArrayList<Operator> children;
 	private ArrayList<Expression> residualJoinExpression; 
 	private ArrayList<Element> unionFindJoinExpList;
+	private Expression ex;
+	
+	
 	public SMJoinOperator(Operator leftChild, Operator rightChild, ArrayList<SchemaPair> leftSchema,
 			ArrayList<SchemaPair> rightSchema) throws Exception {
 		this.leftChild = leftChild;
@@ -48,15 +51,15 @@ public class SMJoinOperator extends Operator {
 		this.children = new ArrayList<Operator>();
 	}
 
-	public SMJoinOperator(ArrayList<Expression> getResidualJoinExpression,
-			ArrayList<Element> getUnionFindJoinExpression, ArrayList<SchemaPair> left, ArrayList<SchemaPair> right) {
-		// TODO Auto-generated constructor stub
-		residualJoinExpression = getResidualJoinExpression;
-		unionFindJoinExpList = getUnionFindJoinExpression;
-		this.leftSchema = left;
-		this.rightSchema = right;
-		this.children = new ArrayList<Operator>();
-	}
+//	public SMJoinOperator(ArrayList<Expression> getResidualJoinExpression,
+//			ArrayList<Element> getUnionFindJoinExpression, ArrayList<SchemaPair> left, ArrayList<SchemaPair> right) {
+//		// TODO Auto-generated constructor stub
+//		residualJoinExpression = getResidualJoinExpression;
+//		unionFindJoinExpList = getUnionFindJoinExpression;
+//		this.leftSchema = left;
+//		this.rightSchema = right;
+//		this.children = new ArrayList<Operator>();
+//	}
 
 	@Override
 	public Tuple getNextTuple() throws Exception {
@@ -146,33 +149,23 @@ public class SMJoinOperator extends Operator {
 	@Override
 	public void setLeftChild(Operator child) throws Exception {
 		this.actualLeftChild=child;
-		if (sortMethod == 0) {
-			this.leftChild = new SortOperator(child, leftSchema);
-		} else {
 			this.leftChild = new ExternalSortOperator(child, leftSchema, PhysicalPlanBuilder.getSortPageNumber());
-		}
 	}
 
 	@Override
 	public void setRightChild(Operator child) throws Exception {
 		this.actualRightChild=child;
-		if (sortMethod == 0) {
-			this.rightChild = new SortOperator(child, rightSchema);
-		} else {
 			this.rightChild = new ExternalSortOperator(child, rightSchema, PhysicalPlanBuilder.getSortPageNumber());
-		}
 	}
 
 	@Override
 	public Operator getLeftChild() {
-		return null;
-//		return actualLeftChild;
+		return actualLeftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return null;
-//		return actualRightChild;
+		return actualRightChild;
 	}
 
 	@Override
@@ -256,19 +249,39 @@ public class SMJoinOperator extends Operator {
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-	
-		sb.append("SMJoin").append(residualJoinExpression).append("\n");
 		
-		//print union find join expression list
-		for(Element e:unionFindJoinExpList){
-			sb.append(e);
-		}
+		sb.append("SMJoin").append("["+ex+"]").append("\n");
 		return sb.toString();
 	}
+	
+	public String leftExternal() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("ExternalSort").append("["+leftSchema+"]").append("\n");
+		return sb.toString();
+	}
+	
+	public String rightExternal() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("ExternalSort").append("["+rightSchema+"]").append("\n");
+		return sb.toString();
+	}
+	
 	@Override
 	public ArrayList<Operator> getChildren() {
 		// TODO Auto-generated method stub
 		return children;
 	}
+
+	public Expression getEx() {
+		return ex;
+	}
+
+	public void setEx(Expression ex) {
+		this.ex = ex;
+	}
+	
+	
 }
 

@@ -51,6 +51,7 @@ public class ExternalSortOperator extends Operator{
 
 	@Override
 	public Tuple getNextTuple() throws Exception {
+		//System.out.println(child);
 		if(finalSortedFileIdentifier == null){
 			mergeSort();
 			//finalSortedFileIdentifier example: 2_pass0  (file full name: tableName2_pass0)
@@ -67,6 +68,8 @@ public class ExternalSortOperator extends Operator{
 		}
 		 //delete the final sorted files after done reading the tuples
 //		if(tuple == null){cleanFinalSortedFile();}
+		//if(tuple!=null) System.out.println(tuple.getSchemaList());
+		
 		return tuple;
 	}
 	
@@ -126,6 +129,8 @@ public class ExternalSortOperator extends Operator{
 			int n = indexOfSortingTupleSchemaList(sortingTupleSchemaList,schemaPair);
 			if(!Arrays.asList(orderByIndex).contains(n)) {orderByIndex[index++]=n; }
 		}
+	//	System.out.println("schemaPair"+schema_pair);
+		//System.out.println(sortingTupleSchemaList);
 		for(int i = 0; i < sortingTupleSchemaList.size(); i++){
 			if(!orderByListContains(schema_pair,sortingTupleSchemaList.get(i))){
 				orderByIndex[index++] = i;

@@ -24,6 +24,7 @@ public class LogicalJoinOperator extends TreeNode{
 	private UnionFind unionFind;
 	private ArrayList<Expression> residualJoinExpression; //exp not in the unionFind element set 
 	private HashMap<String, Expression> residualSelectExpression;//exp not in the unionFind element set
+	private String FinalOrder=null;
 	/**
 	 * default constructor
 	 */
@@ -83,5 +84,13 @@ public class LogicalJoinOperator extends TreeNode{
 
 	public void setChildren(ArrayList<TreeNode> children) {
 		this.children = children;
+	}
+
+	public String getFinalOrder() {
+		return FinalOrder;
+	}
+
+	public void setFinalOrder(String finalOrder) {
+		FinalOrder = finalOrder;
 	}
 }

@@ -54,6 +54,7 @@ public class processWHERE implements ExpressionVisitor {
 	private HashMap<String, Expression> JoinEx = new HashMap<String, Expression>();
 	private HashMap<String, Expression> SelectEx = new HashMap<String, Expression>();
 	private ArrayList<String> JoinOrder;
+	private HashMap<String, Boolean> UseSMJ = new HashMap<String,Boolean>();
 
 	/**
 	 * Constructor that recursively visit the expression
@@ -153,10 +154,10 @@ public class processWHERE implements ExpressionVisitor {
 		// TODO Auto-generated method stub
 
 	}
-    /**
-     * visit the and expression
-     * @param and expression
-     */
+	/**
+	 * visit the and expression
+	 * @param and expression
+	 */
 	@Override
 	public void visit(AndExpression arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -176,11 +177,11 @@ public class processWHERE implements ExpressionVisitor {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	/**
-     * visit the and expression
-     * @param = expression
-     */
+	 * visit the and expression
+	 * @param = expression
+	 */
 	@Override
 	public void visit(EqualsTo arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -200,7 +201,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -215,7 +216,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -224,18 +225,20 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, true);
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, true);
 			}
 		}
 	}
-	
-	 /**
-     * visit the and expression
-     * @param > expression
-     */
+
+	/**
+	 * visit the and expression
+	 * @param > expression
+	 */
 	@Override
 	public void visit(GreaterThan arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -255,7 +258,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -270,7 +273,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -279,18 +282,22 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, false);
+
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, false);
+
 			}
 		}
 	}
 
-	 /**
-     * visit the and expression
-     * @param >= expression
-     */
+	/**
+	 * visit the and expression
+	 * @param >= expression
+	 */
 	@Override
 	public void visit(GreaterThanEquals arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -310,7 +317,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -325,7 +332,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -334,10 +341,14 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, false);
+
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, false);
+
 			}
 		}
 	}
@@ -359,11 +370,11 @@ public class processWHERE implements ExpressionVisitor {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	/**
-     * visit the and expression
-     * @param < expression
-     */
+	 * visit the and expression
+	 * @param < expression
+	 */
 	@Override
 	public void visit(MinorThan arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -383,7 +394,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -398,7 +409,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -407,18 +418,21 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, false);
+
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, false);
 			}
 		}
 	}
-	
+
 	/**
-     * visit the and expression
-     * @param <= expression
-     */
+	 * visit the and expression
+	 * @param <= expression
+	 */
 	@Override
 	public void visit(MinorThanEquals arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -438,7 +452,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -453,7 +467,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -462,18 +476,21 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, false);
+
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, false);
 			}
 		}
 	}
-	
+
 	/**
-     * visit the and expression
-     * @param != expression
-     */
+	 * visit the and expression
+	 * @param != expression
+	 */
 	@Override
 	public void visit(NotEqualsTo arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -493,7 +510,7 @@ public class processWHERE implements ExpressionVisitor {
 				SelectEx.put(ltable, arg0);
 			else
 				SelectEx.put(ltable, new AndExpression(SelectEx.get(ltable), arg0));}
-		
+
 		// one is value and another is column or two columns are the same
 		else if (ltable == "" || rtable == "" || ltable.equals(rtable)) {
 			if (ltable != "") {
@@ -508,7 +525,7 @@ public class processWHERE implements ExpressionVisitor {
 					SelectEx.put(rtable, new AndExpression(SelectEx.get(rtable), arg0));
 			}
 		}
-		
+
 		// different columns(join condition)
 		else {
 			int index1 = JoinOrder.indexOf(ltable);
@@ -517,10 +534,13 @@ public class processWHERE implements ExpressionVisitor {
 				if (JoinEx.putIfAbsent(ltable, arg0) != null) {
 					JoinEx.put(ltable, new AndExpression(JoinEx.get(ltable), arg0));
 				}
+				if(getUseSMJ().get(ltable)==null || getUseSMJ().get(ltable)!=false) getUseSMJ().put(ltable, false);
+
 			} else {
 				if (JoinEx.putIfAbsent(rtable, arg0) != null) {
 					JoinEx.put(rtable, new AndExpression(JoinEx.get(rtable), arg0));
 				}
+				if(getUseSMJ().get(rtable)==null || getUseSMJ().get(rtable)!=false) getUseSMJ().put(rtable, false);
 			}
 		}
 	}
@@ -604,7 +624,7 @@ public class processWHERE implements ExpressionVisitor {
 	public HashMap<String, Expression> getJoinEx() {
 		return JoinEx;
 	}
-	
+
 	/**
 	 * return the hashmap pointing from table to applied select expression
 	 * @return hashmap
@@ -619,6 +639,14 @@ public class processWHERE implements ExpressionVisitor {
 	 */
 	public ArrayList<String> getJoinOrder() {
 		return JoinOrder;
+	}
+
+	public HashMap<String, Boolean> getUseSMJ() {
+		return UseSMJ;
+	}
+
+	public void setUseSMJ(HashMap<String, Boolean> useSMJ) {
+		UseSMJ = useSMJ;
 	}
 
 }

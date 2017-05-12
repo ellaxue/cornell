@@ -37,7 +37,7 @@ public class QueryPlan {
 	static HashMap<String, Expression> JoinEx;
 	static HashMap<String, Expression> SelectEx;
 	private static QueryInterpreter queryInterpreter;
-	public static boolean debuggingMode = true;
+	public static boolean debuggingMode = false;
 
 	
 	/**
@@ -65,17 +65,18 @@ public class QueryPlan {
 			queryCount = 1;
 			try {
 				while ((statement = parser.Statement()) != null) {
+
 					Long t=System.currentTimeMillis();
 					System.out.println("============================Read statement=========================================");
 					System.out.println(statement+"\n=======================================================================================\n");
 //					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
-					
+	
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 					logicalPlan.buildQueryPlan();
 					System.out.println("=================================Print logical plan =========================================\n");
-					
+	
 					queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
 					System.out.println("=======================================================================================\n");
 					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir(),logicalPlan.getUnionFind());
@@ -83,10 +84,9 @@ public class QueryPlan {
 					System.out.println("=================================Print physical plan =========================================\n");
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
 					System.out.println("=======================================================================================\n");
-//					physicalPlan.result().dump();
-					
+					physicalPlan.result().dump();
+					// nextQuery();
 					System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
-					nextQuery();
 				}
 			} 
 			catch (Exception e) {

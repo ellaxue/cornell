@@ -35,15 +35,15 @@ public class ChooseJoinOrder {
 	private HashMap<String, Double> SingleTableReductionFactor= new HashMap<>(); // total ReductionFactor of single table
 	private ArrayList<HashMap<String, Integer>> cost=  new ArrayList<>();
 	private HashMap<String, ArrayList<String>> TableColumns = new HashMap<>();
-	private String FinalOrder;
+	protected String FinalOrder;
 	private UnionFind unionFindConditions;
 
-	public ChooseJoinOrder(UnionFind unionFindConditions, LogicalJoinOperator joinOperator,LogicalPlanBuilder lPlanBuilder,Expression ex) {
+	public ChooseJoinOrder(UnionFind union,LogicalJoinOperator joinOperator,LogicalPlanBuilder lPlanBuilder,Expression ex) {
+		unionFindConditions=union;
 		ArrayList<logicalOperator.TreeNode> joinchild= joinOperator.getChildren();
 		EquijoinCondition equiJoin= new EquijoinCondition(ex);
-		this.unionFindConditions = unionFindConditions;
 		HashMap<String,ArrayList<String>> equalColumn= equiJoin.equiColumn;
-		System.out.println("equalColumn"+  equalColumn);
+		//System.out.println("equalColumn"+  equalColumn);
 
 		HashMap<String, Integer> oneTableVvalue=new HashMap<>();
 		HashMap<String, Integer> oneTableSize=new HashMap<>();
@@ -63,7 +63,7 @@ public class ChooseJoinOrder {
 					oneTableVvalue.put(i+s, stats.getMaxValOfAttr(s)-stats.getMinValOfAttr(s)+1);
 				}
 			}
-
+			
 			// if the table is a selection on a base table
 			else {
 				Double totalReductionFactor=1.0;
@@ -76,16 +76,18 @@ public class ChooseJoinOrder {
 					String colName = col.getColumnName();
 					Element element = unionFindConditions.findElement(colName);
 					double reductionFactor = PhysicalPlanBuilder.computeReductionFactor(element, stats,colName);
-					System.out.println(reductionFactor+" reduction");
+					// if(colName.equals("H")) System.out.println("reduction"+reductionFactor);
+				//	System.out.println(reductionFactor+" reduction");
 					totalReductionFactor=totalReductionFactor*reductionFactor;
+					//if(colName.equals("H")) System.out.println("reduction"+totalReductionFactor);
 					SingleTableReductionFactor.put(colName, reductionFactor);
 				}
 				int size= (int)(stats.getTotalTupleInRelation()*totalReductionFactor);
 				oneTableSize.put(i+"", size);
 				oneTableCost.put(i+"", 0);
 				for (String s:stats.getAttributeNames()) {
-					int factor=1;
-					if (SingleTableReductionFactor.get(s)!=null) factor=(int)(factor*SingleTableReductionFactor.get(s));
+					double factor=1.0;
+					if (SingleTableReductionFactor.get(s)!=null) factor=(factor*SingleTableReductionFactor.get(s));
 					int value= (int)((stats.getMaxValOfAttr(s)-stats.getMinValOfAttr(s)+1)*factor);
 					if (value<size) oneTableVvalue.put(i+s,value);
 					else oneTableVvalue.put(i+s, size);
@@ -94,7 +96,6 @@ public class ChooseJoinOrder {
 			//		System.out.println("vValue"+vValue);
 			//		System.out.println("tablesize"+TableSize);
 			//		System.out.println("reductionfactor"+SingleTableReductionFactor);
-			
 		}
 		
 		TableSize.add(oneTableSize);
@@ -102,7 +103,7 @@ public class ChooseJoinOrder {
 		cost.add(oneTableCost);
 		
 		if(joinchild.size()==2) {
-			System.out.println(TableSize.get(0).get("0"));
+			// System.out.println(TableSize.get(0).get("0"));
 			if (TableSize.get(0).get("0") > TableSize.get(0).get("1")) FinalOrder="01";
 			else FinalOrder="10";
 		}
@@ -135,8 +136,9 @@ public class ChooseJoinOrder {
 							ArrayList<String> leftRightEqualColumn = equalColumn.get(rightColumn);
 							if(leftRightEqualColumn!=null) { for(String leftEqual:leftRightEqualColumn) {
 								if (leftColumn.contains(leftEqual)) {
-									Integer Vleft= iVvalue.get(leftEqual);
-									Integer Vright= iVvalue.get(rightColumn);
+									Integer Vleft= previousVvalue.get(leftRelation+leftEqual);
+									Integer Vright= firstTableVvalue.get(rightRelation+rightColumn);
+								//	System.out.println(previousVvalue);
 									tempSize=tempSize/Math.max(Vleft,Vright);
 								}
 							}
@@ -202,8 +204,8 @@ public class ChooseJoinOrder {
 			for (String s:singleSet) {
 				if (!FinalOrder.contains(s)) FinalOrder=FinalOrder+s;
 			}
-			System.out.println("finalOrder is   "+FinalOrder);
 		}
+		System.out.println("finalOrder is "+FinalOrder);
 	}
 }
 	

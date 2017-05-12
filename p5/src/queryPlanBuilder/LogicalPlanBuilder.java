@@ -74,12 +74,13 @@ public class LogicalPlanBuilder {
 				joinOperator.addChild((LogicalSelectOperator)selectOperator);
 //				joinOperator.setTable((Table)join.getRightItem());
 			}
-//			ChooseJoinOrder c=new ChooseJoinOrder(unionFindConditions,joinOperator, this,queryInterpreter.getWhereCondition());
+			ChooseJoinOrder c=new ChooseJoinOrder(unionFindConditions,joinOperator,this,queryInterpreter.getWhereCondition());
+			joinOperator.setFinalOrder(c.FinalOrder);
 			//update current top level operator as the curOperator
 			curOperator = joinOperator;
 		}
 		
-		//Add projection operator if select item is not '*' (select all)
+		//Add projection operator if selectnex item is not '*' (select all)
 		List<SelectItem> itemList = queryInterpreter.getSelectItemList();
 		if(!(itemList.get(0) instanceof AllColumns)){
 			TreeNode projectOperator = new LogicalProjectOperator(curOperator, itemList);

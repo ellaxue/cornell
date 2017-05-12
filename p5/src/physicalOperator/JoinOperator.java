@@ -160,14 +160,12 @@ public class JoinOperator extends Operator {
 
 	@Override
 	public Operator getLeftChild() {
-		return null;
-//		return this.leftChild;
+		return this.leftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return null;
-//		return this.rightChild;
+		return this.rightChild;
 	}
 	
 	@Override
@@ -214,12 +212,8 @@ public class JoinOperator extends Operator {
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Join").append(residualJoinExpression).append("\n");
+		sb.append("Join").append(ex).append("\n");
 		
-		//print union find join expression list
-		for(Element e:unionFindJoinExpList){
-			sb.append(e);
-		}
 		return sb.toString();
 	}
 	

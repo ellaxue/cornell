@@ -53,16 +53,6 @@ public class BNLJOperator extends Operator{
 	}
 	
 	
-	public BNLJOperator(ArrayList<Expression> residualJoinExpression, ArrayList<Element> unionFindJoinExpList,
-			Expression ex, int pageSize) {
-		// TODO Auto-generated constructor stub
-		this.residualJoinExpression = residualJoinExpression;
-		this.unionFindJoinExpList = unionFindJoinExpList;
-		this.pageSize = pageSize;
-		children = new ArrayList<Operator>();
-		this.ex = ex;
-		this.count = 0;
-	}
 
 
 	/** 
@@ -76,11 +66,12 @@ public class BNLJOperator extends Operator{
 	@Override
 	public Tuple getNextTuple() throws Exception {
 		Tuple temp;
-		if(first_enter == true&&(temp=leftChild.getNextTuple())!=null){//Initiate buffer
+		if(first_enter == true && (temp=leftChild.getNextTuple())!=null){//Initiate buffer
 			this.Outer_attr = temp.getTuple().length;
 			leftChild.reset();
 			this.first_enter = false;
 			this.buf = new Buffer(pageSize, Outer_attr);
+			
 		}
 		
 		if(addedToSet == false) {//Initiate new block
@@ -100,8 +91,9 @@ public class BNLJOperator extends Operator{
 			for (String s : lt) {
 				sb.append(s).append(",");
 			}
-			
+
 			while ((right = rightChild.getNextTuple()) != null) {//get tuple from the inner
+
 				StringBuffer sb_next = new StringBuffer(sb);
 				ArrayList<SchemaPair> def_schema_next = new ArrayList<SchemaPair>(def_schema);
 				for (SchemaPair s : new ArrayList<SchemaPair>(right.getSchemaList())) {
@@ -115,9 +107,11 @@ public class BNLJOperator extends Operator{
 				if (ex != null) {
 					conditionEvaluator eva = new conditionEvaluator(tu, ex);
 					if (eva.getResult()) {
+
 						return tu;
 					}
 				} else
+
 					return tu;
 			}
 			rightChild.reset();
@@ -145,6 +139,7 @@ public class BNLJOperator extends Operator{
 		//int cst = BNLJ_Page_Bytes/(4*Outer_attr);
 		//buf = new Buffer(pageSize, cst);
 		buf.clear();
+		System.out.println("buffis"+buf);
 		first_enter = true;
 		addedToSet=false;
 	}
@@ -164,6 +159,8 @@ public class BNLJOperator extends Operator{
 	 */
 	@Override
 	public void dump() throws Exception {
+		
+
 		Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
@@ -183,6 +180,7 @@ public class BNLJOperator extends Operator{
 	 */
 	private void addLeftTableToBuffer() throws Exception{
 		Tuple left;
+	//	System.out.println("buf is"+buf);
 		while ( (!buf.isFull() &&(left = leftChild.getNextTuple()) != null)) {
 			this.buf.add(left);
 		}// get and store tuple from the outer
@@ -206,14 +204,12 @@ public class BNLJOperator extends Operator{
 
 	@Override
 	public Operator getLeftChild() {
-		return null;
-//		return this.leftChild;
+		return this.leftChild;
 	}
 
 	@Override
 	public Operator getRightChild() {
-		return null;
-//		return this.rightChild;
+		return this.rightChild;
 	}
 	
 	@Override
@@ -250,12 +246,10 @@ public class BNLJOperator extends Operator{
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("BNLJ").append(residualJoinExpression).append("\n");
+		sb.append("BNLJ").append("["+ex+"]").append("\n");
 		
 		//print union find join expression list
-		for(Element e:unionFindJoinExpList){
-			sb.append(e);
-		}
+		
 		return sb.toString();
 	}
 

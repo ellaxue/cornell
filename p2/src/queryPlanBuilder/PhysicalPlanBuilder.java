@@ -121,7 +121,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		}
 		else if(joinMethod == 1){
 			//System.out.println("BNLJ method chosen with join page size " + joinPageSize);
-			joinOperator = new BNLJOperator(null, null, node.getExpressoin(), joinPageSize);
+			joinOperator = new BNLJOperator(null, null, node.getExpressoin(), 5);
 		}
 		else{
 			//System.out.println("SMJoin method chosen with sort page size " + sortPageSize);

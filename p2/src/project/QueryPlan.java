@@ -82,7 +82,7 @@ public class QueryPlan {
 					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir());
 					logicalPlan.getRootOperator().accept(physicalPlan);
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
-					 
+					 System.out.println(1);
 					physicalPlan.result().dump();
 					//System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
 				}
