@@ -26,6 +26,11 @@ import physicalOperator.JoinOperator;
 import physicalOperator.SelectOperator;
 import project.catalog;
 
+/**
+ * for a logical plan, calculate the join cost and output the best join order.
+ * @author anorakj
+ *
+ */
 public class ChooseJoinOrder {
 
 	private catalog cl = catalog.getInstance();
@@ -38,6 +43,14 @@ public class ChooseJoinOrder {
 	protected String FinalOrder;
 	private UnionFind unionFindConditions;
 
+	/**
+	 * using V value model to calculate the size of intermediate relation. Sum up all the sizes to get 
+	 * the total cost. Choose the join plan with the lowest cost. 
+	 * @param union
+	 * @param joinOperator
+	 * @param lPlanBuilder
+	 * @param ex
+	 */
 	public ChooseJoinOrder(UnionFind union,LogicalJoinOperator joinOperator,LogicalPlanBuilder lPlanBuilder,Expression ex) {
 		unionFindConditions=union;
 		ArrayList<logicalOperator.TreeNode> joinchild= joinOperator.getChildren();
