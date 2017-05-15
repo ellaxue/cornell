@@ -36,6 +36,7 @@ public class ExternalSortOperator extends Operator{
 	private String finalSortedFileIdentifier = null;
 	private TupleReader tupleReader;
 	private Integer orderByIndex[];
+	private ArrayList<SchemaPair> previousSchema;
 	/**
 	 * Constructor 
 	 * @param BPages Buffer size with B pages
@@ -68,8 +69,7 @@ public class ExternalSortOperator extends Operator{
 		}
 		 //delete the final sorted files after done reading the tuples
 //		if(tuple == null){cleanFinalSortedFile();}
-		//if(tuple!=null) System.out.println(tuple.getSchemaList());
-		
+		if(tuple!=null) tuple.setSchemaList(previousSchema);
 		return tuple;
 	}
 	
@@ -83,6 +83,7 @@ public class ExternalSortOperator extends Operator{
 		Tuple tuple = null;
 		//pass 0 - sort B pages' tuples at a time
 		while((tuple = child.getNextTuple()) != null){
+			previousSchema = tuple.getSchemaList();
 			if(tableName == null){
 				setTempFileName(tuple);
 				setSortingIndexOrder(tuple);
@@ -94,6 +95,7 @@ public class ExternalSortOperator extends Operator{
 				//write the sorted tuples to a file and clear the buffer after write
 				writeToFile((++sortedRun)+pass+passCount);
 			}
+			
 			buffer.add(tuple);
 		}
 		//not full buffer pages

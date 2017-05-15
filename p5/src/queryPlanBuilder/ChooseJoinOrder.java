@@ -206,6 +206,7 @@ public class ChooseJoinOrder {
 			}
 		}
 		System.out.println("finalOrder is "+FinalOrder);
+		System.out.println(TableSize.get(0));
 	}
 }
 	
