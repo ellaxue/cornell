@@ -152,7 +152,9 @@ public class ChooseJoinOrder {
 									Integer Vleft= previousVvalue.get(leftRelation+leftEqual);
 									Integer Vright= firstTableVvalue.get(rightRelation+rightColumn);
 								//	System.out.println(previousVvalue);
-									tempSize=tempSize/Math.max(Vleft,Vright);
+									Integer max= Math.max(Vleft,Vright);
+									if(max==0) {tempSize=0;}
+									else tempSize=tempSize/max;
 								}
 							}
 							}
