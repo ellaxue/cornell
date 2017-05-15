@@ -332,8 +332,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 	 */
 	@Override
 	public void visit(LogicalSortOperator node) throws Exception {
-		Operator sortOperator;
-			sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
+		Operator sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
 		//	System.out.println("external sort method chosen with sort page size " + sortPageSize);
 
 		if(rootOperator == null){rootOperator = sortOperator;}
@@ -357,11 +356,18 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		else{
 			distinctOperator = new DuplicateEliminationOperator(null,QueryPlan.schema_pair);
 		}
-
+		
+		ExternalSortOperator sortOperator = new ExternalSortOperator(null,QueryPlan.schema_pair_order,sortPageSize);
+		distinctOperator.setLeftChild(sortOperator);
+		
 		if(rootOperator == null){rootOperator = distinctOperator;}
 		else{curOperator.setLeftChild(distinctOperator);}
-
-		curOperator = distinctOperator;
+		if(node.getLeftChild() instanceof LogicalSortOperator){
+			curOperator = distinctOperator;
+		}
+		else{
+			curOperator = sortOperator;
+		}
 		if(node.getLeftChild() != null) {node.getLeftChild().accept(this);}
 	}
 

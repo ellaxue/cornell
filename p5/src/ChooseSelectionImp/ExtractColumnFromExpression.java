@@ -45,42 +45,73 @@ import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
 
+/**
+ * This class extract out all column names from an expression
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class ExtractColumnFromExpression implements ExpressionVisitor{
 
 	private HashSet<Column> columnList;
+	/**
+	 * default constructor
+	 */
 	public ExtractColumnFromExpression(){
 		columnList = new HashSet<Column>();
 	}
+	
+	/**
+	 * 
+	 * @return the columns in the expression
+	 */
 	public HashSet<Column> getColumnResult(){
 		return this.columnList;
 	}
 	
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(EqualsTo arg0) {
 		arg0.getLeftExpression().accept(this);
 	}
 	
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(GreaterThan arg0) {
 		arg0.getLeftExpression().accept(this);
 	}
 
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(GreaterThanEquals arg0) {
 		arg0.getLeftExpression().accept(this);
 	}
 
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(MinorThan arg0) {
 		arg0.getLeftExpression().accept(this);
 
 	}
 
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(MinorThanEquals arg0) {
 		arg0.getLeftExpression().accept(this);
 	}
 	
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(AndExpression arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -89,11 +120,17 @@ public class ExtractColumnFromExpression implements ExpressionVisitor{
 		right.accept(this);	
 	}
 
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(NotEqualsTo arg0) {
 		arg0.getLeftExpression().accept(this);
 	}
 
+	/**
+	 * Expression visitor
+	 */
 	@Override
 	public void visit(Column arg0) {
 		// TODO Auto-generated method stub

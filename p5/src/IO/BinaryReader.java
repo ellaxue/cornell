@@ -273,6 +273,7 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public void reset() throws Exception {
 		count=8;
+//		System.out.println("file to be open" + fileDirectory);
 		fin = new FileInputStream(fileDirectory);
 		fc = fin.getChannel();
 		buffer=ByteBuffer.allocate(QueryPlan.pageSize);
@@ -322,6 +323,7 @@ public class BinaryReader implements TupleReader {
 	@Override
 	public void close() throws Exception{
 		this.fc.close();
+//		System.out.println("close");
 		this.fin.close();
 	}
 	/**

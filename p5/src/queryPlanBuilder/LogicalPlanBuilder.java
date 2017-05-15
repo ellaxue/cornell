@@ -96,15 +96,7 @@ public class LogicalPlanBuilder {
 		
 		//create distinct operator in the query plan tree 
 		if(queryInterpreter.getDistinct() != null){
-			TreeNode distinctOperator;
-			// if the curOperator is not an instance of SortOperator, need to create one for distinct
-			if(!(curOperator instanceof LogicalSortOperator)){
-				distinctOperator = new LogicalDulplicateEliminationOperator(new LogicalSortOperator(curOperator,orderElementList));
-			}
-			else{ //otherwise, set the curOperator as distinctOperator's child
-				
-				distinctOperator = new LogicalDulplicateEliminationOperator(curOperator);
-			}
+			TreeNode distinctOperator = new LogicalDulplicateEliminationOperator(curOperator);
 			curOperator = distinctOperator;
 		}
 		

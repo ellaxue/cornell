@@ -46,11 +46,20 @@ import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
 
+/**
+ * This class process where expression for finding union find elements
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class WhereProcessForUnionFind implements ExpressionVisitor {
 	private UnionFind unionFind;
 	private ArrayList<Expression> residualJoinExpression;
 	private HashMap<String, Expression> residualSelectExpression;
 	
+	/**
+	 * Constructor
+	 * @param exp
+	 */
 	public WhereProcessForUnionFind(Expression exp){
 		unionFind = new UnionFind();
 		residualJoinExpression = new ArrayList<Expression>();
@@ -58,16 +67,33 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 		if(exp != null) exp.accept(this);
 	}
 	
+	/**
+	 * 
+	 * @return getResidualJoinExpression
+	 */
 	public ArrayList<Expression> getResidualJoinExpression(){
 		return this.residualJoinExpression;
 	}
+	
+	/**
+	 * 
+	 * @return unionFind
+	 */
 	public UnionFind getUnionFindResult(){
 		return this.unionFind;
 	}
 	
+	/**
+	 * 
+	 * @return residualSelectExpression
+	 */
 	public HashMap<String, Expression> getResidualSelectExpression(){
 		return residualSelectExpression;
 	}
+	
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(EqualsTo arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -80,15 +106,21 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 			Element element = unionFind.findElement((Column)left);
 			element.setNumericConstarints(((LongValue)right).toLong());
 		}
+		else if(right instanceof Column && left instanceof LongValue){
+			Element element = unionFind.findElement((Column)right);
+			element.setNumericConstarints(((LongValue)left).toLong());
+		}
 		else{
 			//residual comparison
 			residualJoinExpression.add(arg0);
 		}
 	}
 	
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(GreaterThan arg0) {
-		// TODO Auto-generated method stub
 		Expression left = arg0.getLeftExpression();
 		Expression right = arg0.getRightExpression();
 		
@@ -96,27 +128,40 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 			Element element = unionFind.findElement((Column)left);
 			element.setLowerBound(((LongValue)right).toLong()+1);
 		}
+		else if(right instanceof Column && left instanceof LongValue){
+			Element element = unionFind.findElement((Column)right);
+			element.setLowerBound(((LongValue)left).toLong()+1);
+		}
 		else{
 			//residual comparison
 			residualJoinExpression.add(arg0);
 		}
 	}
 
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(GreaterThanEquals arg0) {
-		// TODO Auto-generated method stub
 		Expression left = arg0.getLeftExpression();
 		Expression right = arg0.getRightExpression();
 		if(left instanceof Column && right instanceof LongValue){
 			Element element = unionFind.findElement((Column)left);
 			element.setLowerBound(((LongValue)right).toLong());
 		}
+		else if(right instanceof Column && left instanceof LongValue){
+			Element element = unionFind.findElement((Column)right);
+			element.setLowerBound(((LongValue)left).toLong());
+		}
 		else{
 			//residual comparison
 			residualJoinExpression.add(arg0);
 		}
 	}
 
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(MinorThan arg0) {
 		// TODO Auto-generated method stub
@@ -126,12 +171,19 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 			Element element = unionFind.findElement((Column)left);
 			element.setUpperBound(((LongValue)right).toLong()-1);
 		}
+		else if(right instanceof Column && left instanceof LongValue){
+			Element element = unionFind.findElement((Column)right);
+			element.setLowerBound(((LongValue)left).toLong()-1);
+		}
 		else{
 			//residual comparison
 			residualJoinExpression.add(arg0);
 		}
 	}
 
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(MinorThanEquals arg0) {
 		// TODO Auto-generated method stub
@@ -141,12 +193,19 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 			Element element = unionFind.findElement((Column)left);
 			element.setUpperBound(((LongValue)right).toLong());
 		}
+		else if(right instanceof Column && left instanceof LongValue){
+			Element element = unionFind.findElement((Column)right);
+			element.setLowerBound(((LongValue)left).toLong());
+		}
 		else{
 			//residual comparison
 			residualJoinExpression.add(arg0);
 		}
 	}
 	
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(AndExpression arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -155,6 +214,9 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 		right.accept(this);	
 	}
 
+	/**
+	 * Expression visitor for finding union find elements
+	 */
 	@Override
 	public void visit(NotEqualsTo arg0) {
 		Expression left = arg0.getLeftExpression();
@@ -164,6 +226,15 @@ public class WhereProcessForUnionFind implements ExpressionVisitor {
 		}
 		else if(left instanceof Column && right instanceof LongValue){
 			String tableName = ((Column)left).getTable().getName();
+			if(!residualSelectExpression.containsKey(tableName)){
+				residualSelectExpression.put(tableName, arg0);
+			}
+			else{
+				residualSelectExpression.put(tableName, new AndExpression(residualSelectExpression.get(tableName),arg0));
+			}	
+		}
+		else if(right instanceof Column && left instanceof LongValue){
+			String tableName = ((Column)right).getTable().getName();
 			if(!residualSelectExpression.containsKey(tableName)){
 				residualSelectExpression.put(tableName, arg0);
 			}

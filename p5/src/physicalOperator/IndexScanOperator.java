@@ -96,6 +96,7 @@ public class IndexScanOperator extends Operator{
 	 */
 	@Override
 	public void reset() throws Exception {
+		reader.close();
 		reader.reset();	
 	}
 	
@@ -122,7 +123,9 @@ public class IndexScanOperator extends Operator{
     	if (QueryPlan.debuggingMode){writerReadable.close();}
 		QueryPlan.nextQuery();
 	}
-	
+	/**
+	 * Method to close reader 
+	 */
 	public void close() throws Exception{
 		reader.close();
 	}
@@ -149,6 +152,10 @@ public class IndexScanOperator extends Operator{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	/**
+	 * Method to translate to string 
+	 */
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();

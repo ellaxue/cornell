@@ -14,6 +14,11 @@ import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
 import net.sf.jsqlparser.schema.Column;
 import project.catalog;
 
+/**
+ * This class finds all union find elements
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class UnionFind {
 	private Map<Integer, Element> disjointSet;
 	private Map<String, Integer> attributeMap;
@@ -23,7 +28,9 @@ public class UnionFind {
 //	private HashMap<String, Expression> unionFindJoinExpMap;
 	private ArrayList<Element> unionFindJoinExpList;
 	
-	
+	/**
+	 * Constructor
+	 */
 	public UnionFind(){
 		disjointSet = new HashMap<Integer, Element>();
 		attributeMap = new HashMap<String, Integer>();
@@ -62,11 +69,15 @@ public class UnionFind {
         return disjointSet.size();
     }
 	
+    /**
+     * Merges two columns into the same element set
+     * @param A one column
+     * @param B the other column
+     */
 	public void mergerElements(Column A, Column B){
 		Integer KeyA = attributeMap.get(A.getColumnName());
 		Integer KeyB = attributeMap.get(B.getColumnName());
 		
-//		Integer key = KeyA != null? KeyA : (KeyB != null)? KeyB : null;
 		if(KeyA == null && KeyB == null){
 			disjointSetCount++;	
 			attributeMap.put(A.getColumnName(),disjointSetCount);
@@ -92,6 +103,11 @@ public class UnionFind {
 		}		    
 	}
 	
+	/**
+	 * Finds an element if it exists and return otherwise add it to element set and return 
+	 * @param col the column to be added to the element
+	 * @return the element
+	 */
 	public Element findElement(Column col){
 		Integer key = attributeMap.get(col.getColumnName());
 		if(key == null){
@@ -105,6 +121,11 @@ public class UnionFind {
 		return disjointSet.get(key);
 	}
 	
+	/**
+	 * Finds an element based on give column name
+	 * @param columnName
+	 * @return the element contains such column
+	 */
 	public Element findElement(String columnName){
 		Integer key = attributeMap.get(columnName);
 		if(key == null){
@@ -146,13 +167,30 @@ public class UnionFind {
 			}
 		}		
 	}
+	
+	/**
+	 * 
+	 * @return the union find selection expression map
+	 */
 	public HashMap<String, Expression> getUnionFindSelectExpMap(){
 		return unionFindSelectExpMap;
 	}
 	
+	/**
+	 * 
+	 * @return the union find join expression list
+	 */
 	public ArrayList<Element> getUnionFindJoinExpList(){
 		return unionFindJoinExpList;
 	}
+	
+	/**
+	 *  This method stores all value to the expression map
+	 * @param tableName table name
+	 * @param exp expression
+	 * @param col column 
+	 * @param longValue value
+	 */
 	private void storeExpressionToMAP(String tableName, BinaryExpression exp, Column col, LongValue longValue){
 		exp.setLeftExpression(col);
 		exp.setRightExpression(longValue);

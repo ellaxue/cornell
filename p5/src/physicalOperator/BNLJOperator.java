@@ -65,19 +65,18 @@ public class BNLJOperator extends Operator{
 	 */
 	@Override
 	public Tuple getNextTuple() throws Exception {
-		Tuple temp;
-		if(first_enter == true && (temp=leftChild.getNextTuple())!=null){//Initiate buffer
+		Tuple temp = leftChild.getNextTuple();
+		if(first_enter == true && temp!=null){//Initiate buffer
 			this.Outer_attr = temp.getTuple().length;
-			leftChild.reset();
+			// leftChild.reset();
 			this.first_enter = false;
-			this.buf = new Buffer(pageSize, Outer_attr);
-			
+			this.buf = new Buffer(pageSize, Outer_attr);	
 		}
-		
+		if(temp == null) return null;
 		if(addedToSet == false) {//Initiate new block
 			addLeftTableToBuffer();
 			addedToSet = true;
-			}
+		}
 		Tuple left;
 		String[] lt;
 		Tuple right;
@@ -139,7 +138,7 @@ public class BNLJOperator extends Operator{
 		//int cst = BNLJ_Page_Bytes/(4*Outer_attr);
 		//buf = new Buffer(pageSize, cst);
 		buf.clear();
-		System.out.println("buffis"+buf);
+		// System.out.println("buffis"+buf);
 		first_enter = true;
 		addedToSet=false;
 	}
@@ -185,37 +184,54 @@ public class BNLJOperator extends Operator{
 			this.buf.add(left);
 		}// get and store tuple from the outer
 	}
-	
+	/**
+	 * Method to add children
+	 */
 	public void addChildren(Operator operator){
 		System.out.println("BNjoin operator adding child ==========>" + operator.getClass());
 		children.add(operator);
 	}
-	
+	/**
+	 * Method to set left child
+	 */
 	@Override
 	public void setLeftChild(Operator child) throws Exception {
-		
 		this.leftChild = child;
 	}
-
+	/**
+	 * Method to set right child
+	 */
 	@Override
 	public void setRightChild(Operator child) {
 		this.rightChild = child;
 	}
-
+	/**
+	 * Method to get left child
+	 * * @return (Operator) the left child
+	 */
 	@Override
 	public Operator getLeftChild() {
 		return this.leftChild;
 	}
-
+	/**
+	 * Method to get right child
+	 * * @return (Operator) the right child
+	 */
 	@Override
 	public Operator getRightChild() {
 		return this.rightChild;
 	}
-	
+	/**
+	 * Method to get the expression
+	 * * @return (Expression) the expression
+	 */
 	@Override
 	public Expression getExpression(){
 		return this.ex;
 	}
+	/**
+	 * Method to set Residual Join Expression
+	 */
 	public void setResidualJoinExpression(ArrayList<Expression> expList){
 		this.residualJoinExpression = expList;
 	}
@@ -241,7 +257,9 @@ public class BNLJOperator extends Operator{
 		return residualJoinExpression;
 	}
 	
-	
+	/**
+	 * Method to translate to string 
+	 */
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
@@ -253,7 +271,9 @@ public class BNLJOperator extends Operator{
 		return sb.toString();
 	}
 
-
+	/**
+	 * @return (ArrayList<Operator>)the children
+	 */
 	@Override
 	public ArrayList<Operator> getChildren() {
 		// TODO Auto-generated method stub

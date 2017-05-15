@@ -47,6 +47,7 @@ public class ScanOperator extends Operator {
 	 */
 	@Override
 	public void reset() throws Exception {
+		reader.close();
 		reader.reset();
 	}
 
@@ -69,6 +70,7 @@ public class ScanOperator extends Operator {
 	}
 	
 	public void close() throws Exception{
+		
 		reader.close();
 	}
 	@Override

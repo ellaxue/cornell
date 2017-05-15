@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import project.SchemaPair;
 import project.catalog;
 
+/**
+ * This class a relation table information
+ * @author Chengcheng Ji (cj368), Pei Xu (px29) and Ella Xue (ex32)
+ *
+ */
 public class RelationInfo {
 	
 	private int totalTupleInRelation;
@@ -13,6 +18,15 @@ public class RelationInfo {
 	private int[] attributeMax;
 	private int totalAttribute;
 	private String attributeNames[];
+	
+	/**
+	 * Constructor
+	 * @param attrMin attributes min value
+	 * @param attrMax attributes max value
+	 * @param totalTuple total number of tuples in the relation
+	 * @param tablename table name of the relation
+	 * @param attriName all the attribute names in the relation
+	 */
 	public RelationInfo(int[] attrMin, int[] attrMax, int totalTuple, String tablename, String[] attriName){
 		this.tableName = tablename;
 		this.totalTupleInRelation = totalTuple;
@@ -22,6 +36,10 @@ public class RelationInfo {
 		this.setAttributeNames(attriName);
 	}
 	
+	/**
+	 * 
+	 * @return number of attribute of this relation
+	 */
 	public int getNumOfAttribute(){
 		return this.totalAttribute;
 	}
@@ -81,6 +99,11 @@ public class RelationInfo {
 		this.attributeMax = attributeMax;
 	}
 
+	/**
+	 * 
+	 * @param colName attribute name
+	 * @return min value of this attribute
+	 */
 	public Integer getMinValOfAttr(String colName) {
 		for(int i = 0; i< getAttributeNames().length;i++){
 			if(getAttributeNames()[i].equals(colName)){
@@ -90,6 +113,11 @@ public class RelationInfo {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @param colName attribute name
+	 * @return max value of this attribute
+	 */
 	public Integer getMaxValOfAttr(String colName) {
 		for(int i = 0; i< getAttributeNames().length;i++){
 			if(getAttributeNames()[i].equals(colName)){
@@ -99,10 +127,18 @@ public class RelationInfo {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return return all attribute name in this relation
+	 */
 	public String[] getAttributeNames() {
 		return attributeNames;
 	}
 
+	/**
+	 * set attribute names in this relation
+	 * @param attributeNames attribute names in this relation
+	 */
 	public void setAttributeNames(String attributeNames[]) {
 		this.attributeNames = attributeNames;
 	}
