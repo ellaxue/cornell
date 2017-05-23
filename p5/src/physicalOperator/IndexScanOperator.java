@@ -51,7 +51,7 @@ public class IndexScanOperator extends Operator{
 	public IndexScanOperator(String tableName, IndexInfo index) throws Exception {
 		// original table name disregard if alias is used for index file scan
 		this.originalTableName = index.getTableName();
-		System.out.println("table name:" + tableName);
+		//System.out.println("table name:" + tableName);
 		this.reader= new BinaryReader(tableName);//could be alias name, if alias used
 		this.indexCol = index.getIndexCol();
 		this.count = 0;

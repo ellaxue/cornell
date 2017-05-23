@@ -102,16 +102,16 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		case FULL_SCAN:
 			if(exp == null) selectOperator = new ScanOperator(tableName);
 			else selectOperator = new SelectOperator(new ScanOperator(tableName),exp);
-			System.out.println("full scan opterator chosen with table name " + tableName + " exp " + exp );
+			//System.out.println("full scan opterator chosen with table name " + tableName + " exp " + exp );
 			break;
 		case INDEX_SCAN:
 			if (exp ==null) {
 				selectOperator= new IndexScanOperator(tableName,index);
-				System.out.println("index scan opterator chosen with table name " + tableName + " exp " + exp);
+				//System.out.println("index scan opterator chosen with table name " + tableName + " exp " + exp);
 			}
 			else {
 				selectOperator=new SelectOperator(new IndexScanOperator(tableName,index), exp);
-				System.out.println("index scan and select opterator chosen with table name " + tableName + " exp " + exp);
+				//System.out.println("index scan and select opterator chosen with table name " + tableName + " exp " + exp);
 			}
 		default:break;
 		}
@@ -199,7 +199,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 					}
 				}
 			}
-		System.out.println("=========| full scan cost " + fullScanCost + " indexCost " + indexCost + " |==============");
+		//System.out.println("=========| full scan cost " + fullScanCost + " indexCost " + indexCost + " |==============");
 		return fullScanCost < indexCost ? SELECT_METHOD.FULL_SCAN : SELECT_METHOD.INDEX_SCAN;
 	}
 
@@ -216,8 +216,8 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 		Integer equal = element.getEqualityConstraint() == null? null:element.getEqualityConstraint().intValue();
 		Integer indexLowBound = equal == null? element.getLowerBound() == null? null:element.getLowerBound().intValue():equal;
 		Integer indexUpBound = equal == null? element.getUpperBound() == null? null:element.getUpperBound().intValue() :equal;
-		System.out.println("indexlow"+indexLowBound);
-		System.out.println("indexup"+indexUpBound);
+		//System.out.println("indexlow"+indexLowBound);
+		//System.out.println("indexup"+indexUpBound);
 
 		//current relation's min - max value
 		int attributeMinVal = relation.getMinValOfAttr(colName);
@@ -381,7 +381,7 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 
 		planWriter.write(dash(dash)+op);
 		//		System.out.println(op.getClass());
-		System.out.print(dash(dash)+op);
+		//System.out.print(dash(dash)+op);
 
 		ArrayList<Operator> operatorList = new ArrayList<>();
 		operatorList.add(op.getLeftChild());
@@ -391,10 +391,10 @@ public class PhysicalPlanBuilder implements OperationVisitor{
 			for(Operator operator:operatorList){
 				if(op instanceof SMJoinOperator) {
 					if(left) {
-						System.out.print(dash(dash+1)+((SMJoinOperator)op).leftExternal());
+						//System.out.print(dash(dash+1)+((SMJoinOperator)op).leftExternal());
 						planWriter.write(dash(dash+1)+((SMJoinOperator)op).leftExternal());}
 					else {
-						System.out.print(dash(dash+1)+((SMJoinOperator)op).rightExternal());
+						//System.out.print(dash(dash+1)+((SMJoinOperator)op).rightExternal());
 						planWriter.write(dash(dash+1)+((SMJoinOperator)op).rightExternal());}
 					printPhysicalPlanTreeHelper(operator,dash+2);
 					left=false;

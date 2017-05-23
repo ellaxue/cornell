@@ -141,7 +141,7 @@ public class DuplicateEliminationOperator extends Operator {
 			firstTime=false;
 			return firstTuple;
 		}
-		System.out.println(firstTuple.getComplete());
+		//System.out.println(firstTuple.getComplete());
 		if (firstTuple==null) return null;
 		while (true) {
 			tu=child.getNextTuple();

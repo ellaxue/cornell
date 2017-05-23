@@ -74,7 +74,7 @@ public class ExternalSortOperator extends Operator{
 	}
 	
 	public void cleanFinalSortedFile() {
-		System.out.println("delete final file" );
+		//System.out.println("delete final file" );
 		File file = new File(cl.getTempFileDir()+File.separator+this.toString(tableName)+finalSortedFileIdentifier);
 		file.delete();
 	}

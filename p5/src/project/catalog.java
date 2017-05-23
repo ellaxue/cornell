@@ -76,8 +76,8 @@ public final class catalog {
 	public void printIndexInfo(){
 		for(Map.Entry<String, HashMap<String, Boolean>> entry:indexes.entrySet()){
 			for(Map.Entry<String, Boolean> indexes:  entry.getValue().entrySet()){
-				System.out.println("Table " + entry.getKey() + " has an index on " + 
-						indexes.getKey() + ", is cluster = " + indexes.getValue());
+				//System.out.println("Table " + entry.getKey() + " has an index on " + 
+						//indexes.getKey() + ", is cluster = " + indexes.getValue());
 			}			
 		}
 	}

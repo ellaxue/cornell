@@ -220,8 +220,8 @@ public class ChooseJoinOrder {
 				if (!FinalOrder.contains(s)) FinalOrder=FinalOrder+s;
 			}
 		}
-		System.out.println("finalOrder is "+FinalOrder);
-		System.out.println(TableSize.get(0));
+		//System.out.println("finalOrder is "+FinalOrder);
+		//System.out.println(TableSize.get(0));
 	}
 }
 	

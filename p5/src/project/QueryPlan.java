@@ -55,9 +55,9 @@ public class QueryPlan {
 		buildIndex(cl);
 //		else {findIndex(cl);}
 		
-		System.out.println("<======================================Index info for all relations=============================>" );
+		//System.out.println("<======================================Index info for all relations=============================>" );
 		cl.printIndexInfo();
-		System.out.println("<==========================================================================================>\n\n\n" );
+		//System.out.println("<==========================================================================================>\n\n\n" );
 		// parse the query and output results
 		CCJSqlParser parser = new CCJSqlParser(new FileReader(cl.getInputDir() + File.separator + "queries.sql"));
 		Statement statement;
@@ -67,26 +67,26 @@ public class QueryPlan {
 				while ((statement = parser.Statement()) != null) {
 
 					Long t=System.currentTimeMillis();
-					System.out.println("============================Read statement=========================================");
-					System.out.println(statement+"\n=======================================================================================\n");
+					//System.out.println("============================Read statement=========================================");
+					//System.out.println(statement+"\n=======================================================================================\n");
 //					store alias information and interprets query statement
 					queryInterpreter = new QueryInterpreter(statement,cl);
 	
 					setSchemaPair();
 					LogicalPlanBuilder logicalPlan = new LogicalPlanBuilder(queryInterpreter, cl);
 					logicalPlan.buildQueryPlan();
-					System.out.println("=================================Print logical plan =========================================\n");
+					//System.out.println("=================================Print logical plan =========================================\n");
 	
 					queryInterpreter.printQueryPlan(logicalPlan.getRootOperator());
-					System.out.println("=======================================================================================\n");
+					//System.out.println("=======================================================================================\n");
 					PhysicalPlanBuilder physicalPlan = new PhysicalPlanBuilder(cl,queryInterpreter,cl.getInputDir(),logicalPlan.getUnionFind());
 					logicalPlan.getRootOperator().accept(physicalPlan);
-					System.out.println("=================================Print physical plan =========================================\n");
+					//System.out.println("=================================Print physical plan =========================================\n");
 					physicalPlan.printPhysicalPlanTree(physicalPlan.result());
-					System.out.println("=======================================================================================\n");
+					//System.out.println("=======================================================================================\n");
 					physicalPlan.result().dump();
 					// nextQuery();
-					System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
+					//System.out.println("query"+(queryCount-1)+" Evaluation time:"+ (System.currentTimeMillis()-t));
 				}
 			} 
 			catch (Exception e) {

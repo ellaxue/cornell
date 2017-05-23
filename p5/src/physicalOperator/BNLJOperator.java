@@ -65,17 +65,16 @@ public class BNLJOperator extends Operator{
 	 */
 	@Override
 	public Tuple getNextTuple() throws Exception {
-		Tuple temp = leftChild.getNextTuple();
-		if(first_enter == true && temp!=null){//Initiate buffer
-			this.Outer_attr = temp.getTuple().length;
-			// leftChild.reset();
-			this.first_enter = false;
-			this.buf = new Buffer(pageSize, Outer_attr);	
-		}
-		if(temp == null) return null;
-		if(addedToSet == false) {//Initiate new block
-			addLeftTableToBuffer();
-			addedToSet = true;
+		
+		if(first_enter == true){//Initiate buffer
+		    Tuple temp = leftChild.getNextTuple();
+		    if(temp == null ) return null;
+		    this.Outer_attr = temp.getTuple().length;
+		    // leftChild.reset();
+		    this.first_enter = false;
+		    this.buf = new Buffer(pageSize, Outer_attr);
+		    buf.add(temp);
+		    addLeftTableToBuffer();
 		}
 		Tuple left;
 		String[] lt;
@@ -188,7 +187,7 @@ public class BNLJOperator extends Operator{
 	 * Method to add children
 	 */
 	public void addChildren(Operator operator){
-		System.out.println("BNjoin operator adding child ==========>" + operator.getClass());
+		//System.out.println("BNjoin operator adding child ==========>" + operator.getClass());
 		children.add(operator);
 	}
 	/**

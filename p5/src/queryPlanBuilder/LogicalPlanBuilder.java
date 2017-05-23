@@ -58,7 +58,7 @@ public class LogicalPlanBuilder {
 		Table firstTable = queryInterpreter.getFirstTable();
 		//create first select operator and set up select condition
 		TreeNode curOperator = new LogicalSelectOperator(new LogicalScanOperator(firstTable.getName()),unionFindConditions.getUnionFindSelectExpMap(),residualSelectExpression);
-		System.out.println("The table ===========> " + queryInterpreter.getFirstTable());
+		//System.out.println("The table ===========> " + queryInterpreter.getFirstTable());
 		((LogicalSelectOperator)curOperator).setExpressoin(firstTable);
 		
 		// add join operators based on the number of join elements in the list
@@ -117,7 +117,7 @@ public class LogicalPlanBuilder {
 	private void printCondition(HashMap<String, Expression> expressions) {
 		// TODO Auto-generated method stub
 		for(Map.Entry<String, Expression> entry: expressions.entrySet()){
-			System.out.println("table " + entry.getKey() + " with expression " + entry.getValue());
+			//System.out.println("table " + entry.getKey() + " with expression " + entry.getValue());
 		}
 	}
 

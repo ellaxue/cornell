@@ -78,7 +78,7 @@ public class QueryInterpreter {
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		String line = reader.readLine();
 		catalog cl = catalog.getInstance();
-		System.out.print("<====================================Relation statistics====================================>\n ");
+		//System.out.print("<====================================Relation statistics====================================>\n ");
 		while(line != null){
 			String splitStr[] = line.split(" ");
 			String tableName = splitStr[0];
@@ -89,21 +89,21 @@ public class QueryInterpreter {
 				int	attributeMin[] = new int[attributeNum];
 				int attributeMax[] = new int[attributeNum];
 				String attributeNames[] = new String[attributeNum];
-				System.out.print("table name " + tableName + " num of tuples " + numOfTuple  + " ");
+				//System.out.print("table name " + tableName + " num of tuples " + numOfTuple  + " ");
 				for(int i = 2; i < splitStr.length; i++){
 					String splitAttribute[] = splitStr[i].split(",");
 					attributeNames[i-2] = splitAttribute[0];
 					attributeMin[i-2] = Integer.parseInt(splitAttribute[1]);
 					attributeMax[i-2] = Integer.parseInt(splitAttribute[2]);
-					System.out.print(attributeNames[i-2] + ", " +attributeMin[i-2] + ", " + attributeMax[i-2]+ " ");
+					//System.out.print(attributeNames[i-2] + ", " +attributeMin[i-2] + ", " + attributeMax[i-2]+ " ");
 				}
-				System.out.println();
+				//System.out.println();
 				RelationInfo relationInfo = new RelationInfo(attributeMin,attributeMax,numOfTuple,tableName,attributeNames);
 				cl.getRelationMap().put(tableName, relationInfo);
 //			}
 			line = reader.readLine();
 		}
-		System.out.print("<====================================Relation statistics====================================> \n\n\n");
+		//System.out.print("<====================================Relation statistics====================================> \n\n\n");
 		reader.close();
 	}
 	/** get query plan from query plan builder
@@ -124,7 +124,7 @@ public class QueryInterpreter {
 		}
 		else{
 			writer.write(dash(dash)+root);
-			System.out.print(dash(dash)+root);
+			//System.out.print(dash(dash)+root);
 		}
 		
 //		System.out.println(root.getClass());
