@@ -1,5 +1,7 @@
 package physicalOperator;
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import ChooseSelectionImp.Element;
@@ -9,90 +11,76 @@ import IO.TupleWriter;
 import logicalOperator.LogicalSelectOperator;
 import logicalOperator.TreeNode;
 import net.sf.jsqlparser.expression.Expression;
-import project.Buffer;
 import project.QueryInterpreter;
 import project.QueryPlan;
 import project.SchemaPair;
 import project.Tuple;
+import project.catalog;
 import project.conditionEvaluator;
 import queryPlanBuilder.PhysicalPlanBuilder;
+
 /**
- * BNLJoin operator to execute the BNLJoin operation
+ * Join operator to execute the join operation
  * 
- * @author Chengcheng Ji (cj368), Pei Xu (px29)  and Ella Xue (ex32) 
+ * @author Chengcheng Ji (cj368) and Pei Xu (px29)
  */
-public class BNLJOperator extends Operator{
-	public int BNLJ_Page_Bytes = QueryPlan.pageSize;
-	private Buffer buf;
-	private int pageSize;
-	private Operator rightChild;
+
+public class JoinOperator extends Operator {
+	private ArrayList<Tuple> leftset;
 	private Operator leftChild;
-	private boolean first_enter = true;
-	private int Outer_attr;
+	private Operator rightChild;
 	private Expression ex;
 	private int count;
 	private boolean addedToSet = false;
+	private int printcount = 0;
 	private ArrayList<Operator> children;
-	private ArrayList<Expression> residualJoinExpression; 
-	private ArrayList<Element> unionFindJoinExpList;
-	public BNLJOperator(Operator leftChild, Operator rightChild, Expression ex, int pageSize) throws Exception {
-		
-		//The leftChild is the Outer Child and the rightChild is the Inner Child
-		//System.out.println("leftChild:::::::::::::::::::::: "+leftChild.toString());
-		//Inner_attr= rightChild.getNextTuple().getTuple().length;
-		this.pageSize = pageSize;
-		//reset after getting attributes number
-		//leftChild.reset();
-		//rightChild.reset();
-		children = new ArrayList<Operator>();
-		this.rightChild = rightChild;
-		this.leftChild = leftChild;
 
+	private ArrayList<Element> unionFindJoinExpList;
+	private ArrayList<Expression> residualJoinExpression;
+	public JoinOperator(Operator leftChild, Operator rightChild, Expression ex) throws Exception {
+		
+		this.leftset = new ArrayList<>();
+		this.leftChild = leftChild;
+		this.rightChild = rightChild;
 		this.ex = ex;
 		this.count = 0;
+		this.children = new ArrayList<Operator>();
 	}
-	
-	
 
+	public JoinOperator(ArrayList<Expression> residualJoinExpression, ArrayList<Element> unionFindJoinExpression,
+			Expression expressoin) {
+		// TODO Auto-generated constructor stub
+		this.leftset = new ArrayList<>();
+		this.count = 0;
+		this.children = new ArrayList<Operator>();
+		this.unionFindJoinExpList = unionFindJoinExpression;
+		this.residualJoinExpression= residualJoinExpression;
+	}
 
 	/** 
 	 * Method to obtain a tuple from the outer and a tuple from the inner and glue them
 	   together
-	   Outer tuples are stored in block
 	 * 
 	 * @return (Tuple) the tuple matches the join condition(If the join is a cross product, all pairs of
 	   tuples are returned)
 	 */
 	@Override
 	public Tuple getNextTuple() throws Exception {
-		Tuple temp = leftChild.getNextTuple();
-		if(first_enter == true && temp!=null){//Initiate buffer
-			this.Outer_attr = temp.getTuple().length;
-			// leftChild.reset();
-			this.first_enter = false;
-			this.buf = new Buffer(pageSize, Outer_attr);	
-		}
-		if(temp == null) return null;
-		if(addedToSet == false) {//Initiate new block
-			addLeftTableToBuffer();
-			addedToSet = true;
-		}
+		if(addedToSet == false) {addLeftTableToSet();addedToSet = true;}
 		Tuple left;
 		String[] lt;
 		Tuple right;
 		String[] rt;
-		if(buf.size()==0) return null;
-		while (count<buf.size()) {//get tuple from the outer
-			left = buf.get(count);
+		while (count<leftset.size()) {//get tuple from the outer
+			left = leftset.get(count);
 			ArrayList<SchemaPair> def_schema = new ArrayList<SchemaPair>(left.getSchemaList());
 			lt = left.getTuple();
 			StringBuffer sb = new StringBuffer();
 			for (String s : lt) {
 				sb.append(s).append(",");
 			}
-
+			
 			while ((right = rightChild.getNextTuple()) != null) {//get tuple from the inner
-
 				StringBuffer sb_next = new StringBuffer(sb);
 				ArrayList<SchemaPair> def_schema_next = new ArrayList<SchemaPair>(def_schema);
 				for (SchemaPair s : new ArrayList<SchemaPair>(right.getSchemaList())) {
@@ -106,61 +94,40 @@ public class BNLJOperator extends Operator{
 				if (ex != null) {
 					conditionEvaluator eva = new conditionEvaluator(tu, ex);
 					if (eva.getResult()) {
-
 						return tu;
 					}
 				} else
-
 					return tu;
 			}
 			rightChild.reset();
 			count ++;
 		}
-		if(count==buf.size()){
-			if(!buf.isFull()) return null;
-			addedToSet = false;
-			buf.clear();
-			count = 0;
-			return getNextTuple();
+		if (leftChild instanceof ExternalSortOperator){
+			((ExternalSortOperator)leftChild).cleanFinalSortedFile();
+		}
+		if (rightChild instanceof ExternalSortOperator){
+			((ExternalSortOperator)rightChild).cleanFinalSortedFile();
 		}
 		return null;
 	}
 
-	
 	/**
 	 * Method to reset by reset all its fields
 	 */
 	@Override
-	public void reset() throws Exception {
-		rightChild.reset();
+	public void reset() throws Exception  {
 		leftChild.reset();
+		rightChild.reset();
 		count = 0;
-		//int cst = BNLJ_Page_Bytes/(4*Outer_attr);
-		//buf = new Buffer(pageSize, cst);
-		buf.clear();
-		// System.out.println("buffis"+buf);
-		first_enter = true;
-		addedToSet=false;
+		leftset = new ArrayList<Tuple>();
 	}
 
-	
-	/**
-	 * Method to reset by reset all its fields
-	 */
-	@Override
-	public void reset(int index) throws Exception {
-		// TODO Auto-generated method stub	
-	}
-
-	
 	/**
 	 * Method to dump the results of the join operator
 	 */
 	@Override
 	public void dump() throws Exception {
-		
-
-		Tuple tu;
+	    Tuple tu;
         TupleWriter writer= new BinaryWriter();
         TupleWriter writerReadable = null;
         if (QueryPlan.debuggingMode) {writerReadable = new DirectWriter();}
@@ -173,65 +140,50 @@ public class BNLJOperator extends Operator{
     	if (QueryPlan.debuggingMode){writerReadable.close();}
 		QueryPlan.nextQuery();
 	}
-
-	/**
-	 * Method to read and store outer tuples in blocks
-	 */
-	private void addLeftTableToBuffer() throws Exception{
+	
+	private void addLeftTableToSet() throws Exception{
 		Tuple left;
-	//	System.out.println("buf is"+buf);
-		while ( (!buf.isFull() &&(left = leftChild.getNextTuple()) != null)) {
-			this.buf.add(left);
+		while ((left = leftChild.getNextTuple()) != null) {
+			this.leftset.add(left);
 		}// get and store tuple from the outer
 	}
-	/**
-	 * Method to add children
-	 */
-	public void addChildren(Operator operator){
-		//System.out.println("BNjoin operator adding child ==========>" + operator.getClass());
-		children.add(operator);
-	}
-	/**
-	 * Method to set left child
-	 */
+	
 	@Override
 	public void setLeftChild(Operator child) throws Exception {
 		this.leftChild = child;
 	}
-	/**
-	 * Method to set right child
-	 */
+
 	@Override
 	public void setRightChild(Operator child) {
 		this.rightChild = child;
 	}
-	/**
-	 * Method to get left child
-	 * * @return (Operator) the left child
-	 */
+
 	@Override
 	public Operator getLeftChild() {
 		return this.leftChild;
 	}
-	/**
-	 * Method to get right child
-	 * * @return (Operator) the right child
-	 */
+
 	@Override
 	public Operator getRightChild() {
 		return this.rightChild;
 	}
-	/**
-	 * Method to get the expression
-	 * * @return (Expression) the expression
-	 */
+	
 	@Override
 	public Expression getExpression(){
 		return this.ex;
 	}
-	/**
-	 * Method to set Residual Join Expression
-	 */
+
+	@Override
+	public void reset(int index) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addChildren(Operator operator){
+//		System.out.println("join operator adding child ==========>" + operator.getClass());
+		children.add(operator);
+	}
+	
 	public void setResidualJoinExpression(ArrayList<Expression> expList){
 		this.residualJoinExpression = expList;
 	}
@@ -256,28 +208,17 @@ public class BNLJOperator extends Operator{
 	public ArrayList<Expression> getResidualJoinExpression() {
 		return residualJoinExpression;
 	}
-	
-	/**
-	 * Method to translate to string 
-	 */
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
-		
-		sb.append("BNLJ").append("["+ex+"]").append("\n");
-		
-		//print union find join expression list
+
+		sb.append("Join").append(ex).append("\n");
 		
 		return sb.toString();
 	}
-
-	/**
-	 * @return (ArrayList<Operator>)the children
-	 */
+	
 	@Override
 	public ArrayList<Operator> getChildren() {
-		// TODO Auto-generated method stub
 		return children;
 	}
-
 }
