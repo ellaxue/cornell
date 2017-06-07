@@ -1,0 +1,3 @@
+samples/input
+samples/output
+samples/tempSort

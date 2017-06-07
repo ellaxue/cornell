@@ -1,0 +1,6 @@
+Project[R.G, R.H, B.D, B.E, B.F]
+-BNLJ[B.D <> R.G]
+--Select[B.E <= 99]
+---TableScan[Boats]
+--Select[R.G <= 99]
+---TableScan[Reserves]

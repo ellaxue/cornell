@@ -1,0 +1,6 @@
+Project[R.G, R.H, B.D, B.E, B.F]
+-SMJoin[B.D = R.G]
+--ExternalSort[[R.G]]
+---TableScan[Reserves]
+--ExternalSort[[B.D]]
+---TableScan[Boats]

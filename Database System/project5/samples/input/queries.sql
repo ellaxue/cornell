@@ -1,0 +1,10 @@
+SELECT * FROM Reserves R;
+SELECT * FROM Sailors S WHERE S.A < 50;
+SELECT * FROM Sailors S WHERE S.B > 50;
+SELECT * FROM Sailors S WHERE S.A < 50 AND S.B < 50;
+SELECT R.G, R.H, B.D, B.E, B.F FROM Reserves R, Boats B WHERE B.D=R.G;
+SELECT R.G, R.H, B.D, B.E, B.F, S.A, S.B, S.C FROM Sailors S, Reserves R, Boats B WHERE B.D=R.G AND R.H = S.A;
+SELECT R.G, R.H, B.D, B.E, B.F FROM Reserves R, Boats B WHERE B.D=R.G AND B.D < 100;
+SELECT R.G, R.H, B.D, B.E, B.F FROM Reserves R, Boats B WHERE B.D<>R.G AND R.G < 100  AND B.E < 100;
+SELECT R.G, R.H, B.D, B.E, B.F FROM Reserves R, Boats B WHERE B.D<>R.G AND B.E = R.H;
+SELECT DISTINCT S.A, R.G FROM Sailors S, Reserves R, Boats B WHERE S.B = R.G AND S.A = B.D AND R.H <> B.D AND R.H < 100 ORDER BY S.A;
