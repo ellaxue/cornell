@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Elevate Bootstrap 4.0 Theme</title>
+<!--
+Elevate
+http://www.templatemo.com/tm-481-elevate
+-->
+    <!-- load stylesheets -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400">   <!-- Google web font "Open Sans" -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">                                      <!-- Bootstrap style -->
+    <link rel="stylesheet" href="css/magnific-popup.css">                                     <!-- Magnific pop up style -->
+    <link rel="stylesheet" href="css/templatemo-style.css">                                   <!-- Templatemo style -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+          <![endif]-->
+      </head>
+
+      <body>
+        <div class="container">
+            <div class="tm-sidebar">
+                <nav class="tm-main-nav">
+                    <ul>
+                        <li class="tm-nav-item"><a href="#home" class="tm-nav-item-link">Home</a></li>
+                        <li class="tm-nav-item"><a href="#project" class="tm-nav-item-link">Our Project</a></li>
+                        <li class="tm-nav-item"><a href="#appendix" class="tm-nav-item-link">Appendix</a></li>
+                        <li class="tm-nav-item"><a href="#about" class="tm-nav-item-link">About</a></li>
+
+                    </ul>
+                </nav>
+            </div>
+            
+
+
+            <div class="tm-main-content">
+
+                <section id="home" class="tm-content-box tm-banner margin-b-4">
+                    <div class="tm-banner-inner">
+                       <font size="-1"> <h3 class="tm-banner-title">Security Camera System</h3></font> 
+                       <font size="+3"><p class="tm-section-description">with</p></font> 
+                       <font size="-1"><h3 style="color:rgb(0,150,180);"class="tm-banner-title">Human Detection</h3></font>
+                    </div>                    
+                </section>
+
+                <section id="home">
+                    <div id="tmCarousel" class="carousel slide tm-content-box" data-ride="carousel">
+
+                        <ol class="carousel-indicators">
+                            <li data-target="#tmCarousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#tmCarousel" data-slide-to="1" class=""></li>
+                            <li data-target="#tmCarousel" data-slide-to="2" class=""></li>
+                        </ol>
+
+                        <div class="carousel-inner" role="listbox">
+                        
+                            <div class="carousel-item active">
+                                <div class="carousel-content">
+                                    <div class="flex-item">
+                                        <h2 class="tm-section-title"></h2>
+                                        <a >
+                                            <img id="pic1" class="selected imagethumb" src="img/albert.jpg" width="600" height="400"/>
+                                        </a>
+                                    </div>
+                                </div>                               
+                            </div>
+
+                            <div class="carousel-item">
+                                <div class="carousel-content">
+                                    <div class="flex-item">
+                                        <h2 class="tm-section-title"></h2>
+                                        <a >
+                                            <img id="pic1" class="selected imagethumb" src="img/albert_ta_meitu_15.jpg" width="600" height="400"/>
+                                        </a>
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <div class="carousel-item">
+                                <div class="carousel-content">
+                                    <div class="flex-item">
+                                        <h2 class="tm-section-title"></h2>
+                                        <a >
+                                            <img id="pic1" class="selected imagethumb" src="img/our_pi.jpg" width="600" height="400"/>
+                                        </a>
+                                    </div>
+                                </div>                                
+                            </div>
+
+                        </div>
+                        
+                    </div>                    
+                </section>
+                
+                
+
+                <section class="tm-content-box">
+                    <img src="img/house_meitu.jpg" alt="Contact image" class="img-fluid">
+
+                    <div id="project" class="pad">
+                        <h1 class="tm-section-title">Introduction</h1>
+                        <form action="#contact" method="get" class="contact-form">
+                            
+                         <p class="tm-section-description">Our project idea is to utilize a Raspberry Pi 3 to build a webcam server that provides a platform for users to remotely monitor their homes over the internet. DropBox uploading of captured images and email notifications will be triggered if a human is detected to warn the user of potential intruders. One usage of this project is to provide a home security system for homeowners while they are physically absent. </p>
+        
+                            <p class="tm-section-description">The hardware of the system includes a Raspberry Pi 3, a Pi Cam, and a pan-tilt kit with two servos that provides 180 degrees of up/down and left/right rotation. Our final software is based on experimenting with existing OpenCV libraries by using various combinations of motion, face, and human body detection to find the optimal combination of performance versus accuracy for a practical security system.
+                            </p>
+                         
+                            <h2 class="tm-section-title">Objective</h2>
+                            <p class="tm-section-description">The objective of this project is to build a human detection security camera system that monitors a home and captures images of potential intruders. The  camera mechanism rotates either automatically or manually to track a face when a human is within view of the camera. A notification is sent to the homeowner immediately upon detection of a human to warn the user of the security status of their home.</p>
+
+
+
+                            <hr>
+                            <h1 class="tm-section-title">System Design</h1> 
+                            <img src="img/system_design.png" alt="Image" class="img-fluid">
+                            <center><p class="tm-section-description">Figure 1. System Design </p></center>
+                            <p class="tm-section-description"> The Pi Server provides video streaming and runs human face detection and body detection to distingush humans from non-human objects. Notifications are sent to users through email and uploaded to users' DropBox accounts upon detection.</p>
+                            <hr>
+
+                            <div>
+                   
+                                <h2 class="tm-section-title"> Hardware Implementation</h2>
+                                <h6 class="tm-section-title">System Schemetic and Flow Chart Design</h6>
+                                <center><img src="img/schemtic.png" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 2. System Block Diagram</p></center>
+                                <p class="tm-section-description"></p>
+
+                                <center><img src="img/system2.png" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 3. System Design Flowchart</p></center>
+                                <p class="tm-section-description">The above figures show the design of our system. The servos of the pan-and-tilt kit are connected to 2 GPIO output pins of the Raspberry Pi to enable their control via PWMs. They were powered by an external 4.5V supply, either from a lab bench power supply or a battery pack with a voltage regulator. The Pi Cam was directly connected via the camera slot on the Raspberry Pi’s PCB.</p>
+
+
+
+                                <h6 class="tm-section-title">Raspberry Pi3</h6>
+                                <center><img src="img/pi3.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 4. Raspberry Pi 3 with 1.2GHz 64-bit quad-core ARMv8 CPU, 1 GB RAM</p></center>
+                                
+
+                                <h6 class="tm-section-title">PiCamera Module</h6>
+                                <center><img src="img/pi_camera.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 5. Raspberry Pi Camera Module V2 - 8 Megapixel,1080p, 3280 (H) x 2464 (V) Active Pixel Count</p></center>
+                                
+
+                                <h6 class="tm-section-title">Pan Tilt Servos</h6>
+                                <center><img src="img/sg90.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 6. Pan Tilt Kit with two servos for 180 degrees of up/down and left/right rotation</p></center>
+
+                                <center><img src="img/our_pi.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                                <center><p class="tm-section-description">Figure 7. Final Security Camera System</p></center>
+                            </div>
+                            <hr>
+
+
+                            <!-- Software implementation -->
+                            <font size="-2"><h2 class="tm-section-title"> Software Implementation</h2></font>
+                            <h5 class="tm-section-title">Human Detection Algorithm with Opencv</h5>
+                            <p class="tm-section-description">For human body detection, we used existing OpenCV libraries with different combinations of motion, face, and body detection.</p>
+                            <p>Click <a href=http://pklab.net/?id=392&lang=EN>here</a> for instructions on installing OpenCV3.</p>
+                            
+                            <!-- motion detection -->
+                            <h5 class="tm-section-title">Motion Detection</h5>
+                            <p class="tm-section-description">Our motion detector uses OpenCV’s APIs to compute the weighted mean of previous frames along with the current frame to detect changes in the background. By subtracting the computed average of the previous frames from the current frame, we can obtain the difference in frames and compare the frame delta with the specified threshold value. If the delta exceeds the threshold, the motion detector is triggered. The lower the threshold value, the more sensitive the motion detector becomes. The video stream on the screen will have a bounding box drawn around the object and text reading "Occupied" when motion is detected.</p>
+                            <center><img src="img/motion.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                            <center><p class="tm-section-description">Figure 8. Motion detected in dark environment</p></center>
+
+                            <!-- human face detection -->
+                            <h5 class="tm-section-title">Human Face Detection</h5>
+                            <p class="tm-section-description">  For face detection, we used the Haar cascade classifier as it is capable of significant accuracy detecting human faces. The computational load is also low enough to achieve a reasonable framerate when multithreading on the 4 processing cores of the Raspberry Pi. The Haar cascade face detector already has a classifier trained on human faces, so there is no need for us to perform training.</p> 
+                            <center><img src="img/ella_danna_face.png" alt="Image" class="img-fluid" height="480" width="480"></center>
+                            <center><p class="tm-section-description">Figure 9. Face detection with Haar cascade classifier</p></center>
+                             <p>Click <a href=https://github.com/opencv/opencv/tree/master/data/haarcascades>here</a> to download OpenCV Haar cascade classifiers.</p>
+                            
+                            <!-- human body detection -->
+                            <h5 class="tm-section-title">Human Body Detection</h5>
+                            <p class="tm-section-description">We worked with two algorithms for human body detection. One is a Haar cascade classifier trained to detect the upper and lower body seperately. The computational load is lower with the Haar cascade at significant expense to accuracy. Thus, we went with the other option and integrated a pedestrian detector that uses a histogram of oriented gradients (HOG) classifier. This algorithm works by detecting different body parts and pieces them together to form a human body. The computation is rather expensive but significantly more accurate than the cascade classifier. (The HOG detector was included in OpenCV with no additional files required for download.)</p>
+                            <center><img src="img/body2_meitu_12.jpg" alt="Image" class="img-fluid" height="480" width="480"></center>
+                            <center><p class="tm-section-description">Figure 10. Human body detection with HOG detector</p></center>
+
+                            <!-- dropbox -->
+                            <h5 class="tm-section-title">Dropbox Image Upload of Detected Humans</h5>
+                            <p class="tm-section-description">To trigger the DropBox uploading, users need to have a reigstered DropBox account and save their "dropbox_key" and "dropbox_secret" in the conf.json file (attached in the Appendix section) and consent to DropBox access before running. Once a human is detected, the images will be uploaded automatically into users' DropBox folders and sent via email if the feature is enabled.</p>
+                            <center><img src="img/dropbox.png" alt="Image" class="img-fluid" height="480" width="480"></center>
+                            <center><p class="tm-section-description">Figure 11. Images stored in the local folder that is linked with the DropBox account</p></center>
+
+                            <!-- email notication -->
+                            <h5 class="tm-section-title">Email Notication of Detected Humans</h5>
+                            <p class="tm-section-description">If a human is detected, an email notification is immediately sent to notify the user of potential intruders. The email notification also includes a captured image of the detected human. The email notification configuration file is attached in the Appendix section.</p>
+                            <p>Install mailutils for email notification</p>
+                            <code>$ sudo apt-get install mailutils</code>
+                            <center><img src="img/email.png" alt="Image" class="img-fluid" height="480" width="480"></center>
+                            <center><p class="tm-section-description">Figure 12. Email sent to the user of the detected human</p></center>
+
+
+                            <hr>
+                        
+                            <!-- Demos -->
+                            <h1 class="tm-section-title">Demos</h1>
+                            <h5 class="tm-section-title">Parallelized Face Detector</h5>
+                            
+                        	<p class="tm-section-description"><a href=code/face_parallel.py>face_parallel.py</a></p>
+                            <p class="tm-section-description">Our first code was modified from a basic face detection program we found online. It uses the Haar cascade classifier built into the OpenCV library. The baseline version was single threaded and only used one processing core of the Raspberry Pi, so we modified it to support multithreading. Images from the PiCam are distributed with a round robin scheduler across all four cores. Our version achieves roughly 8 to 10 FPS by using all available processors on the Raspberry Pi and is capable of accurately detecting faces under appropriate lighting conditions at distances of up to approximately 20 feet.</p>
+
+                            <h5 class="tm-section-title">Pedestrian Detector with Face Prescreening</h5>
+                            <p class="tm-section-description"><a href=code/face_pedestrian.py>face_pedestrian.py</a> 
+                            <p class="tm-section-description"> We next found a pedestrian detection library that used a histogram of oriented gradients (HOG) classifier. This program would detect body parts to identify an entire person, such as arms, torso, and legs. The HOG classifier requires significantly more computing power than the Haar cascade classifier, and achieved a very low framerate on the Raspberry Pi of roughly 0.5 to 1 frame per second. We combined the face and pedestrian detectors into a single program by using the fast face detection as a pre-filter. If a face was detected, we would trigger the slower pedestrian detector to try to identify the person’s body. This enabled a relatively smooth video stream until the pedestrian detector was activated, at which point the video would stall for several seconds as the compute intensive stage was run. We also introduced frame skipping in this version. Every third video frame would be skipped to accelerate the program. We also skipped frames of the pedestrian detector as a form of “cooldown” after it detected a body. This avoids reprocessing the same individual too quickly and helps to improve the overall framerate.</p>
+
+                            <h5 class="tm-section-title">Pedestrian Detector with Motion Prescreening</h5>
+                            <p class="tm-section-description"><a href=code/motion_pedestrian.py>motion_pedestrian.py</a>
+                            <p class="tm-section-description">A trivially simple method to defeat the above mechanisms is to cover one’s face, bypassing the face detector completely. We developed a fix for this by replacing the pre-filtering stage with a motion detector instead. This would trigger whenever enough motion was captured by the camera and run the pedestrian detector. The number of false positives limited the framerate, as even slight amounts of motion in the background would freeze the video as the HOG classifier attempted to locate a body. Ultimately, we determined the framerate limited the effectiveness of this method, and reverted back to the face detector.</p>
+
+                            <h5 class="tm-section-title">Body Detector with Face Prescreening</h5>
+                            <p class="tm-section-description"><a href=code/face_body.py>face_body.py</a></p>
+                            <p class="tm-section-description">We next tried to accelerate body detection by using a different classifier to improve the overall framerate. We located a Haar cascade classifier that would detect a figure’s upper and lower body. The Haar classifier runs significantly faster than the HOG classifier, eliminating the video freezes from pedestrian detection. However, we found the detection accuracy of the Haar body classifiers is disappointingly low. Even though we achieved a high framerate, the program would only detect faces reliably, missing out the test subjects’ bodies. This was deemed unacceptable, so we reverted to the HOG pedestrian detector.</p>
+
+                            <h5 class="tm-section-title">Pedestrian Detector with Face Prescreening, Camera Tracking/Control, and Live Notifications</h5>
+                            <p class="tm-section-description"><a href=code/face_ped_db_track.py>face_ped_db_track.py</a> 
+                            <p class="tm-section-description">Our final demo was built from the face pedestrian detector, and involve integrating various features to build a complete security system. The PiCam was mounted to a gimble that enabled panning and tilting. We introduced two methods to change the camera orientation. The first enabled a remote user to manually control the camera direction using the keyboard. The user could also toggle to an auto-tracking mode that would center the camera on a detected face. To stabilize the camera, we used two methods to minimize jitter. The camera turns only if the center of the face is outside of a bounding box, preventing the camera from rapidly changing direction after achieving a lock. We also took inspiration from saturating counters used in branch prediction with an x-axis and y-axis counter. Each counter would be incremented or decremented on each frame depending on if the face was above/below or left/right of the camera’s center. The camera would only turn upon hitting the saturation values, indicating the uncentered face was detected in roughly the same region for multiple consecutive frames. This eliminates the error from background noise, such as a person briefly walking past the camera. Picking up a face would trigger the pedestrian detector. If that determined there was a human body onscreen, the Raspberry Pi would automatically upload that image frame to a Dropbox account via a secure connection. It would also email the picture to a specified address to warn the owner immediately.</p>
+                            <hr>
+                            <h1 class="tm-section-title">Conclusion</h1>
+                            <p class="tm-section-description">There are several avenues for expansion from the current state of our project. Firstly, our final design can be defeated by an intruder with a covered face. To rectify this, the motion detection needs to be improved to reduce the rate of false positives. Potential solutions could include a way to quantify on-screen movement and only trigger when a human sized object is moving. Our programs overall suffer from relatively low framerates and high latency because of the large number of applications being run concurrently. Currently, all of our features are blocking; i.e. the video is paused while uploading a picture to Dropbox, and the camera cannot track or be turned while the pedestrian detector is running. One major improvement would be to make all these features nonblocking. Thus, the video would continue to stream while the pedestrian detector runs in the background, and interfacing with Dropbox services would run entirely in the background with no obvious effect on performance. This would produce a major improvement to the user experience.</p>
+
+                            <p class="tm-section-description">Finally, one obvious method to circumvent the processing power bottleneck is to migrate to a more powerful platform, such as a Beaglebone. Our design is clearly constrained by the resources available on the Raspberry Pi. Another option is to interface multiple Raspberry Pis together on a distributed computing model and offload computation to other devices. For example, running the face detection and camera control on one Pi and the pedestrian detection and Dropbox/email interface on another should dramatically improve performance. The last resort would be to reduce the number of features of our system, as a tiny embedded device is not designed to handle so much computing for a smooth user interface.</p>
+
+                            <p class="tm-section-description">We were able to implement a fairly complex security system on a resource constrained hardware platform with reasonable performance. On the image processing side, our design exploration led to several different detection schemes with varying levels of performance and reliability. On the notifications side, we were able to provide live alerts and intruder identification via a Dropbox connection and an automated email mechanism. We ultimately achieved the objectives outlined in our project proposal and updates.</p>
+
+                        </form>      
+                    </div>
+                    <hr>
+                     <div class="pad">
+                        	<h1 class="tm-section-title">Parts List</h1>
+                        		<p align="justify"> 
+                                    The following list is the parts that we used for this project. Raspberry pi 3 is not listed as it was already provided to us at the beginning of this course. We would like to thank Prof. Joseph for donating Raspberry Pi Camera to this project.
+                                </p> <br/>
+                                
+                                <style type="text/css">
+							.tg  {border-collapse:collapse;border-spacing:0;}
+							.tg td{font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+							.tg th{font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+							.tg .tg-mwif{font-weight:bold;background-color:#90EEDD;color:#000000;vertical-align:top}
+							.tg .tg-ssyz{font-weight:bold;background-color:#90EEDD;color:#000000;text-align:center;vertical-align:top}
+							.tg .tg-kixb{background-color:#efefef;color:#000000;vertical-align:top}
+							.tg .tg-q9yg{background-color:#efefef;color:#000000;text-align:right;vertical-align:top}
+							.tg .tg-yxcv{background-color:#efefef;color:#000000;vertical-align:top}
+							.tg .tg-ls9k{background-color:#efefef;color:#000000;text-align:right;vertical-align:top}
+							</style>
+							<center>
+							<table class="tg" style="undefined;table-layout: fixed; width: 445px">
+							<colgroup>
+							<col style="width: 170px">
+							<col style="width: 70px">
+							<col style="width: 70px">
+							<col style="width: 85px">
+							</colgroup>
+							  <tr>
+							    <th class="tg-ssyz">Parts Used</th>
+							    <th class="tg-mwif">Link</th>
+							    <th class="tg-ssyz">Quantity</th>
+							    <th class="tg-ssyz">Cost</th>  
+							  </tr>
+							  <tr>
+							    <td class="tg-kixb">Raspberry Pi Camera V2</td>
+							    <td class="tg-q9yg"><a href=https://www.amazon.com/Raspberry-Pi-Camera-Module-Megapixel/dp/B01ER2SKFS>Amazon</a></td>
+							    <td class="tg-q9yg">1</td>
+							    <td class="tg-q9yg">$29.88</td>
+							    
+							  </tr>
+
+							  <tr>
+							    <td class="tg-kixb">Mini Pan-Tilt Kit</td>
+							    <td class="tg-q9yg"><a href=https://www.amazon.com/Management-Development-Assemb-Pan-Tilt-Servos/dp/B00PY3LQ2Y/ref=sr_1_4?ie=UTF8&qid=1495395394&sr=8-4&keywords=pan+tilt+servo>Amazon</a></td>
+							    <td class="tg-q9yg">1</td>
+							    <td class="tg-q9yg">$19.29</td>
+							    
+							  </tr>
+							  <tr>
+							    <td class="tg-yxcv">32GB microSD Card</td>
+							    <td class="tg-ls9k"><a href=https://www.amazon.com/SanDisk-microSDHC-Standard-Packaging-SDSQUNC-032G-GN6MA/dp/B010Q57T02/ref=sr_1_2?s=pc&ie=UTF8&qid=1495395545&sr=1-2&keywords=32gb+micro+sd+card>Amazon</a></td>
+							    <td class="tg-ls9k">1</td>
+							    <td class="tg-ls9k">$13.95</td>
+							    
+							  </tr>
+
+							    <tr>
+							    <td class="tg-yxcv">Total</td>
+							     <td class="tg-ls9k"><a href=""></a></td>
+							    <td class="tg-ls9k"> </td>
+							    <td class="tg-ls9k">$63.12</td>
+							    
+							  </tr>
+
+							</table>
+                                </center>
+
+                    	</div>
+                    	<hr>
+                    	</section>
+                    	<section class="tm-content-box">
+                      <div id="appendix" class="pad">
+                        <h1 class="tm-section-title">Appendix</h1>
+                        
+                        <p class="tm-section-description"><a href=code/face_body.py>face_body.py</a> <code>$ python face_body.py</code></p>
+                        <p class="tm-section-description"><a href=code/face_parallel.py>face_parallel.py</a> <code>$ python face_parallel.py</code></p>
+                        <p class="tm-section-description"><a href=code/face_pedestrian.py>face_pedestrian.py</a> <code>$ python face_pedestrian.py</code></p>
+                        <p class="tm-section-description"><a href=code/motion_pedestrian.py>motion_pedestrian.py</a> <code>$ python motion_pedestrian.py </code></p>
+                        <p class="tm-section-description"><a href=code/face_ped_db_track.py>face_ped_db_track.py</a> <code>$ python face_ped_db_track.py --conf conf.json</code></p>
+                        <p class="tm-section-description"> <a href=code/ssmtp.conf>ssmtp.conf</a> Configuration file for setting up email notification </p>
+                        <p class="tm-section-description"> <a href=code/conf.json>conf.json</a> Configuration file for running the python script</p>
+
+                        <hr>
+
+                        <h1 class="tm-section-title">Acknowledgements</h1>
+                        <p>We would like to thank Prof. Joseph Skovira and our TAs Brendon, Steven, and Jacob for providing us support and guidance throughout the semester. Without them, this project would not have been nearly as successful. We'd also like to acknowledge the greater Raspberry Pi community for providing a platform for low cost hardware projects.</p>
+                        <p class="tm-section-description"><font size="-2"><a href=https://courses.cit.cornell.edu/ece5990/ECE5990_Fall15_FinalProjects/Andre_Heil/ece5990_final_report/avh34_jr986.html>https://courses.cit.cornell.edu/ece5990/ECE5990_Fall15_FinalProjects/
+                        Andre_Heil/ece5990_final_report/avh34_jr986.html/</a></font></p>
+                        <p class="tm-section-description"><font size="-2"><a href=https://realpython.com/blog/python/face-recognition-with-python>https://realpython.com/blog/python/face-recognition-with-python </a></font></p>
+                        <p class="tm-section-description"><font size="-2"><a href=http://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/>http://www.pyimagesearch.com/2015/11/09/pedestrian-detection-opencv/</a> </font></p>
+                        <p class="tm-section-description"><font size="-2"><a href=http://www.pyimagesearch.com/2015/06/01/home-surveillance-and-motion-detection-with-the-raspberry-pi-python-and-opencv/>http://www.pyimagesearch.com/2015/06/01/home-surveillance-and-motion-detection-with-the-raspberry-pi-python-and-opencv/</a></font> </p>
+                        <p class="tm-section-description"><font size="-2"><a href=http://answers.opencv.org/question/42049/body-detection-using-haarcascade/>http://answers.opencv.org/question/42049/body-detection-using-haarcascade/</a> </font></p>
+
+                    </div>
+
+                       
+                </section>  
+
+                <section>
+                    <div id="about" class="tm-content-box flex-2-col">
+                        <div class="pad flex-item tm-team-description-container">
+                            <h2 class="tm-section-title">Our Team</h2>
+                            <p class="tm-section-description">Albert Xu (awx2 at cornell dot edu)</p>    
+                            <p class="tm-section-description">Danna Ma (dm797 at cornell dot edu)</p>
+                            <p class="tm-section-description">Ella Xue (ex32 at cornell dot edu)</p>
+                        </div>
+                        <div class="flex-item">
+                            <img src="img/our_team.JPG" alt="" width="372" height="289">    
+                        </div>                       
+                    </div>
+                </section>
+
+                <footer class="tm-footer">
+                    <p class="text-xs-center">Copyright &copy; 2017 by Albert Xu, Danna Ma and Ella Xue</p>
+                </footer>
+
+            </div>
+             
+        </div>
+        
+        <!-- load JS files -->
+        
+        <script src="js/jquery-1.11.3.min.js"></script>             <!-- jQuery (https://jquery.com/download/) -->
+        <script src="index.js"></script>
+        <script src="js/bootstrap.min.js"></script>                 <!-- Bootstrap (http://v4-alpha.getbootstrap.com/getting-started/download/) -->
+        <script src="js/jquery.magnific-popup.min.js"></script>     <!-- Magnific pop-up (http://dimsemenov.com/plugins/magnific-popup/) -->
+        <script src="js/jquery.singlePageNav.min.js"></script>      <!-- Single Page Nav (https://github.com/ChrisWojcik/single-page-nav) -->
+        <script src="js/jquery.touchSwipe.min.js"></script>         <!-- https://github.com/mattbryson/TouchSwipe-Jquery-Plugin -->
+        
+        <!-- Templatemo scripts -->
+        <script>                      
+    
+        $(document).ready(function(){
+
+            // Single page nav
+            if($(window).width() <= 1139) {
+                $('.tm-main-nav').singlePageNav({
+                    'currentClass' : "active",
+                    offset : 100
+                });
+            } else {
+                $('.tm-main-nav').singlePageNav({
+                    'currentClass' : "active",
+                    offset : 80
+                });
+            }
+
+            // Handle nav offset upon window resize
+            $(window).resize(function(){
+                if($(window).width() <= 1139) {
+                    $('.tm-main-nav').singlePageNav({
+                        'currentClass' : "active",
+                        offset : 100
+                    });
+                } else {
+                    $('.tm-main-nav').singlePageNav({
+                        'currentClass' : "active",
+                        offset : 80
+                    });
+                }
+            });
+
+            // Magnific pop up
+            $('.gallery-container').magnificPopup({
+              delegate: 'a', // child items selector, by clicking on it popup will open
+              type: 'image',
+              gallery: {enabled:true}
+              // other options
+            });
+
+            $('.carousel').carousel({
+              interval: 3000
+            })
+
+            // Enable carousel swiping (http://lazcreative.com/blog/adding-swipe-support-to-bootstrap-carousel-3-0/)
+            $(".carousel-inner").swipe( {
+                //Generic swipe handler for all directions
+                swipeLeft:function(event, direction, distance, duration, fingerCount) {
+                    $(this).parent().carousel('next'); 
+                },
+                swipeRight: function() {
+                    $(this).parent().carousel('prev'); 
+                }
+            });
+
+        });
+    
+        </script>             
+
+    </body>
+    </html>
