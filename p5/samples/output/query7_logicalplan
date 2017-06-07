@@ -1,0 +1,7 @@
+Project[R.G, R.H, B.D, B.E, B.F]
+-Join[]
+[[R.G,B.D], equals null, min null, max 99]
+--Select[R.G <= 99]
+---Leaf[Reserves]
+--Select[B.D <= 99]
+---Leaf[Boats]
