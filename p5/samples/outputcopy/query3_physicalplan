@@ -1,2 +1,0 @@
-Select[S.B >= 51]
--TableScan[Sailors]

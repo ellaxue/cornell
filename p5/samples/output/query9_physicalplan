@@ -1,4 +1,0 @@
-Project[R.G, R.H, B.D, B.E, B.F]
--BNLJ[B.D <> R.G AND B.E = R.H]
---TableScan[Reserves]
---TableScan[Boats]

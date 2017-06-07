@@ -1,2 +1,0 @@
-Select[S.A <= 49]
--IndexScan[Sailors,A,1,49]
